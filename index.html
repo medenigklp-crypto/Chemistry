@@ -37,7 +37,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <!-- ANA SAYFA -->
 <div id="s-home" class="screen active">
   <div style="text-align:center;padding:40px 20px;">
-    <h1 style="font-size:32px;margin-bottom:8px;">Kimya İçin Her Şey</h1>
+    <h1 style="font-size:32px;margin-bottom:8px;">Kimya İçin<br>Her Şey Tek Yerde</h1>
     <p style="color:var(--tx2);">TYT • AYT Hazırlık</p>
   </div>
   <div class="card">
@@ -49,7 +49,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
 <!-- PERİYODİK TABLO -->
 <div id="s-pt" class="screen">
-  <h2 style="margin-bottom:12px;">🔬 Periyodik Tablo (118 Element)</h2>
+  <h2>🔬 Periyodik Tablo</h2>
   <div id="pt-grid" class="pt-grid"></div>
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
 </div>
@@ -72,7 +72,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
 </div>
 
-<!-- QUIZ -->
+<!-- ELEMENT TESTİ -->
 <div id="s-quiz" class="screen">
   <h2>🧪 Element Testi</h2>
   <div class="card" style="text-align:center;padding:60px 20px;">
@@ -86,7 +86,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <div id="toast" class="toast"></div>
 
 <script>
-// ====================== 118 ELEMENT VERİSİ ======================
+// ====================== 118 ELEMENT (Kısaltılmış Önemli Kısım) ======================
 const elements = [
   {n:1,sym:"H",name:"Hidrojen"},{n:2,sym:"He",name:"Helyum"},{n:3,sym:"Li",name:"Lityum"},
   {n:4,sym:"Be",name:"Berilyum"},{n:5,sym:"B",name:"Bor"},{n:6,sym:"C",name:"Karbon"},
@@ -94,12 +94,12 @@ const elements = [
   {n:10,sym:"Ne",name:"Neon"},{n:11,sym:"Na",name:"Sodyum"},{n:12,sym:"Mg",name:"Magnezyum"},
   {n:13,sym:"Al",name:"Alüminyum"},{n:14,sym:"Si",name:"Silisyum"},{n:15,sym:"P",name:"Fosfor"},
   {n:16,sym:"S",name:"Kükürt"},{n:17,sym:"Cl",name:"Klor"},{n:18,sym:"Ar",name:"Argon"},
-  {n:26,sym:"Fe",name:"Demir"},{n:29,sym:"Cu",name:"Bakır"},{n:47,sym:"Ag",name:"Gümüş"},
+  {n:19,sym:"K",name:"Potasyum"},{n:20,sym:"Ca",name:"Kalsiyum"},{n:26,sym:"Fe",name:"Demir"},
+  {n:29,sym:"Cu",name:"Bakır"},{n:30,sym:"Zn",name:"Çinko"},{n:47,sym:"Ag",name:"Gümüş"},
   {n:79,sym:"Au",name:"Altın"},{n:82,sym:"Pb",name:"Kurşun"},{n:118,sym:"Og",name:"Oganesson"}
-  // Tam liste daha sonra eklenebilir, şimdilik önemli olanlar var
 ];
 
-// ====================== ANA FONKSİYONLAR ======================
+// ====================== FONKSİYONLAR ======================
 function nav(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('s-' + id).classList.add('active');
@@ -115,11 +115,10 @@ function toast(msg) {
 function renderPeriodicTable() {
   const grid = document.getElementById('pt-grid');
   grid.innerHTML = '';
-  
   elements.forEach(el => {
     const cell = document.createElement('div');
     cell.className = 'pt-cell';
-    cell.innerHTML = `<div class="num">${el.n}</div><div class="sym">${el.sym}</div><div style="font-size:10px;color:#94a3b8;">${el.name}</div>`;
+    cell.innerHTML = `<div class="num">${el.n}</div><div class="sym">${el.sym}</div>`;
     cell.onclick = () => toast(`${el.n} - ${el.name} (${el.sym})`);
     grid.appendChild(cell);
   });
@@ -129,9 +128,7 @@ function calcMK() {
   const mw = parseFloat(document.getElementById('mk0').value) || 0;
   const val = parseFloat(document.getElementById('mk2').value) || 0;
   const type = document.getElementById('mk1').value;
-  
   if (mw === 0 || val === 0) return toast("Değerleri doldurun");
-  
   let result = type === "m2k" ? (val * mw).toFixed(3) : (val / mw).toFixed(4);
   let unit = type === "m2k" ? " g" : " mol";
   document.getElementById('mkrv').textContent = result + unit;
@@ -142,19 +139,16 @@ function calcMK() {
 function startQuiz() {
   toast("Element Testi başlıyor...");
   setTimeout(() => {
-    const answer = prompt("Soru 1: H sembolü hangi elementindir?");
-    if (answer && answer.toLowerCase().includes("hidrojen")) {
-      toast("✅ Doğru cevap! Daha fazla soru için geliştiriliyor.");
-    } else {
-      toast("❌ Doğru cevap: Hidrojen");
-    }
-  }, 400);
+    const q = prompt("H sembolü hangi elementin?");
+    if (q && q.toLowerCase().includes("hidrojen")) toast("✅ Doğru! Daha fazla soru eklenecek.");
+    else toast("❌ Doğru cevap: Hidrojen");
+  }, 300);
 }
 
 // Başlangıç
 document.addEventListener('DOMContentLoaded', () => {
   renderPeriodicTable();
-  toast("Ronya YKS Kimya hazır! 🎉");
+  toast("Ronya YKS Kimya yüklendi! 🎉");
 });
 </script>
 </body>
