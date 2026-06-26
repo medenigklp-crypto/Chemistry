@@ -19,7 +19,6 @@ html,body{background:#08090f!important;color:var(--tx);font-family:'Inter',sans-
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(99,102,241,.06) 1px,transparent 0);background-size:28px 28px;pointer-events:none;z-index:0;}
 .app{position:relative;z-index:1;}
 ::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px;}
-/* HEADER */
 header{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:58px;border-bottom:1px solid var(--br);background:rgba(8,9,15,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100;}
 .logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;display:flex;align-items:center;gap:8px;}
 .logo-sub{font-size:11px;-webkit-text-fill-color:var(--tx3);font-weight:400;font-family:'Inter',sans-serif;}
@@ -33,12 +32,9 @@ nav button.active{background:var(--sf2);color:var(--ac2);}
 .mnav.open{transform:translateY(0);opacity:1;pointer-events:all;}
 .mnav button{background:var(--sf2);border:none;color:var(--tx2);font-size:14px;font-family:'Inter',sans-serif;padding:12px 16px;border-radius:var(--r);cursor:pointer;font-weight:600;text-align:left;}
 .mnav button:hover{background:var(--sf3);color:var(--tx);}
-/* SCREENS */
 .sc{display:none;}
 .sc.active{display:block;animation:fi .3s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-@keyframes pop{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:scale(1);}}
-/* COMMON */
 .pw{max-width:960px;margin:0 auto;padding:44px 20px;}
 .pw.wide{max-width:1200px;}
 .pw.narrow{max-width:660px;}
@@ -48,7 +44,6 @@ nav button.active{background:var(--sf2);color:var(--ac2);}
 .slbl{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
 .inp{width:100%;background:var(--sf2);border:1px solid var(--br);border-radius:var(--r);padding:11px 15px;color:var(--tx);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
 .inp:focus{border-color:var(--ac);}
-.inp::placeholder{color:var(--tx3);}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 22px;border-radius:var(--r);font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;border:none;}
 .bp{background:var(--ac);color:#fff;box-shadow:0 4px 18px rgba(99,102,241,.3);}
 .bp:hover{background:#4f46e5;transform:translateY(-1px);}
@@ -56,7 +51,6 @@ nav button.active{background:var(--sf2);color:var(--ac2);}
 .bs:hover{border-color:var(--ac);color:var(--ac2);}
 .bfull{width:100%;}
 .badge{display:inline-flex;align-items:center;gap:5px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);border-radius:100px;padding:5px 12px;font-size:11px;color:var(--ac2);font-weight:600;letter-spacing:.3px;}
-/* HOME */
 .hero{text-align:center;padding:72px 20px 52px;max-width:760px;margin:0 auto;}
 .hero .badge{margin-bottom:24px;}
 .hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:18px;}
@@ -69,7 +63,6 @@ nav button.active{background:var(--sf2);color:var(--ac2);}
 .tc .ti{font-size:26px;margin-bottom:10px;}
 .tc .tt{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:5px;}
 .tc .td{font-size:12px;color:var(--tx2);line-height:1.5;}
-/* PERIODIC TABLE */
 .pt-container{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;}
 #pt-real-grid{min-width:700px;font-family:'Space Grotesk',sans-serif;}
 .pt-cell-wrap{aspect-ratio:1;border-radius:10px;cursor:pointer;position:relative;overflow:hidden;border:1px solid transparent;transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s ease,opacity .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 1px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,.18);}
@@ -78,14 +71,14 @@ nav button.active{background:var(--sf2);color:var(--ac2);}
 .pt-cn{font-size:6.5px;font-weight:700;line-height:1.2;opacity:.9;}
 .pt-cs{font-size:13px;font-weight:800;color:#fff;line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.6);}
 .pt-cnm{font-size:5px;color:rgba(255,255,.75);line-height:1.1;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pt-cmass{font-size:4.5px;color:rgba(255,255,.4);line-height:1;}
+.pt-cmass{font-size:4.5px;color:rgba(255,255,255,.4);line-height:1;}
 .pt-col-hdr{font-size:8.5px;color:rgba(255,255,.35);text-align:center;font-weight:700;padding:1px 0;letter-spacing:.3px;}
 .pt-row-hdr{font-size:8.5px;color:rgba(255,255,255,.35);text-align:center;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:.3px;}
 .pt-ref-cell{aspect-ratio:1;border-radius:7px;border:1px dashed rgba(100,116,139,.4);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--tx3);}
 .pt-spacer-cell{aspect-ratio:1;}
 .cat-btn{height:32px;padding:0 12px;border-radius:100px;font-size:11px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;white-space:nowrap;transition:all .15s;background:rgba(255,255,.06);border:1px solid rgba(255,255,.15);color:rgba(255,255,255,.5);}
-.cat-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);}
-.cat-btn.active{background:rgba(var(--cb-rgb,99,102,241),.2);border-color:var(--cb,#6366f1);color:var(--cb,#a5b4fc);box-shadow:0 0 10px rgba(var(--cb-rgb,99,102,241),.3);}
+.cat-btn:hover{background:rgba(255,255,.1);color:rgba(255,255,.8);}
+.cat-btn.active{background:rgba(var(--cb-rgb,99,102,241),.2);border-color:var(--cb,#6366f1);color:var(--cb,#a5b4fc);box-shadow:0 10px rgba(var(--cb-rgb,99,102,241),.3);}
 .trend-btn{padding:7px 12px;border-radius:var(--r);font-size:12px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;border:1px solid var(--br);background:var(--sf2);color:var(--tx2);transition:all .15s;}
 .trend-btn:hover{background:rgba(255,255,255,.08);color:#fff;}
 .trend-btn.active{background:rgba(99,102,241,.2);border-color:#6366f1;color:#a5b4fc;}
@@ -275,7 +268,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ==================== DATA ====================
-const ELS = [
+const ELS=[
 {n:1,sym:'H',name:'Hidrojen',mass:1.008,cat:'Ametal'},
 {n:2,sym:'He',name:'Helyum',mass:4.003,cat:'Soy Gaz'},
 {n:3,sym:'Li',name:'Lityum',mass:6.941,cat:'Alkali Metal'},
@@ -420,7 +413,7 @@ const PT_POS = {
 };
 
 const CAT_COLORS2 = {
-'Alkali Metal':{bg:'rgba(127,29,29,.7)',border:'#ef4444'},
+'Alkali Metal':{bg:'rgba(127,29,.7)',border:'#ef4444'},
 'Toprak Alkali Metal':{bg:'rgba(124,45,18,.7)',border:'#f97316'},
 'Geçiş Metali':{bg:'rgba(69,26,3,.7)',border:'#f59e0b'},
 'Post-Geçiş Metali':{bg:'rgba(20,83,45,.7)',border:'#4ade80'},
@@ -457,21 +450,21 @@ neg:{label:'Elektronegatiflik',unit:'',desc:'Periyotta soldan sağa artar. Grupt
 };
 
 // ==================== STATE ====================
-let ptCatActive = 'all';
-let ptSearchQ = '';
-let ptTempMode = false;
-let currentTrend = null;
+let ptCatActive='all';
+let ptSearchQ='';
+let ptTempMode=false;
+let currentTrend=null;
 
 // ==================== NAVIGATION ====================
 function nav(id){
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
   const t=document.getElementById('s-'+id);
-  if(t) t.classList.add('active');
+  if(t)t.classList.add('active');
   document.querySelectorAll('#desktop-nav button').forEach(b=>b.classList.remove('active'));
   const nb=document.getElementById('nb-'+id);
-  if(nb) nb.classList.add('active');
+  if(nb)nb.classList.add('active');
   document.getElementById('mn').classList.remove('open');
-  if(id==='pt') renderRealPT();
+  if(id==='pt')renderRealPT();
   window.scrollTo(0,0);
 }
 
@@ -500,14 +493,14 @@ function toggleTempMode(){
 
 function getTempColorForEl(el){
   const d=EL_DATA[el.n];
-  if(!d||d.melt==null) return {bg:'rgba(30,41,59,.7)',border:'#475569'};
+  if(!d||d.melt==null)return{bg:'rgba(30,41,59,.7)',border:'#475569'};
   const mp=d.melt;
   if(mp<0)return{bg:'rgba(7,89,133,.7)',border:'#38bdf8'};
   if(mp<100)return{bg:'rgba(6,78,59,.7)',border:'#34d399'};
   if(mp<500)return{bg:'rgba(22,101,52,.7)',border:'#4ade80'};
   if(mp<1000)return{bg:'rgba(113,63,18,.7)',border:'#fbbf24'};
   if(mp<2000)return{bg:'rgba(124,45,18,.7)',border:'#f97316'};
-  return{bg:'rgba(127,29,.7)',border:'#ef4444'};
+  return{bg:'rgba(127,29,29,.7)',border:'#ef4444'};
 }
 
 function setCatFilter(btn){
@@ -519,18 +512,12 @@ function setCatFilter(btn){
 
 function renderRealPT(){
   const container=document.getElementById('pt-real-grid');
-  if(!container) return;
+  if(!container)return;
 
   const cells={};
   ELS.forEach(el=>{const p=PT_POS[el.n];if(p)cells[p[0]+'-'+p[1]]=el;});
 
   const mkCell=(el)=>{
-    const colors=ptTempMode?getTempColorForEl(el):(CAT_COLORS2[el.cat]||{bg:'rgba(30,41,59,.85)',border:'#6366f1'});
-    const ms=!ptSearchQ||el.name.toLowerCase().includes(ptSearchQ)||el.sym.toLowerCase().includes(ptSearchQ);
-    const mc=ptCatActive==='all'||el.cat===ptCatActive||(ptCatActive==='Lantanit & Aktinit'&&(el.cat==='Lantanit'||el.cat==='Aktinit'));
-    const op=(!ms||!mc)?'0.08':'1';
-    const mass=typeof el.mass==='number'
-    const mkCell=(el)=>{
     const colors=ptTempMode?getTempColorForEl(el):(CAT_COLORS2[el.cat]||{bg:'rgba(30,41,59,.85)',border:'#6366f1'});
     const ms=!ptSearchQ||el.name.toLowerCase().includes(ptSearchQ)||el.sym.toLowerCase().includes(ptSearchQ);
     const mc=ptCatActive==='all'||el.cat===ptCatActive||(ptCatActive==='Lantanit & Aktinit'&&(el.cat==='Lantanit'||el.cat==='Aktinit'));
@@ -549,7 +536,6 @@ function renderRealPT(){
   html+='<div></div>';
   for(let c=1;c<=18;c++)html+=`<div class="pt-col-hdr">${c}</div>`;
   html+='</div>';
-
   for(let r=1;r<=7;r++){
     html+=`<div style="display:grid;grid-template-columns:20px repeat(18,minmax(0,1fr));gap:3px;margin-bottom:3px;"><div class="pt-row-hdr">${r}</div>`;
     for(let c=1;c<=18;c++){
@@ -561,17 +547,13 @@ function renderRealPT(){
     }
     html+='</div>';
   }
-
   html+='<div style="height:6px;margin:2px 0;border-top:1px dashed rgba(100,116,139,.2)"></div>';
-
   html+=`<div style="display:grid;grid-template-columns:20px repeat(18,minmax(0,1fr));gap:3px;margin-bottom:3px;"><div class="pt-row-hdr" style="font-size:7.5px;color:#818cf8">La</div><div class="pt-spacer-cell"></div><div class="pt-spacer-cell"></div>`;
   for(let c=3;c<=17;c++){const el=cells['9-'+c];html+=el?mkCell(el):'<div class="pt-spacer-cell"></div>';}
   html+='<div class="pt-spacer-cell"></div></div>';
-
   html+=`<div style="display:grid;grid-template-columns:20px repeat(18,minmax(0,1fr));gap:3px;"><div class="pt-row-hdr" style="font-size:7.5px;color:#7dd3fc">Ac</div><div class="pt-spacer-cell"></div><div class="pt-spacer-cell"></div>`;
-  for(let c=3;c<=17;c++){const el=cells['10-'+c];html+=el?mkCell(el):'<div class="pt-spacer-cell"></div>';}
-  html+='<div class="pt-spacer-cell"></div></div>';
-
+  for(let c=3;c<=17;c++){const el=cells['10-'+
+      html+='<div class="pt-spacer-cell"></div></div>';
   container.innerHTML=html;
 }
 
@@ -597,7 +579,7 @@ function openElDetail(el){
   html+=`<div style="font-size:11px;color:rgba(255,255,255,.5)">${el.mass}</div></div>`;
   html+=`<div><div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:6px">${el.name}</div>`;
   if(d.en)html+=`<div style="font-size:14px;color:var(--tx3);margin-bottom:8px">${d.en}</div>`;
-  html+=`<span style="background:${cc}22;border:1px solid ${cc}44;border-radius:100px;padding:4px 12px;font-size:12px;color:${cc}">${el.cat}</span></div></div>`;
+  html+=`<span style="background:${cc}22;border:1px solid ${cc}44;border-radius:100px;padding:4px 12px;font-size:12px;color:${cc}">${el.cat}</span></div></div></div>`;
 
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">`;
   html+=`<div style="background:var(--sf2);border:1px solid ${cc}44;border-radius:var(--r);padding:14px"><div style="font-size:10px;color:${cc};font-weight:700;margin-bottom:6px">ATOM NUMARASI</div><div style="font-size:26px;font-weight:800;color:#fff">${el.n}</div></div>`;
@@ -670,6 +652,17 @@ function renderTrendGrid(){
   if(cfg.arrow_group)ihtml+=`<div style="font-size:11px;color:var(--tx3)">Grup: <span style="color:#f59e0b;font-weight:600">${cfg.arrow_group}</span></div>`;
   infoCard.innerHTML=ihtml+'</div>';
 
+  const ae=document.getElementById('trend-arrows');
+  const pt=document.getElementById('arrow-period-text');
+  const gt=document.getElementById('arrow-group-text');
+  const pi=document.getElementById('arrow-period-icon');
+  const gi=document.getElementById('arrow-group-icon');
+  if(ae)ae.style.display='block';
+  if(pt)pt.textContent=cfg.arrow_period||'';
+  if(gt)gt.textContent=cfg.arrow_group||'';
+  if(pi){const pa=cfg.arrow_period||'';pi.textContent=pa.indexOf('←')>-1?'⟵':pa.indexOf('→')>-1?'⟶':'↔';}
+  if(gi){const ga=cfg.arrow_group||'';gi.textContent=ga.indexOf('↑')>-1?'↑':ga.indexOf('↓')>-1?'↓':'↕';}
+
   const vals=[];
   ELS.forEach(el=>{const v=cfg.getValue(el);if(v!=null&&!isNaN(Number(v)))vals.push(Number(v));});
   if(!vals.length){container.innerHTML='<div style="color:var(--tx3);font-size:13px;text-align:center;padding:20px">Veri bulunamadı.</div>';return;}
@@ -740,14 +733,14 @@ function init3D(){
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x0f1117);
   camera=new THREE.PerspectiveCamera(50,canvas.clientWidth/canvas.clientHeight,0.1,1000);
-  camera.position.set(5,5);
+  camera.position.set(5,5,5);
   renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setSize(canvas.clientWidth,canvas.clientHeight);
   controls=new OrbitControls(camera,renderer.domElement);
   controls.enableDamping=true;
   scene.add(new THREE.AmbientLight(0xffffff,0.6));
   const dl=new THREE.DirectionalLight(0xffffff,0.8);
-  dl.position.set(5,5);scene.add(dl);
+  dl.position.set(5,5,5);scene.add(dl);
   animate3D();
   loadMol('h2o');
   window.addEventListener('resize',()=>{camera.aspect=canvas.clientWidth/canvas.clientHeight;camera.updateProjectionMatrix();renderer.setSize(canvas.clientWidth,canvas.clientHeight);});
@@ -761,7 +754,7 @@ function animate3D(){
 }
 
 function loadMol(key){
-  if(!scene)return;
+  if(!scene)init3D();
   if(currentMol)scene.remove(currentMol);
   currentMol=new THREE.Group();
   const mol=MOL_DATA[key];
