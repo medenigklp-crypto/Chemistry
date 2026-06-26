@@ -23,7 +23,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .pt-cell .num{font-size:9px;color:#94a3b8;}
 .pt-cell .sym{font-size:18px;font-weight:800;}
 .pt-cell .name{font-size:8.5px;color:#cbd5e1;margin-top:2px;}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2535;padding:14px 24px;border-radius:999px;color:white;z-index:1000;opacity:0;transition:.4s;max-width:300px;text-align:center;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:200;}
+.modal-content{background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:24px;max-width:380px;width:90%;text-align:center;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2535;padding:14px 24px;border-radius:999px;color:white;z-index:1000;opacity:0;transition:.4s;}
 .toast.show{opacity:1;}
 </style>
 </head>
@@ -51,7 +53,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <!-- PERİYODİK TABLO -->
 <div id="s-pt" class="screen">
   <h2>🔬 Periyodik Tablo</h2>
-  <p style="color:var(--tx2);margin-bottom:12px;">Elemente dokunarak bilgi al</p>
+  <p style="color:var(--tx2);margin-bottom:12px;">Elemente dokunarak detayları gör</p>
   <div id="pt-grid" class="pt-grid"></div>
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
 </div>
@@ -74,7 +76,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
 </div>
 
-<!-- QUIZ -->
+<!-- ELEMENT TESTİ -->
 <div id="s-quiz" class="screen">
   <h2>🧪 Element Testi</h2>
   <div class="card" style="text-align:center;padding:60px 20px;">
@@ -85,10 +87,20 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
 </div>
 
+<!-- DETAY MODAL -->
+<div id="detail-modal" class="modal">
+  <div class="modal-content">
+    <h2 id="modal-sym" style="font-size:48px;margin:0;color:#a5b4fc;"></h2>
+    <h3 id="modal-name" style="margin:8px 0 16px;"></h3>
+    <p id="modal-info" style="color:var(--tx2);line-height:1.6;"></p>
+    <button class="btn" onclick="closeModal()" style="margin-top:20px;">Kapat</button>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
-// Element Verileri
+// ====================== ELEMENT VERİLERİ ======================
 const elements = [
   {n:1,sym:"H",name:"Hidrojen",group:"Ametal",color:"#4ade80"},
   {n:2,sym:"He",name:"Helyum",group:"Soy Gaz",color:"#f472b6"},
@@ -135,6 +147,21 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+function showDetail(el) {
+  document.getElementById('modal-sym').textContent = el.sym;
+  document.getElementById('modal-name').textContent = el.name;
+  document.getElementById('modal-info').innerHTML = `
+    Atom Numarası: <strong>${el.n}</strong><br>
+    Grup: <strong>${el.group}</strong><br><br>
+    Periyodik tabloda ${el.group} grubunda yer alır.
+  `;
+  document.getElementById('detail-modal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('detail-modal').style.display = 'none';
+}
+
 function renderPeriodicTable() {
   const grid = document.getElementById('pt-grid');
   grid.innerHTML = '';
@@ -147,7 +174,7 @@ function renderPeriodicTable() {
       <div class="sym" style="color:${el.color}">${el.sym}</div>
       <div class="name">${el.name}</div>
     `;
-    cell.onclick = () => toast(`${el.n} — ${el.name} (${el.sym})\nGrup: ${el.group}`);
+    cell.onclick = () => showDetail(el);
     grid.appendChild(cell);
   });
 }
@@ -174,7 +201,7 @@ function startQuiz() {
 
 document.addEventListener('DOMContentLoaded', () => {
   renderPeriodicTable();
-  toast("Periyodik Tablo hazır! 🎉");
+  toast("Detaylı Periyodik Tablo yüklendi! 🎉");
 });
 </script>
 </body>
