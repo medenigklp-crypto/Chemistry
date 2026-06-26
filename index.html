@@ -1148,7 +1148,7 @@ ELS.push({n:116,sym:'Lv',name:'Livermoryum',mass:293,cat:'Metal'});
 ELS.push({n:117,sym:'Ts',name:'Tennesin',mass:294,cat:'Halojen'});
 ELS.push({n:118,sym:'Og',name:'Oganesson',mass:294,cat:'Soy Gaz'});
 
-// EL_DATA için sadece isim -> açıklama vb. kullanıcıya gösterilecek
+// EL_DATA için isim -> açıklama vb.
 for(var i=0;i<ELS.length;i++){
   var e=ELS[i];
   EL_DATA[e.n] = {en:e.name, desc:e.cat+' elementi.', melt:null, boil:null, neg:null};
@@ -1192,7 +1192,4 @@ var TREND_CONFIG = {
   ionization:{label:'İyonlaşma Enerjisi',unit:'kJ/mol',desc:'Periyotta soldan sağa artar. Grupta yukarıdan aşağı azalır.',arrow_period:'→ Artar',arrow_group:'↓ Azalır',color_low:'#3b82f6',color_high:'#ef4444',getValue:function(el){var d=TREND_DATA[el.n];return d?d[1]:null;}},
   electron_affinity:{label:'Elektron İlgisi',unit:'kJ/mol',desc:'Periyotta soldan sağa genellikle artar. Halojenler en yüksek.',arrow_period:'→ Artar',arrow_group:'↓ Azalır',color_low:'#3b82f6',color_high:'#a855f7',getValue:function(el){var d=TREND_DATA[el.n];return d?d[2]:null;}},
   neg:{label:'Elektronegatiflik',unit:'(Pauling)',desc:'Periyotta soldan sağa artar. Grupta yukarıdan aşağı azalır.',arrow_period:'→ Artar',arrow_group:'↓ Azalır',color_low:'#3b82f6',color_high:'#ef4444',getValue:function(el){var d=EL_DATA[el.n];return d&&d.neg!=null?d.neg:null;}},
-  metallic:{label:'Metalik Aktiflik',unit:'',desc:'Grupta yukarıdan aşağı artar. Periyotta sağdan sola artar.',arrow_period:'← Artar',arrow_group:'↓ Artar',color_low:'#94a3b8',color_high:'#f59e0b',getValue:function(el){var d=TREND_DATA[el.n];if(!d)return null;var cats=['Alkali Metal','Toprak Alkali Metal','Geçiş Metali','Metal'];if(cats.indexOf(el.cat)===-1)return null;return Math.round(3000/d[1]*100)/100;}},
-  nonmetallic:{label:'Ametalik Aktiflik',unit:'',desc:'Periyotta soldan sağa artar. Grupta yukarıdan aşağı azalır.',arrow_period:'→ Artar',arrow_group:'↑ Artar',color_low:'#94a3b8',color_high:'#a855f7',getValue:function(el){var cats=['Ametal','Halojen','Yarı Metal'];if(cats.indexOf(el.cat)===-1)return null;var d=EL_DATA[el.n];if(!d||d.neg==null)return null;return d.neg;}},
-  melt_metal:{label:'Metal Erime Noktası',unit:'°C',desc:'Metalik bağ gücü belirler. W (3422°C) en yüksek.',arrow_period:'Geçiş metallerinde orta gruplarda maksimum',arrow_group:'—',color_low:'#3b82f6',color_high:'#ef4444',getValue:function(el){var cats=['Alkali Metal','Toprak Alkali Metal','Geçiş Metali','Metal'];if(cats.indexOf(el.cat)===-1)return null;var d=EL_DATA[el.n];return d&&d.melt!=null?d.melt:null;}},
-  boil_metal:{label:'Metal Kaynama Noktası',unit:'°C',desc:'Metalik bağ gücü ile ilişkili. W en yüksek.',arrow_period:'Geçiş metallerinde
+  metallic:{label:'Metalik Aktiflik',unit:'',desc:'Grupta yukarıdan aşağı artar. Periyotta sağdan sola artar.',arrow_period:'← Artar',arrow_group:'↓ Artar',color_low:'#94a3b8',color_high:'#f59e0b',getValue:function
