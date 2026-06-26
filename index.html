@@ -1,3 +1,30 @@
+// ===== MENÜ GEÇİŞ FONKSİYONU (DÜZELTİLMİŞ) =====
+function nav(id) {
+  console.log('nav çağrıldı: ' + id); // Konsolda görmek için
+
+  // Mobil menüyü kapat
+  var mn = document.getElementById('mn');
+  if (mn) mn.style.display = 'none';
+
+  // Tüm sayfaları gizle
+  var pages = ['s-home','s-quiz','s-qact','s-res','s-pt','s-eldetay','s-mol','s-eq','s-ph','s-gaz','s-yks','s-pom','s-board','s-sim','s-3d','s-puan','s-atlas'];
+  for (var i = 0; i < pages.length; i++) {
+    var el = document.getElementById(pages[i]);
+    if (el) el.style.display = 'none';
+  }
+
+  // Hedef sayfayı göster
+  var target = document.getElementById('s-' + id);
+  if (target) {
+    target.style.display = 'block';
+    console.log('✅ ' + id + ' gösteriliyor');
+  } else {
+    console.error('❌ s-' + id + ' bulunamadı!');
+  }
+
+  // Sayfayı yukarı kaydır
+  window.scrollTo(0, 0);
+}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
