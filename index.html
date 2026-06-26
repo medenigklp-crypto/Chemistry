@@ -6,73 +6,105 @@
 <title>Ronya — YKS Kimya</title>
 <link rel="manifest" href="manifest.json">
 <style>
-/* Orijinal CSS + Düzeltmeler */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
 :root{--bg:#08090f;--sf:#0f1117;--sf2:#161922;--sf3:#1c2030;--br:#1e2535;--br2:#252d40;--ac:#6366f1;--ac2:#818cf8;--ac3:#a5b4fc;--gr:#22c55e;--rd:#ef4444;--yw:#f59e0b;--cy:#06b6d4;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#475569;--r:14px;--rsm:8px;--rlg:20px;--rxl:28px;}
-*{box-sizing:border-box;margin:0;padding:0;}html,body{background:#08090f;color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;}
-/* ... (Tüm CSS burada, orijinalden korundu) ... */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--sf2);border:1px solid var(--br);border-radius:100px;padding:10px 20px;font-size:13px;z-index:300;opacity:0;transition:all .3s;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+*{box-sizing:border-box;margin:0;padding:0;}html,body{background:#08090f;color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+.app{position:relative;z-index:1;}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:58px;border-bottom:1px solid var(--br);background:rgba(8,9,15,.95);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100;}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;}
+.screen{display:none;}
+.screen.active{display:block;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--sf2);border:1px solid var(--br);border-radius:100px;padding:12px 20px;font-size:14px;z-index:999;opacity:0;transition:all .3s;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-10px);}
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- Header ve tüm içerik buraya -->
-  <header><!-- ... orijinal header ... --></header>
+
+<header>
+  <div class="logo" onclick="nav('home')">Ronya <span style="font-size:11px;color:#94a3b8;">YKS Kimya</span></div>
+  <button onclick="alert('Menü yakında eklenecek')" style="background:none;border:none;color:white;font-size:24px;">☰</button>
+</header>
+
+<!-- ANA SAYFA -->
+<div id="s-home" class="screen active" style="padding:20px;text-align:center;">
+  <h1 style="font-size:32px;margin:40px 0 20px;">Hoş Geldin!</h1>
+  <p style="color:#94a3b8;font-size:18px;">YKS Kimya Platformu</p>
   
-  <!-- Ekranlar -->
-  <div id="s-home" class="screen">Ana Sayfa İçeriği</div>
-  <!-- Diğer ekranlar ... -->
+  <div style="margin:40px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <button onclick="nav('pt')" style="padding:18px;background:#1e2535;border:1px solid #6366f1;border-radius:12px;color:white;">🔬 Periyodik Tablo</button>
+    <button onclick="nav('mol')" style="padding:18px;background:#1e2535;border:1px solid #6366f1;border-radius:12px;color:white;">⚖️ Mol Hesaplayıcı</button>
+  </div>
 </div>
 
-<script>
-// ====================== DÜZELTİLMİŞ VE ÇALIŞIR JS ======================
+<!-- PERİYODİK TABLO -->
+<div id="s-pt" class="screen" style="padding:20px;">
+  <h2>Periyodik Tablo</h2>
+  <p style="color:#94a3b8;">Yakında tam versiyon yüklenecek...</p>
+  <button onclick="nav('home')">← Geri</button>
+</div>
 
-// Debug kaldırıldı, temizlendi
+<!-- MOL HESAPLAYICI -->
+<div id="s-mol" class="screen" style="padding:20px;">
+  <h2>⚖️ Mol Hesaplayıcı</h2>
+  <div style="background:#1e2535;padding:20px;border-radius:12px;margin-top:20px;">
+    <input type="number" id="mk0" placeholder="Molar Kütle (g/mol)" style="width:100%;padding:12px;margin:8px 0;background:#161922;border:1px solid #475569;border-radius:8px;color:white;">
+    <select id="mk1" style="width:100%;padding:12px;margin:8px 0;background:#161922;border:1px solid #475569;border-radius:8px;color:white;">
+      <option value="m2k">Mol → Kütle</option>
+      <option value="k2m">Kütle → Mol</option>
+    </select>
+    <input type="number" id="mk2" placeholder="Değer" style="width:100%;padding:12px;margin:8px 0;background:#161922;border:1px solid #475569;border-radius:8px;color:white;">
+    <button onclick="calcMK()" style="width:100%;padding:14px;background:#6366f1;border:none;border-radius:8px;color:white;margin-top:10px;">Hesapla</button>
+    <div id="mkr" style="display:none;margin-top:15px;padding:15px;background:#0f1117;border-radius:8px;">
+      <strong>Sonuç: <span id="mkrv"></span></strong>
+    </div>
+  </div>
+  <button onclick="nav('home')" style="margin-top:20px;">← Geri</button>
+</div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ====================== ANA JS ======================
 function nav(id) {
-  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
   const target = document.getElementById('s-' + id);
-  if (target) target.style.display = 'block';
-  else console.error('Ekran bulunamadı:', id);
-  
-  if (id === 'pt') renderRealPT();
+  if (target) target.classList.add('active');
+  else console.log('Ekran bulunamadı:', id);
 }
 
 function toast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast';
-    t.className = 'toast';
-    document.body.appendChild(t);
-  }
+  const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// Basit hesap makineleri (gerçek çalışan versiyonlar)
 function calcMK() {
   const mw = parseFloat(document.getElementById('mk0').value) || 0;
   const val = parseFloat(document.getElementById('mk2').value) || 0;
   const type = document.getElementById('mk1').value;
-  let result = type === 'm2k' ? val * mw : val / mw;
-  document.getElementById('mkrv').textContent = result.toFixed(4) + (type === 'm2k' ? ' g' : ' mol');
+  
+  if (!mw || !val) {
+    toast("Değerleri doldurun!");
+    return;
+  }
+  
+  let result = type === "m2k" ? (val * mw).toFixed(3) : (val / mw).toFixed(4);
+  let unit = type === "m2k" ? " g" : " mol";
+  
+  document.getElementById('mkrv').textContent = result + unit;
   document.getElementById('mkr').style.display = 'block';
-}
-
-// Diğer hesap makineleri de benzer şekilde...
-
-// Periyodik tablo (basitleştirilmiş)
-function renderRealPT() {
-  toast("Periyodik Tablo yüklendi");
-  // Gerçek render burada olacak
+  toast("Hesaplandı ✓");
 }
 
 // Başlangıç
 document.addEventListener('DOMContentLoaded', () => {
-  nav('home');
-  toast('Ronya YKS Kimya yüklendi ✓');
+  toast('Ronya YKS Kimya yüklendi!');
 });
 </script>
 </body>
