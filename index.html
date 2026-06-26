@@ -86,7 +86,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <div id="toast" class="toast"></div>
 
 <script>
-// ====================== 118 ELEMENT (Kısaltılmış Önemli Kısım) ======================
+// ====================== ELEMENT VERİLERİ ======================
 const elements = [
   {n:1,sym:"H",name:"Hidrojen"},{n:2,sym:"He",name:"Helyum"},{n:3,sym:"Li",name:"Lityum"},
   {n:4,sym:"Be",name:"Berilyum"},{n:5,sym:"B",name:"Bor"},{n:6,sym:"C",name:"Karbon"},
@@ -139,16 +139,16 @@ function calcMK() {
 function startQuiz() {
   toast("Element Testi başlıyor...");
   setTimeout(() => {
-    const q = prompt("H sembolü hangi elementin?");
-    if (q && q.toLowerCase().includes("hidrojen")) toast("✅ Doğru! Daha fazla soru eklenecek.");
-    else toast("❌ Doğru cevap: Hidrojen");
-  }, 300);
+    const q = prompt("Soru 1: H sembolü hangi elementindir?");
+    if (q && q.toLowerCase().includes("hidrojen")) toast("✅ Doğru! Devam ediyor...");
+    else toast("❌ H = Hidrojen");
+  }, 400);
 }
 
 // Başlangıç
 document.addEventListener('DOMContentLoaded', () => {
   renderPeriodicTable();
-  toast("Ronya YKS Kimya yüklendi! 🎉");
+  toast("Ronya YKS Kimya'ya hoş geldin! 🎉");
 });
 </script>
 </body>
