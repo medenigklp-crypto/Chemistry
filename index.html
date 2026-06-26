@@ -1,22 +1,49 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ronya — YKS Kimya</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="theme-color" content="#08090f">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ronya — YKS Kimya</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#08090f">
+    <style>
+        /* Orijinal CSS'in tamamı buraya gelecek (çok uzun olduğu için ikinci adımda vereceğim) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+        :root{
+          --bg:#08090f;--sf:#0f1117;--sf2:#161922;--sf3:#1c2030;
+          --br:#1e2535;--br2:#252d40;
+          --ac:#6366f1;--ac2:#818cf8;--ac3:#a5b4fc;
+          --gr:#22c55e;--rd:#ef4444;--yw:#f59e0b;--cy:#06b6d4;
+          --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#475569;
+          --r:14px;--rsm:8px;--rlg:20px;--rxl:28px;
+        }
+        /* ... (orijinal CSS'in tamamı) ... */
+    </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Header ve tüm ekranlar buraya gelecek (orijinalden kopyalayacağım) -->
-  </div>
+<div class="app">
+    <!-- Header -->
+    <header>
+      <div class="logo" onclick="nav('home')">Ronya<span class="logo-sub">YKS Kimya</span></div>
+      <nav id="desktop-nav">
+        <!-- Menü butonları buraya gelecek -->
+      </nav>
+      <button class="hmb" onclick="toggleMobileMenu()">☰</button>
+    </header>
 
-  <script src="js/data.js"></script>
-  <script src="js/periodic-table.js"></script>
-  <script src="js/calculators.js"></script>
-  <script src="js/quiz.js"></script>
-  <script src="js/main.js"></script>
+    <!-- Tüm ekranlar buraya yüklenecek -->
+    <div id="screen-container">
+      <!-- Dinamik olarak değiştirilecek -->
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/periodic-table.js"></script>
+<script src="js/calculators.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
