@@ -7,17 +7,17 @@
 <link rel="manifest" href="manifest.json">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
-:root{--bg:#08090f;--sf:#0f1117;--sf2:#161922;--sf3:#1c2030;--br:#1e2535;--br2:#252d40;--ac:#6366f1;--ac2:#818cf8;--gr:#22c55e;--rd:#ef4444;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#475569;--r:14px;}
+:root{--bg:#08090f;--sf:#0f1117;--sf2:#161922;--sf3:#1c2030;--br:#1e2535;--br2:#252d40;--ac:#6366f1;--ac2:#818cf8;--gr:#22c55e;--rd:#ef4444;--yw:#f59e0b;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#475569;--r:14px;}
 *{box-sizing:border-box;margin:0;padding:0;}body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;}
-.app{max-width:960px;margin:0 auto;}
-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(8,9,15,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;border-bottom:1px solid var(--br);}
-.logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;}
+.app{max-width:960px;margin:0 auto;padding-bottom:80px;}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(8,9,15,0.98);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;border-bottom:1px solid var(--br);}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:800;background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;}
 .screen{display:none;padding:16px;}
 .screen.active{display:block;}
-.card{background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:20px;margin-bottom:16px;}
-.btn{width:100%;padding:16px;background:var(--ac);color:white;border:none;border-radius:12px;font-weight:600;font-size:16px;margin:8px 0;cursor:pointer;}
-.btn2{background:var(--sf2);color:var(--tx2);}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2535;padding:14px 24px;border-radius:999px;color:white;z-index:1000;opacity:0;transition:.4s;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+.card{background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:20px;margin:16px 0;}
+.btn{width:100%;padding:16px;background:var(--ac);color:white;border:none;border-radius:12px;font-weight:600;font-size:16px;margin:10px 0;cursor:pointer;}
+.btn2{background:var(--sf2);color:var(--tx);}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2535;padding:14px 24px;border-radius:999px;color:white;z-index:1000;opacity:0;transition:.4s;box-shadow:0 10px 30px rgba(0,0,0,0.6);}
 .toast.show{opacity:1;}
 </style>
 </head>
@@ -31,9 +31,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
 <!-- ANA SAYFA -->
 <div id="s-home" class="screen active">
-  <div style="text-align:center;padding:40px 20px;">
-    <h1 style="font-size:32px;margin-bottom:8px;">Kimya İçin Her Şey</h1>
-    <p style="color:var(--tx2);font-size:18px;">TYT - AYT Hazırlık</p>
+  <div style="text-align:center;padding:30px 20px 40px;">
+    <h1 style="font-size:32px;margin-bottom:8px;">Kimya İçin<br>Her Şey Tek Yerde</h1>
+    <p style="color:var(--tx2);">TYT • AYT Hazırlık</p>
   </div>
   
   <div class="card">
@@ -45,8 +45,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 
 <!-- PERİYODİK TABLO -->
 <div id="s-pt" class="screen">
-  <h2 style="margin-bottom:16px;">🔬 Periyodik Tablo</h2>
-  <div id="pt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px;"></div>
+  <h2>🔬 Periyodik Tablo</h2>
+  <div id="pt-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:8px;margin-top:16px;"></div>
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
 </div>
 
@@ -54,15 +54,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <div id="s-mol" class="screen">
   <h2>⚖️ Mol Hesaplayıcı</h2>
   <div class="card">
-    <input type="number" id="mk0" placeholder="Molar Kütle (g/mol)" style="width:100%;padding:14px;margin:10px 0;background:#161922;border:1px solid #475569;border-radius:10px;color:white;">
-    <select id="mk1" style="width:100%;padding:14px;margin:10px 0;background:#161922;border:1px solid #475569;border-radius:10px;color:white;">
+    <input type="number" id="mk0" placeholder="Molar Kütle (g/mol) - örn: 18" style="width:100%;padding:14px;margin:8px 0;background:#161922;border:1px solid #475569;border-radius:10px;color:white;">
+    <select id="mk1" style="width:100%;padding:14px;margin:8px 0;background:#161922;border:1px solid #475569;border-radius:10px;color:white;">
       <option value="m2k">Mol → Kütle</option>
       <option value="k2m">Kütle → Mol</option>
     </select>
-    <input type="number" id="mk2" placeholder="Değer" style="width:100%;padding:14px;margin:10px 0;background:#161922;border:1px solid #475569;border-radius:10px;color:white;">
+    <input type="number" id="mk2" placeholder="Değer gir" style="width:100%;padding:14px;margin:8px 0;background:#161922;border:1px solid #475569;border-radius:10px;color:white;">
     <button class="btn" onclick="calcMK()">Hesapla</button>
-    <div id="mkr" style="display:none;margin-top:15px;padding:15px;background:#0f1117;border-radius:12px;text-align:center;">
-      <strong>Sonuç: <span id="mkrv" style="color:#a5b4fc;font-size:18px;"></span></strong>
+    <div id="mkr" style="display:none;margin-top:15px;padding:18px;background:#0f1117;border-radius:12px;text-align:center;">
+      <strong>Sonuç: <span id="mkrv" style="color:#a5b4fc;font-size:20px;"></span></strong>
     </div>
   </div>
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
@@ -71,9 +71,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <!-- ELEMENT TESTİ -->
 <div id="s-quiz" class="screen">
   <h2>🧪 Element Testi</h2>
-  <div class="card" style="text-align:center;padding:40px 20px;">
-    <p style="color:var(--tx2);margin-bottom:20px;">118 element ile pratik yap</p>
-    <button class="btn" onclick="startSimpleQuiz()">Teste Başla</button>
+  <div class="card" style="text-align:center;padding:50px 20px;">
+    <p style="margin-bottom:30px;color:var(--tx2);">Sembol → İsim veya İsim → Sembol testi</p>
+    <button class="btn" onclick="startQuiz()">Teste Başla</button>
   </div>
   <button class="btn btn2" onclick="nav('home')">← Ana Sayfa</button>
 </div>
@@ -83,16 +83,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <div id="toast" class="toast"></div>
 
 <script>
-// ====================== ANA UYGULAMA ======================
-let currentScreen = 'home';
-
+// ====================== ANA JS ======================
 function nav(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById('s-' + id);
-  if (target) {
-    target.classList.add('active');
-    currentScreen = id;
-  }
+  document.getElementById('s-' + id).classList.add('active');
 }
 
 function toast(msg) {
@@ -108,7 +102,7 @@ function calcMK() {
   const val = parseFloat(document.getElementById('mk2').value) || 0;
   const type = document.getElementById('mk1').value;
   
-  if (mw === 0 || val === 0) return toast("Değerleri doldurun");
+  if (mw === 0 || val === 0) return toast("Lütfen tüm değerleri girin");
   
   let result = type === "m2k" ? (val * mw).toFixed(3) : (val / mw).toFixed(4);
   let unit = type === "m2k" ? " g" : " mol";
@@ -119,43 +113,44 @@ function calcMK() {
 }
 
 // Basit Periyodik Tablo
-function renderSimplePT() {
+function renderPT() {
   const grid = document.getElementById('pt-grid');
-  if (!grid) return;
   grid.innerHTML = '';
   
-  const elements = [
-    {n:1,sym:"H",name:"Hidrojen"},{n:2,sym:"He",name:"Helyum"},
-    {n:3,sym:"Li",name:"Lityum"},{n:6,sym:"C",name:"Karbon"},
-    {n:7,sym:"N",name:"Azot"},{n:8,sym:"O",name:"Oksijen"},
-    {n:11,sym:"Na",name:"Sodyum"},{n:13,sym:"Al",name:"Alüminyum"},
-    {n:26,sym:"Fe",name:"Demir"},{n:29,sym:"Cu",name:"Bakır"},
-    {n:47,sym:"Ag",name:"Gümüş"},{n:79,sym:"Au",name:"Altın"}
+  const sample = [
+    {n:1,s:"H",name:"Hidrojen"},{n:6,s:"C",name:"Karbon"},{n:7,s:"N",name:"Azot"},
+    {n:8,s:"O",name:"Oksijen"},{n:11,s:"Na",name:"Sodyum"},{n:13,s:"Al",name:"Alüminyum"},
+    {n:26,s:"Fe",name:"Demir"},{n:29,s:"Cu",name:"Bakır"},{n:47,s:"Ag",name:"Gümüş"},
+    {n:79,s:"Au",name:"Altın"},{n:82,s:"Pb",name:"Kurşun"}
   ];
   
-  elements.forEach(el => {
-    const div = document.createElement('div');
-    div.style.cssText = 'background:#1e2535;padding:12px;border-radius:10px;text-align:center;border:1px solid #6366f1;cursor:pointer;';
-    div.innerHTML = `<strong style="font-size:18px;color:#a5b4fc">${el.sym}</strong><br><small>${el.n} - ${el.name}</small>`;
-    div.onclick = () => toast(`${el.name} (${el.sym})`);
-    grid.appendChild(div);
+  sample.forEach(el => {
+    const d = document.createElement('div');
+    d.style.cssText = `background:#1e2535;padding:12px 8px;border-radius:12px;text-align:center;border:1px solid #6366f1;cursor:pointer;`;
+    d.innerHTML = `<div style="font-size:20px;font-weight:800;color:#a5b4fc">${el.s}</div><small>${el.n}</small>`;
+    d.onclick = () => toast(`${el.name} (${el.s})`);
+    grid.appendChild(d);
   });
 }
 
 // Basit Quiz
-function startSimpleQuiz() {
-  toast("Element Testi başlıyor... (Basit mod)");
+let quizScore = 0;
+function startQuiz() {
+  quizScore = 0;
+  toast("Test başlıyor! İlk soru:");
   setTimeout(() => {
-    const q = prompt("H'nin simgesi nedir?");
-    if (q && q.toUpperCase() === "H") toast("✅ Doğru!");
-    else toast("❌ H = Hidrojen");
-  }, 300);
+    const ans = prompt("1) H sembolü hangi elementin? (Cevap: Hidrojen)");
+    if (ans && ans.toLowerCase().includes("hidrojen")) {
+      quizScore++;
+      toast("✅ Doğru! Skor: " + quizScore);
+    } else toast("❌ H = Hidrojen");
+  }, 500);
 }
 
 // Başlangıç
 document.addEventListener('DOMContentLoaded', () => {
-  renderSimplePT();
-  toast("Ronya YKS Kimya'ya hoş geldin!");
+  renderPT();
+  toast("Ronya YKS Kimya'ya hoş geldin! 🎉");
 });
 </script>
 </body>
