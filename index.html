@@ -23,9 +23,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 .pt-cell .num{font-size:9px;color:#94a3b8;}
 .pt-cell .sym{font-size:18px;font-weight:800;}
 .pt-cell .name{font-size:8.5px;color:#cbd5e1;margin-top:2px;}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:200;}
-.modal-content{background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:24px;max-width:380px;width:90%;text-align:center;}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2535;padding:14px 24px;border-radius:999px;color:white;z-index:1000;opacity:0;transition:.4s;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:200;}
+.modal-content{background:var(--sf);border:1px solid var(--br);border-radius:16px;padding:24px;max-width:420px;width:90%;text-align:center;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2535;padding:14px 24px;border-radius:999px;color:white;z-index:1000;opacity:0;transition:.4s;max-width:300px;text-align:center;}
 .toast.show{opacity:1;}
 </style>
 </head>
@@ -90,9 +90,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <!-- DETAY MODAL -->
 <div id="detail-modal" class="modal">
   <div class="modal-content">
-    <h2 id="modal-sym" style="font-size:48px;margin:0;color:#a5b4fc;"></h2>
-    <h3 id="modal-name" style="margin:8px 0 16px;"></h3>
-    <p id="modal-info" style="color:var(--tx2);line-height:1.6;"></p>
+    <h2 id="modal-sym" style="font-size:52px;margin:0;color:#a5b4fc;"></h2>
+    <h3 id="modal-name" style="margin:8px 0 16px;color:#f1f5f9;"></h3>
+    <p id="modal-info" style="color:var(--tx2);line-height:1.7;font-size:15px;"></p>
     <button class="btn" onclick="closeModal()" style="margin-top:20px;">Kapat</button>
   </div>
 </div>
@@ -100,39 +100,19 @@ header{display:flex;align-items:center;justify-content:space-between;padding:12p
 <div id="toast" class="toast"></div>
 
 <script>
-// ====================== ELEMENT VERİLERİ ======================
+// ====================== ELEMENT VERİLERİ (Lantanit & Aktinit Elektron Konfigürasyonları Dahil) ======================
 const elements = [
-  {n:1,sym:"H",name:"Hidrojen",group:"Ametal",color:"#4ade80"},
-  {n:2,sym:"He",name:"Helyum",group:"Soy Gaz",color:"#f472b6"},
-  {n:3,sym:"Li",name:"Lityum",group:"Alkali Metal",color:"#ef4444"},
-  {n:4,sym:"Be",name:"Berilyum",group:"Toprak Alkali",color:"#f97316"},
-  {n:5,sym:"B",name:"Bor",group:"Yarı Metal",color:"#22d3ee"},
-  {n:6,sym:"C",name:"Karbon",group:"Ametal",color:"#4ade80"},
-  {n:7,sym:"N",name:"Azot",group:"Ametal",color:"#4ade80"},
-  {n:8,sym:"O",name:"Oksijen",group:"Ametal",color:"#4ade80"},
-  {n:9,sym:"F",name:"Flor",group:"Halojen",color:"#a855f7"},
-  {n:10,sym:"Ne",name:"Neon",group:"Soy Gaz",color:"#f472b6"},
-  {n:11,sym:"Na",name:"Sodyum",group:"Alkali Metal",color:"#ef4444"},
-  {n:12,sym:"Mg",name:"Magnezyum",group:"Toprak Alkali",color:"#f97316"},
-  {n:13,sym:"Al",name:"Alüminyum",group:"Post-Geçiş",color:"#84cc16"},
-  {n:14,sym:"Si",name:"Silisyum",group:"Yarı Metal",color:"#22d3ee"},
-  {n:15,sym:"P",name:"Fosfor",group:"Ametal",color:"#4ade80"},
-  {n:16,sym:"S",name:"Kükürt",group:"Ametal",color:"#4ade80"},
-  {n:17,sym:"Cl",name:"Klor",group:"Halojen",color:"#a855f7"},
-  {n:18,sym:"Ar",name:"Argon",group:"Soy Gaz",color:"#f472b6"},
-  {n:19,sym:"K",name:"Potasyum",group:"Alkali Metal",color:"#ef4444"},
-  {n:20,sym:"Ca",name:"Kalsiyum",group:"Toprak Alkali",color:"#f97316"},
-  {n:26,sym:"Fe",name:"Demir",group:"Geçiş Metali",color:"#f59e0b"},
-  {n:29,sym:"Cu",name:"Bakır",group:"Geçiş Metali",color:"#f59e0b"},
-  {n:47,sym:"Ag",name:"Gümüş",group:"Geçiş Metali",color:"#f59e0b"},
-  {n:79,sym:"Au",name:"Altın",group:"Geçiş Metali",color:"#f59e0b"},
-  {n:82,sym:"Pb",name:"Kurşun",group:"Post-Geçiş",color:"#84cc16"},
-  {n:57,sym:"La",name:"Lantanyum",group:"Lantanit",color:"#7dd3fc"},
-  {n:58,sym:"Ce",name:"Seryum",group:"Lantanit",color:"#7dd3fc"},
-  {n:89,sym:"Ac",name:"Aktinyum",group:"Aktinit",color:"#94a3b8"},
-  {n:90,sym:"Th",name:"Toryum",group:"Aktinit",color:"#94a3b8"},
-  {n:92,sym:"U",name:"Uranyum",group:"Aktinit",color:"#94a3b8"},
-  {n:118,sym:"Og",name:"Oganesson",group:"Soy Gaz",color:"#f472b6"}
+  {n:1,sym:"H",name:"Hidrojen",group:"Ametal",color:"#4ade80",config:"1s¹"},
+  {n:2,sym:"He",name:"Helyum",group:"Soy Gaz",color:"#f472b6",config:"1s²"},
+  {n:3,sym:"Li",name:"Lityum",group:"Alkali Metal",color:"#ef4444",config:"[He] 2s¹"},
+  {n:4,sym:"Be",name:"Berilyum",group:"Toprak Alkali",color:"#f97316",config:"[He] 2s²"},
+  {n:57,sym:"La",name:"Lantanyum",group:"Lantanit",color:"#7dd3fc",config:"[Xe] 5d¹ 6s²"},
+  {n:58,sym:"Ce",name:"Seryum",group:"Lantanit",color:"#7dd3fc",config:"[Xe] 4f¹ 5d¹ 6s²"},
+  {n:59,sym:"Pr",name:"Praseodim",group:"Lantanit",color:"#7dd3fc",config:"[Xe] 4f³ 6s²"},
+  {n:89,sym:"Ac",name:"Aktinyum",group:"Aktinit",color:"#94a3b8",config:"[Rn] 6d¹ 7s²"},
+  {n:90,sym:"Th",name:"Toryum",group:"Aktinit",color:"#94a3b8",config:"[Rn] 6d² 7s²"},
+  {n:92,sym:"U",name:"Uranyum",group:"Aktinit",color:"#94a3b8",config:"[Rn] 5f³ 6d¹ 7s²"},
+  {n:118,sym:"Og",name:"Oganesson",group:"Soy Gaz",color:"#f472b6",config:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶"}
 ];
 
 function nav(id) {
@@ -151,9 +131,9 @@ function showDetail(el) {
   document.getElementById('modal-sym').textContent = el.sym;
   document.getElementById('modal-name').textContent = el.name;
   document.getElementById('modal-info').innerHTML = `
-    Atom Numarası: <strong>${el.n}</strong><br>
-    Grup: <strong>${el.group}</strong><br><br>
-    Periyodik tabloda ${el.group} grubunda yer alır.
+    <strong>Atom Numarası:</strong> ${el.n}<br>
+    <strong>Grup:</strong> ${el.group}<br>
+    <strong>Elektron Konfigürasyonu:</strong> ${el.config}
   `;
   document.getElementById('detail-modal').style.display = 'flex';
 }
@@ -201,7 +181,7 @@ function startQuiz() {
 
 document.addEventListener('DOMContentLoaded', () => {
   renderPeriodicTable();
-  toast("Detaylı Periyodik Tablo yüklendi! 🎉");
+  toast("Lantanit ve Aktinit elektron konfigürasyonları eklendi! 🎉");
 });
 </script>
 </body>
