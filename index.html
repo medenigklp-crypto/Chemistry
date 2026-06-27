@@ -1,6 +1,9 @@
 
-# Write the file in parts to avoid JSON issues with backticks
-part1 = '''<!DOCTYPE html>
+# Write the complete HTML file in one go using a different approach
+# to avoid JSON parsing issues with backticks and special characters
+
+with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
+    f.write('''<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -613,15 +616,7 @@ part1 = '''<!DOCTYPE html>
             
             return project(cx + x, cy + y, cz + z);
         }
-'''
 
-with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
-    f.write(part1)
-
-print("Part 1 written successfully")
-
-  
-part2 = '''
         // ===== TEARDROP / DROPLET LOBE =====
         // Creates a lobe that:
         // - Starts with a flat circular face at origin (like a cut sphere)
@@ -1096,18 +1091,9 @@ part2 = '''
         renderVids();
     </script>
 </body>
-</html>'''
+</html>''')
 
-with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'a', encoding='utf-8') as f:
-    f.write(part2)
-
-# Get final file size
 import os
 size = os.path.getsize('/mnt/agents/output/kimya_orbitaller_videolar.html')
-print(f"✅ Part 2 appended successfully")
-print(f"📊 Total file size: {size:,} bytes")
-print("💧 Su damlasi seklinde loblar uygulandi!")
-print("   - Orijinde: duz yuzey (neckRadius)")
-print("   - Ortada: maksimum siskinlik")
-print("   - Ucta: sivri kapanis (radius=0)")
-      
+print(f"✅ Tam kod basariyla yazildi!")
+print(f"📊 Dosya boyutu: {size:,} bytes")
