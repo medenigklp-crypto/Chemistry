@@ -4,7 +4,7 @@ html_content = '''<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Kimya - Orbitaller & Videolar</title>
+    <title>Kimya - Gerçekçi Orbitaller & Videolar</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -48,36 +48,64 @@ html_content = '''<!DOCTYPE html>
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* Orbital Cards */
-        .orbital-grid {
+        /* Main Type Selector */
+        .type-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 20px;
         }
-        .orbital-card {
+        .type-card {
             background: rgba(255,255,255,0.06);
             border: 2px solid rgba(0,212,255,0.3);
             border-radius: 16px;
-            padding: 20px 10px;
+            padding: 18px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .orbital-card:active { transform: scale(0.95); }
-        .orbital-card.selected {
+        .type-card:active { transform: scale(0.95); }
+        .type-card.selected {
             border-color: #00d4ff;
             background: rgba(0,212,255,0.15);
             box-shadow: 0 0 25px rgba(0,212,255,0.3);
         }
-        .orbital-card h3 {
-            font-size: 2.2rem;
+        .type-card h3 {
+            font-size: 2rem;
             color: #00d4ff;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
-        .orbital-card p {
-            font-size: 0.8rem;
+        .type-card p {
+            font-size: 0.75rem;
             color: rgba(255,255,255,0.6);
+        }
+
+        /* Sub-orbital buttons */
+        .sub-orbital-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            min-height: 50px;
+        }
+        .sub-btn {
+            padding: 10px 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .sub-btn:active { transform: scale(0.95); }
+        .sub-btn.selected {
+            border-color: #00ff88;
+            background: rgba(0,255,136,0.15);
+            color: #00ff88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
         }
 
         /* Canvas */
@@ -234,28 +262,32 @@ html_content = '''<!DOCTYPE html>
     <div class="content">
         <!-- ORBITALS -->
         <div id="orbitals" class="tab-panel active">
-            <div class="orbital-grid">
-                <div class="orbital-card" onclick="pickOrbital('s', this)">
+            <!-- Main type selector -->
+            <div class="type-grid">
+                <div class="type-card" onclick="pickType('s', this)">
                     <h3>s</h3>
-                    <p>Küresel Simetri</p>
+                    <p>1 Orbital · 2e⁻</p>
                 </div>
-                <div class="orbital-card" onclick="pickOrbital('p', this)">
+                <div class="type-card" onclick="pickType('p', this)">
                     <h3>p</h3>
-                    <p>Çift Loblu</p>
+                    <p>3 Orbital · 6e⁻</p>
                 </div>
-                <div class="orbital-card" onclick="pickOrbital('d', this)">
+                <div class="type-card" onclick="pickType('d', this)">
                     <h3>d</h3>
-                    <p>Karmaşık Yapı</p>
+                    <p>5 Orbital · 10e⁻</p>
                 </div>
-                <div class="orbital-card" onclick="pickOrbital('f', this)">
+                <div class="type-card" onclick="pickType('f', this)">
                     <h3>f</h3>
-                    <p>Çok Karmaşık</p>
+                    <p>7 Orbital · 14e⁻</p>
                 </div>
             </div>
 
+            <!-- Sub-orbital buttons (dynamic) -->
+            <div class="sub-orbital-grid" id="subGrid"></div>
+
             <div class="sim-box">
-                <div class="sim-title" id="simTitle">Bir orbital seçin</div>
-                <canvas id="orbitalCanvas" width="600" height="350"></canvas>
+                <div class="sim-title" id="simTitle">Bir orbital türü seçin</div>
+                <canvas id="orbitalCanvas" width="600" height="380"></canvas>
                 <div class="controls">
                     <button class="ctrl-btn" onclick="toggleSpin()">🔄 Döndür</button>
                     <button class="ctrl-btn" onclick="toggleElec()">⚡ Elektronlar</button>
@@ -267,11 +299,12 @@ html_content = '''<!DOCTYPE html>
             <div class="props">
                 <h3>📋 Orbital Özellikleri</h3>
                 <div class="prop-row"><span class="prop-label">Tip:</span><span class="prop-val" id="pType">-</span></div>
+                <div class="prop-row"><span class="prop-label">Alt Orbital:</span><span class="prop-val" id="pSub">-</span></div>
                 <div class="prop-row"><span class="prop-label">l (Açısal Momentum):</span><span class="prop-val" id="pL">-</span></div>
                 <div class="prop-row"><span class="prop-label">mₗ (Manyetik):</span><span class="prop-val" id="pMl">-</span></div>
                 <div class="prop-row"><span class="prop-label">Maks. Elektron:</span><span class="prop-val" id="pElec">-</span></div>
                 <div class="prop-row"><span class="prop-label">Şekil:</span><span class="prop-val" id="pShape">-</span></div>
-                <div class="prop-desc" id="pDesc">Bir orbital kartına tıklayarak simülasyonu başlatın.</div>
+                <div class="prop-desc" id="pDesc">Bir orbital türü seçin, ardından alt orbital butonlarından birine tıklayın.</div>
             </div>
         </div>
 
@@ -302,229 +335,450 @@ html_content = '''<!DOCTYPE html>
             event.target.classList.add('active');
         }
 
-        // ===== CANVAS SETUP =====
+        // ===== CANVAS =====
         const canvas = document.getElementById('orbitalCanvas');
         const c = canvas.getContext('2d');
-        let W = 600, H = 350;
-        let active = null, t = 0, spin = true, elecOn = true, spd = 1;
+        let W = 600, H = 380;
+        let activeType = null, activeSub = null;
+        let t = 0, spin = true, elecOn = true, spd = 1;
         let animFrame = null;
 
-        // High-DPI support
         function resizeCanvas() {
             const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            W = canvas.width;
-            H = canvas.height;
-            c.scale(dpr, dpr);
             W = rect.width;
             H = rect.height;
+            c.scale(dpr, dpr);
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        const DATA = {
+        // ===== ORBITAL DATA =====
+        const ORBITALS = {
             s: {
-                name: 's Orbitali', l: 0, ml: '0', max: 2,
-                shape: 'Küresel (Sferik)',
-                desc: 's orbitali, atom çekirdeği etrafında küresel simetriye sahiptir. Elektron olasılık yoğunluğu çekirdekten her yöne eşit uzaklıktadır. Her enerji seviyesinde 1 adet s orbitali vardır ve en fazla 2 elektron barındırır.',
+                subs: [
+                    { name: '1s', ml: 0, desc: '1s orbitali en düşük enerjili orbitaldir. Çekirdek etrafında küresel simetriye sahiptir. 2 elektron barındırır.' }
+                ],
+                l: 0, max: 2, shape: 'Küresel',
                 color: [0, 212, 255]
             },
             p: {
-                name: 'p Orbitalleri', l: 1, ml: '-1, 0, +1', max: 6,
-                shape: 'Çift Loblu (Dumbbell)',
-                desc: 'p orbitalleri x, y ve z eksenleri boyunca yönelmiş 3 adet (px, py, pz) çift loblu yapıya sahiptir. 2. periyottan itibaren görülür. Toplam 6 elektron barındırabilir.',
+                subs: [
+                    { name: 'px', ml: -1, desc: 'px orbitali x-ekseni boyunca uzanan çift loblu (dumbbell) şeklindedir. Pozitif ve negatif faz lobları vardır.' },
+                    { name: 'py', ml: 0, desc: 'py orbitali y-ekseni boyunca uzanan çift loblu şeklindedir. x-eksenine diktir.' },
+                    { name: 'pz', ml: +1, desc: 'pz orbitali z-ekseni boyunca uzanan çift loblu şeklindedir. xy-düzlemine diktir.' }
+                ],
+                l: 1, max: 6, shape: 'Çift Loblu (Dumbbell)',
                 color: [255, 107, 107]
             },
             d: {
-                name: 'd Orbitalleri', l: 2, ml: '-2..+2', max: 10,
-                shape: 'Klover (Dört Yapraklı)',
-                desc: 'd orbitalleri 5 adet (dxy, dxz, dyz, dx²-y², dz²) karmaşık şekilli orbitallerden oluşur. 4. periyottan itibaren dolmaya başlar. Toplam 10 elektron alabilir.',
+                subs: [
+                    { name: 'dxy', ml: -2, desc: 'dxy orbitali x ve y eksenleri arasında (45°) yer alan dört yapraklı (klover) şeklindedir.' },
+                    { name: 'dyz', ml: -1, desc: 'dyz orbitali y ve z eksenleri arasında yer alan dört yapraklı şeklindedir.' },
+                    { name: 'dxz', ml: 0, desc: 'dxz orbitali x ve z eksenleri arasında yer alan dört yapraklı şeklindedir.' },
+                    { name: 'dx²-y²', ml: +1, desc: 'dx²-y² orbitali x ve y eksenleri ÜZERİNDE yer alan dört yapraklı şeklindedir. Diğer d orbitallerinden farklı bir yönelime sahiptir.' },
+                    { name: 'dz²', ml: +2, desc: 'dz² orbitali z-ekseni boyunca iki büyük lob ve ortada bir halka (torus) şeklindedir. Diğer d orbitallerinden farklı bir yapıya sahiptir.' }
+                ],
+                l: 2, max: 10, shape: 'Klover / Torus',
                 color: [168, 85, 247]
             },
             f: {
-                name: 'f Orbitalleri', l: 3, ml: '-3..+3', max: 14,
-                shape: 'Çok Karmaşık (Yedi Lob)',
-                desc: 'f orbitalleri 7 adet son derece karmaşık şekilli orbitallerden oluşur. Lantanit ve aktinit serilerinde (6. ve 7. periyot) doldurulur. Toplam 14 elektron kapasitesine sahiptir.',
+                subs: [
+                    { name: 'fxyz', ml: -3, desc: 'fxyz orbitali üç eksenin köşegenleri boyunca yönelmiş karmaşık sekiz yapraklı şekle sahiptir.' },
+                    { name: 'fz(x²-y²)', ml: -2, desc: 'fz(x²-y²) orbitali z-ekseni etrafında dört yapraklı simetrik yapıya sahiptir.' },
+                    { name: 'fy(3x²-y²)', ml: -1, desc: 'fy(3x²-y²) orbitali y-ekseni boyunca uzanan altı yapraklı karmaşık yapıdadır.' },
+                    { name: 'fz³', ml: 0, desc: 'fz³ orbitali z-ekseni boyunca uzanan, merkezi halkalı karmaşık yapıdadır.' },
+                    { name: 'fx(3y²-x²)', ml: +1, desc: 'fx(3y²-x²) orbitali x-ekseni boyunca uzanan altı yapraklı yapıdadır.' },
+                    { name: 'fz(x²-y²)', ml: +2, desc: 'fz(x²-y²) orbitali z-ekseni etrafında dört yapraklı, eksenler üzerinde yönelmiş yapıdadır.' },
+                    { name: 'fx³', ml: +3, desc: 'fx³ orbitali x-ekseni boyunca uzanan, en karmaşık f orbitalidir. Sekiz loblu yapıya sahiptir.' }
+                ],
+                l: 3, max: 14, shape: 'Çok Karmaşık (7-8 Lob)',
                 color: [34, 197, 94]
             }
         };
 
-        function rgba(rgb, a) {
-            return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${a})`;
-        }
+        function rgba(rgb, a) { return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`; }
 
-        function pickOrbital(type, el) {
-            active = type;
-            document.querySelectorAll('.orbital-card').forEach(c => c.classList.remove('selected'));
+        // ===== TYPE SELECTION =====
+        function pickType(type, el) {
+            activeType = type;
+            activeSub = null;
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
-            const d = DATA[type];
-            document.getElementById('simTitle').textContent = d.name + ' Simülasyonu';
-            document.getElementById('pType').textContent = d.name;
+            
+            const d = ORBITALS[type];
+            document.getElementById('simTitle').textContent = type.toUpperCase() + ' Orbitalleri';
+            
+            // Create sub-orbital buttons
+            const grid = document.getElementById('subGrid');
+            grid.innerHTML = '';
+            d.subs.forEach((sub, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'sub-btn';
+                btn.textContent = sub.name;
+                btn.onclick = function() { pickSub(type, i, this); };
+                grid.appendChild(btn);
+            });
+            
+            // Reset properties
+            document.getElementById('pType').textContent = type.toUpperCase();
+            document.getElementById('pSub').textContent = 'Seçiniz';
             document.getElementById('pL').textContent = d.l;
-            document.getElementById('pMl').textContent = d.ml;
+            document.getElementById('pMl').textContent = d.subs.map(s => s.ml).join(', ');
             document.getElementById('pElec').textContent = d.max;
             document.getElementById('pShape').textContent = d.shape;
-            document.getElementById('pDesc').textContent = d.desc;
+            document.getElementById('pDesc').textContent = 'Yukarıdaki butonlardan bir alt orbital seçin.';
+            
+            t = 0;
+        }
+
+        // ===== SUB-ORBITAL SELECTION =====
+        function pickSub(type, idx, el) {
+            activeSub = idx;
+            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            const d = ORBITALS[type];
+            const sub = d.subs[idx];
+            
+            document.getElementById('simTitle').textContent = sub.name + ' Orbitali Simülasyonu';
+            document.getElementById('pSub').textContent = sub.name;
+            document.getElementById('pMl').textContent = sub.ml;
+            document.getElementById('pDesc').textContent = sub.desc;
+            
             t = 0;
             if (animFrame) cancelAnimationFrame(animFrame);
             loop();
         }
 
-        // ===== DRAWING FUNCTIONS =====
+        // ===== DRAWING =====
         function clear() {
             c.clearRect(0, 0, W, H);
-            // Background
             c.fillStyle = '#050510';
             c.fillRect(0, 0, W, H);
-            // Grid
             c.strokeStyle = 'rgba(0,212,255,0.04)';
             c.lineWidth = 1;
-            for (let x = 0; x < W; x += 30) {
-                c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke();
-            }
-            for (let y = 0; y < H; y += 30) {
-                c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
-            }
+            for (let x = 0; x < W; x += 30) { c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); }
+            for (let y = 0; y < H; y += 30) { c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
+        }
+
+        function drawAxes(cx, cy) {
+            c.strokeStyle = 'rgba(255,255,255,0.08)';
+            c.lineWidth = 1;
+            c.setLineDash([4, 4]);
+            c.beginPath(); c.moveTo(cx - 140, cy); c.lineTo(cx + 140, cy); c.stroke();
+            c.beginPath(); c.moveTo(cx, cy - 140); c.lineTo(cx, cy + 140); c.stroke();
+            c.setLineDash([]);
+            // Labels
+            c.fillStyle = 'rgba(255,255,255,0.2)';
+            c.font = '10px sans-serif';
+            c.fillText('+x', cx + 145, cy + 12);
+            c.fillText('+y', cx - 12, cy - 145);
+            c.fillText('-x', cx - 155, cy + 12);
+            c.fillText('-y', cx - 12, cy + 155);
         }
 
         function drawNucleus(cx, cy) {
             const parts = [
-                {x: -4, y: -4, col: '#ff4444'},
-                {x: 4, y: -4, col: '#4488ff'},
-                {x: -4, y: 4, col: '#ff4444'},
-                {x: 4, y: 4, col: '#4488ff'},
-                {x: 0, y: 0, col: '#ff6666'}
+                {x:-3,y:-3,c:'#ff3333'},{x:3,y:-3,c:'#3366ff'},
+                {x:-3,y:3,c:'#ff3333'},{x:3,y:3,c:'#3366ff'},{x:0,y:0,c:'#ff5555'}
             ];
             parts.forEach(p => {
-                c.beginPath();
-                c.arc(cx + p.x, cy + p.y, 5, 0, Math.PI * 2);
-                c.fillStyle = p.col;
-                c.fill();
+                c.beginPath(); c.arc(cx+p.x, cy+p.y, 4.5, 0, Math.PI*2);
+                c.fillStyle = p.c; c.fill();
             });
-            // Glow
-            c.beginPath();
-            c.arc(cx, cy, 12, 0, Math.PI * 2);
-            c.fillStyle = 'rgba(255,255,255,0.1)';
-            c.fill();
+            c.beginPath(); c.arc(cx, cy, 10, 0, Math.PI*2);
+            c.fillStyle = 'rgba(255,255,255,0.08)'; c.fill();
         }
 
-        function drawSphere(cx, cy, r, rgb) {
-            const pulse = 1 + Math.sin(t * 3) * 0.08;
-            const R = r * pulse;
-            const g = c.createRadialGradient(cx - R*0.25, cy - R*0.25, 2, cx, cy, R);
-            g.addColorStop(0, rgba(rgb, 0.9));
-            g.addColorStop(0.4, rgba(rgb, 0.4));
-            g.addColorStop(1, rgba(rgb, 0.05));
-            c.beginPath();
-            c.arc(cx, cy, R, 0, Math.PI * 2);
-            c.fillStyle = g;
-            c.fill();
-            // Outline
-            c.strokeStyle = rgba(rgb, 0.3);
-            c.lineWidth = 1.5;
-            c.stroke();
-            // Inner ring
-            c.beginPath();
-            c.arc(cx, cy, R * 0.55, 0, Math.PI * 2);
-            c.strokeStyle = rgba(rgb, 0.15);
+        function drawElectron(cx, cy, r, angle, phase) {
+            if (!elecOn) return;
+            const x = cx + Math.cos(angle) * r;
+            const y = cy + Math.sin(angle) * r * 0.6;
+            c.beginPath(); c.arc(x, y, 8, 0, Math.PI*2);
+            c.fillStyle = 'rgba(255,255,0,0.12)'; c.fill();
+            c.beginPath(); c.arc(x, y, 3.5, 0, Math.PI*2);
+            c.fillStyle = '#ffff00'; c.fill();
+        }
+
+        // === REALISTIC ORBITAL DRAWERS ===
+
+        function drawSOrbital(cx, cy, rgb) {
+            const pulse = 1 + Math.sin(t * 2.5) * 0.06;
+            const R = 70 * pulse;
+            // Outer glow
+            const g1 = c.createRadialGradient(cx, cy, 10, cx, cy, R + 15);
+            g1.addColorStop(0, rgba(rgb, 0.3));
+            g1.addColorStop(1, rgba(rgb, 0));
+            c.beginPath(); c.arc(cx, cy, R + 15, 0, Math.PI*2);
+            c.fillStyle = g1; c.fill();
+            // Main sphere
+            const g2 = c.createRadialGradient(cx - R*0.2, cy - R*0.2, 5, cx, cy, R);
+            g2.addColorStop(0, rgba(rgb, 0.95));
+            g2.addColorStop(0.5, rgba(rgb, 0.4));
+            g2.addColorStop(1, rgba(rgb, 0.06));
+            c.beginPath(); c.arc(cx, cy, R, 0, Math.PI*2);
+            c.fillStyle = g2; c.fill();
+            // Wireframe rings
+            c.strokeStyle = rgba(rgb, 0.25);
             c.lineWidth = 1;
-            c.stroke();
+            c.beginPath(); c.arc(cx, cy, R, 0, Math.PI*2); c.stroke();
+            c.beginPath(); c.arc(cx, cy, R * 0.6, 0, Math.PI*2); c.stroke();
+            c.beginPath(); c.arc(cx, cy, R * 0.3, 0, Math.PI*2); c.stroke();
+            // Cross-section ellipse
+            c.beginPath();
+            c.ellipse(cx, cy, R, R * 0.35, 0, 0, Math.PI*2);
+            c.strokeStyle = rgba(rgb, 0.15); c.stroke();
+            drawNucleus(cx, cy);
+            drawElectron(cx, cy, 55, t * 2, 0);
+            drawElectron(cx, cy, 55, t * 2 + Math.PI, 0);
         }
 
-        function drawLobe(cx, cy, angle, rgb, sc) {
+        function drawPOrbital(cx, cy, subIdx, rgb) {
+            drawAxes(cx, cy);
+            drawNucleus(cx, cy);
+            
+            const angles = [0, Math.PI/3, 2*Math.PI/3]; // px, py, pz orientations
+            const baseAngle = angles[subIdx] || 0;
+            const rot = spin ? t * 0.8 : baseAngle;
+            
             c.save();
             c.translate(cx, cy);
-            c.rotate(angle);
-            c.scale(sc, sc);
-            // Left lobe
-            let g = c.createRadialGradient(-45, 0, 3, -45, 0, 55);
-            g.addColorStop(0, rgba(rgb, 0.85));
-            g.addColorStop(1, rgba(rgb, 0.08));
-            c.beginPath();
-            c.ellipse(-45, 0, 55, 22, 0, 0, Math.PI * 2);
-            c.fillStyle = g;
-            c.fill();
-            c.strokeStyle = rgba(rgb, 0.4);
-            c.lineWidth = 1.2;
-            c.stroke();
-            // Right lobe
-            g = c.createRadialGradient(45, 0, 3, 45, 0, 55);
-            g.addColorStop(0, rgba(rgb, 0.85));
-            g.addColorStop(1, rgba(rgb, 0.08));
-            c.beginPath();
-            c.ellipse(45, 0, 55, 22, 0, 0, Math.PI * 2);
-            c.fillStyle = g;
-            c.fill();
-            c.strokeStyle = rgba(rgb, 0.4);
-            c.stroke();
-            c.restore();
-        }
-
-        function drawClover(cx, cy, angle, rgb, sc) {
-            c.save();
-            c.translate(cx, cy);
-            c.rotate(angle);
-            c.scale(sc, sc);
-            for (let i = 0; i < 4; i++) {
-                const a = (Math.PI / 2) * i;
-                const g = c.createRadialGradient(
-                    Math.cos(a) * 30, Math.sin(a) * 30, 2,
-                    Math.cos(a) * 30, Math.sin(a) * 30, 35
-                );
-                g.addColorStop(0, rgba(rgb, 0.75));
-                g.addColorStop(1, rgba(rgb, 0.08));
+            c.rotate(rot);
+            
+            // Two lobes - positive and negative phase
+            const lobes = [
+                { x: -50, sign: '+' },
+                { x: 50, sign: '-' }
+            ];
+            
+            lobes.forEach((lobe, li) => {
+                const g = c.createRadialGradient(lobe.x, 0, 3, lobe.x, 0, 58);
+                g.addColorStop(0, rgba(rgb, 0.85));
+                g.addColorStop(0.6, rgba(rgb, 0.3));
+                g.addColorStop(1, rgba(rgb, 0.04));
+                
                 c.beginPath();
-                c.ellipse(Math.cos(a) * 30, Math.sin(a) * 30, 35, 15, a, 0, Math.PI * 2);
-                c.fillStyle = g;
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.3);
+                c.ellipse(lobe.x, 0, 58, 24, 0, 0, Math.PI*2);
+                c.fillStyle = g; c.fill();
+                
+                // Phase indicator
+                c.strokeStyle = rgba(rgb, 0.5);
+                c.lineWidth = 1.5;
+                c.stroke();
+                
+                // Inner detail
+                c.beginPath();
+                c.ellipse(lobe.x, 0, 35, 14, 0, 0, Math.PI*2);
+                c.strokeStyle = rgba(rgb, 0.25);
                 c.lineWidth = 0.8;
                 c.stroke();
-            }
+                
+                // Phase sign
+                c.fillStyle = 'rgba(255,255,255,0.6)';
+                c.font = 'bold 14px sans-serif';
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                c.fillText(lobe.sign, lobe.x, 0);
+            });
+            
+            // Nodal plane (between lobes)
+            c.strokeStyle = 'rgba(255,255,255,0.1)';
+            c.lineWidth = 1;
+            c.setLineDash([3, 3]);
+            c.beginPath();
+            c.moveTo(0, -80); c.lineTo(0, 80);
+            c.stroke();
+            c.setLineDash([]);
+            
             c.restore();
+            
+            // Electrons orbiting
+            if (elecOn) {
+                for (let i = 0; i < 2; i++) {
+                    const a = t * 2 + (Math.PI * 2 / 2) * i + baseAngle;
+                    const r = 65;
+                    const ex = cx + Math.cos(a) * r;
+                    const ey = cy + Math.sin(a) * r * 0.5;
+                    c.beginPath(); c.arc(ex, ey, 8, 0, Math.PI*2);
+                    c.fillStyle = 'rgba(255,255,0,0.15)'; c.fill();
+                    c.beginPath(); c.arc(ex, ey, 3.5, 0, Math.PI*2);
+                    c.fillStyle = '#ffff00'; c.fill();
+                }
+            }
         }
 
-        function drawFOrbital(cx, cy, time, rgb) {
+        function drawDOrbital(cx, cy, subIdx, rgb) {
+            drawAxes(cx, cy);
+            drawNucleus(cx, cy);
+            
+            const rot = spin ? t * 0.5 : 0;
+            
             c.save();
             c.translate(cx, cy);
-            for (let i = 0; i < 7; i++) {
-                const a = (Math.PI * 2 / 7) * i + time * 0.4;
-                const r = 45 + Math.sin(time * 1.5 + i * 0.8) * 8;
-                const g = c.createRadialGradient(
-                    Math.cos(a) * r * 0.5, Math.sin(a) * r * 0.5, 2,
-                    Math.cos(a) * r * 0.5, Math.sin(a) * r * 0.5, 25
-                );
-                g.addColorStop(0, rgba(rgb, 0.6));
-                g.addColorStop(1, rgba(rgb, 0.05));
+            c.rotate(rot);
+            
+            if (subIdx === 4) { // dz² - special case
+                // Two main lobes along z-axis (vertical in 2D)
+                const g1 = c.createRadialGradient(0, -55, 3, 0, -55, 50);
+                g1.addColorStop(0, rgba(rgb, 0.9));
+                g1.addColorStop(1, rgba(rgb, 0.05));
                 c.beginPath();
-                c.ellipse(Math.cos(a) * r * 0.5, Math.sin(a) * r * 0.5, 25, 10, a, 0, Math.PI * 2);
-                c.fillStyle = g;
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.25);
-                c.lineWidth = 0.5;
-                c.stroke();
+                c.ellipse(0, -55, 28, 50, 0, 0, Math.PI*2);
+                c.fillStyle = g1; c.fill();
+                c.strokeStyle = rgba(rgb, 0.4); c.lineWidth = 1.2; c.stroke();
+                
+                const g2 = c.createRadialGradient(0, 55, 3, 0, 55, 50);
+                g2.addColorStop(0, rgba(rgb, 0.9));
+                g2.addColorStop(1, rgba(rgb, 0.05));
+                c.beginPath();
+                c.ellipse(0, 55, 28, 50, 0, 0, Math.PI*2);
+                c.fillStyle = g2; c.fill();
+                c.strokeStyle = rgba(rgb, 0.4); c.lineWidth = 1.2; c.stroke();
+                
+                // Torus (donut) ring in middle
+                c.beginPath();
+                c.ellipse(0, 0, 55, 18, 0, 0, Math.PI*2);
+                const g3 = c.createRadialGradient(0, 0, 5, 0, 0, 55);
+                g3.addColorStop(0, rgba(rgb, 0.3));
+                g3.addColorStop(1, rgba(rgb, 0.05));
+                c.fillStyle = g3; c.fill();
+                c.strokeStyle = rgba(rgb, 0.3); c.lineWidth = 1; c.stroke();
+                
+                c.fillStyle = 'rgba(255,255,255,0.5)';
+                c.font = 'bold 12px sans-serif';
+                c.textAlign = 'center';
+                c.fillText('dz²', 0, 0);
+                
+            } else {
+                // Four-leaf clover for dxy, dyz, dxz, dx²-y²
+                const rotations = [Math.PI/4, Math.PI/2, 0, 0]; // Orientation offsets
+                c.rotate(rotations[subIdx] || 0);
+                
+                for (let i = 0; i < 4; i++) {
+                    const a = (Math.PI / 2) * i;
+                    const lx = Math.cos(a) * 38;
+                    const ly = Math.sin(a) * 38;
+                    const g = c.createRadialGradient(lx, ly, 2, lx, ly, 32);
+                    g.addColorStop(0, rgba(rgb, 0.8));
+                    g.addColorStop(1, rgba(rgb, 0.06));
+                    
+                    c.beginPath();
+                    c.ellipse(lx, ly, 32, 16, a, 0, Math.PI*2);
+                    c.fillStyle = g; c.fill();
+                    c.strokeStyle = rgba(rgb, 0.35);
+                    c.lineWidth = 1;
+                    c.stroke();
+                    
+                    // Phase sign
+                    const sign = (i % 2 === 0) ? '+' : '-';
+                    c.fillStyle = 'rgba(255,255,255,0.5)';
+                    c.font = 'bold 10px sans-serif';
+                    c.textAlign = 'center';
+                    c.textBaseline = 'middle';
+                    c.fillText(sign, lx * 0.7, ly * 0.7);
+                }
+                
+                // Nodal lines
+                c.strokeStyle = 'rgba(255,255,255,0.08)';
+                c.lineWidth = 1;
+                c.setLineDash([3, 3]);
+                c.beginPath(); c.moveTo(-70, 0); c.lineTo(70, 0); c.stroke();
+                c.beginPath(); c.moveTo(0, -70); c.lineTo(0, 70); c.stroke();
+                c.setLineDash([]);
             }
+            
             c.restore();
+            
+            // Electrons
+            if (elecOn) {
+                for (let i = 0; i < 2; i++) {
+                    const a = t * 1.8 + (Math.PI * 2 / 2) * i;
+                    const r = 80;
+                    const ex = cx + Math.cos(a) * r;
+                    const ey = cy + Math.sin(a) * r * 0.5;
+                    c.beginPath(); c.arc(ex, ey, 8, 0, Math.PI*2);
+                    c.fillStyle = 'rgba(255,255,0,0.15)'; c.fill();
+                    c.beginPath(); c.arc(ex, ey, 3.5, 0, Math.PI*2);
+                    c.fillStyle = '#ffff00'; c.fill();
+                }
+            }
         }
 
-        function drawElectrons(cx, cy, count, radius) {
-            if (!elecOn) return;
-            for (let i = 0; i < count; i++) {
-                const ang = t * 2.5 + (Math.PI * 2 / count) * i;
-                const x = cx + Math.cos(ang) * radius;
-                const y = cy + Math.sin(ang) * radius * 0.55;
-                // Glow
+        function drawFOrbital(cx, cy, subIdx, rgb) {
+            drawAxes(cx, cy);
+            drawNucleus(cx, cy);
+            
+            const rot = spin ? t * 0.4 : 0;
+            
+            c.save();
+            c.translate(cx, cy);
+            c.rotate(rot);
+            
+            // Complex 6-8 lobe patterns
+            const lobeCount = [6, 6, 8, 8, 6, 6, 8][subIdx] || 8;
+            const innerRing = subIdx === 2 || subIdx === 3 || subIdx === 6;
+            
+            for (let i = 0; i < lobeCount; i++) {
+                const a = (Math.PI * 2 / lobeCount) * i;
+                const r = innerRing ? 32 : 42;
+                const lx = Math.cos(a) * r;
+                const ly = Math.sin(a) * r;
+                const w = innerRing ? 22 : 26;
+                const h = innerRing ? 12 : 14;
+                
+                const g = c.createRadialGradient(lx, ly, 1, lx, ly, w);
+                g.addColorStop(0, rgba(rgb, 0.7));
+                g.addColorStop(1, rgba(rgb, 0.04));
+                
                 c.beginPath();
-                c.arc(x, y, 10, 0, Math.PI * 2);
-                c.fillStyle = 'rgba(255,255,0,0.15)';
-                c.fill();
-                // Electron
+                c.ellipse(lx, ly, w, h, a, 0, Math.PI*2);
+                c.fillStyle = g; c.fill();
+                c.strokeStyle = rgba(rgb, 0.25);
+                c.lineWidth = 0.7;
+                c.stroke();
+            }
+            
+            // Inner ring for some f orbitals
+            if (innerRing) {
                 c.beginPath();
-                c.arc(x, y, 4, 0, Math.PI * 2);
-                c.fillStyle = '#ffff00';
-                c.fill();
+                c.arc(0, 0, 18, 0, Math.PI*2);
+                const g = c.createRadialGradient(0, 0, 2, 0, 0, 20);
+                g.addColorStop(0, rgba(rgb, 0.3));
+                g.addColorStop(1, rgba(rgb, 0.02));
+                c.fillStyle = g; c.fill();
+                c.strokeStyle = rgba(rgb, 0.2); c.lineWidth = 0.8; c.stroke();
+            }
+            
+            // Nodal surfaces
+            c.strokeStyle = 'rgba(255,255,255,0.06)';
+            c.lineWidth = 0.8;
+            c.setLineDash([2, 4]);
+            for (let i = 0; i < 6; i++) {
+                const a = (Math.PI / 3) * i;
+                c.beginPath();
+                c.moveTo(Math.cos(a)*20, Math.sin(a)*20);
+                c.lineTo(Math.cos(a)*90, Math.sin(a)*90);
+                c.stroke();
+            }
+            c.setLineDash([]);
+            
+            c.restore();
+            
+            // Electrons
+            if (elecOn) {
+                for (let i = 0; i < 2; i++) {
+                    const a = t * 1.5 + (Math.PI * 2 / 2) * i;
+                    const r = 95;
+                    const ex = cx + Math.cos(a) * r;
+                    const ey = cy + Math.sin(a) * r * 0.5;
+                    c.beginPath(); c.arc(ex, ey, 8, 0, Math.PI*2);
+                    c.fillStyle = 'rgba(255,255,0,0.15)'; c.fill();
+                    c.beginPath(); c.arc(ex, ey, 3.5, 0, Math.PI*2);
+                    c.fillStyle = '#ffff00'; c.fill();
+                }
             }
         }
 
@@ -533,57 +787,35 @@ html_content = '''<!DOCTYPE html>
             clear();
             const cx = W / 2;
             const cy = H / 2;
-
-            if (!active) {
+            
+            if (!activeType || activeSub === null) {
                 c.fillStyle = 'rgba(255,255,255,0.3)';
-                c.font = 'bold 16px sans-serif';
+                c.font = 'bold 15px sans-serif';
                 c.textAlign = 'center';
-                c.fillText('Bir orbital seçin', cx, cy);
+                c.fillText('Bir orbital türü ve alt orbital seçin', cx, cy);
                 animFrame = requestAnimationFrame(loop);
                 return;
             }
-
-            if (spin) t += 0.015 * spd;
-            const d = DATA[active];
+            
+            if (spin) t += 0.012 * spd;
+            const d = ORBITALS[activeType];
             const rgb = d.color;
-
-            switch (active) {
-                case 's':
-                    drawSphere(cx, cy, 75, rgb);
-                    drawNucleus(cx, cy);
-                    drawElectrons(cx, cy, 2, 60);
-                    break;
-                case 'p':
-                    drawNucleus(cx, cy);
-                    drawLobe(cx, cy, t, rgb, 1);
-                    drawLobe(cx, cy, t + Math.PI / 3, rgb, 0.75);
-                    drawLobe(cx, cy, t + 2 * Math.PI / 3, rgb, 0.55);
-                    drawElectrons(cx, cy, 6, 85);
-                    break;
-                case 'd':
-                    drawNucleus(cx, cy);
-                    for (let i = 0; i < 5; i++) {
-                        const a = t + (Math.PI * 2 / 5) * i;
-                        const s = 0.55 + Math.sin(t * 0.8 + i) * 0.08;
-                        drawClover(cx, cy, a, rgb, s);
-                    }
-                    drawElectrons(cx, cy, 10, 95);
-                    break;
-                case 'f':
-                    drawNucleus(cx, cy);
-                    drawFOrbital(cx, cy, t, rgb);
-                    drawElectrons(cx, cy, 14, 110);
-                    break;
+            
+            switch (activeType) {
+                case 's': drawSOrbital(cx, cy, rgb); break;
+                case 'p': drawPOrbital(cx, cy, activeSub, rgb); break;
+                case 'd': drawDOrbital(cx, cy, activeSub, rgb); break;
+                case 'f': drawFOrbital(cx, cy, activeSub, rgb); break;
             }
-
+            
             // Legend
             c.textAlign = 'left';
-            c.font = '11px sans-serif';
-            c.fillStyle = 'rgba(255,255,255,0.4)';
-            c.fillText('🔴 Proton  🔵 Nötron', 12, 22);
+            c.font = '10px sans-serif';
+            c.fillStyle = 'rgba(255,255,255,0.35)';
+            c.fillText('🔴 Proton  🔵 Nötron', 10, 18);
             c.fillStyle = '#ffff00';
-            c.fillText('● Elektron', 12, 38);
-
+            c.fillText('● Elektron', 10, 34);
+            
             animFrame = requestAnimationFrame(loop);
         }
 
@@ -591,7 +823,6 @@ html_content = '''<!DOCTYPE html>
         function toggleElec() { elecOn = !elecOn; }
         function setSpeed(v) { spd = v; }
 
-        // Start loop immediately
         loop();
 
         // ===== VIDEOS =====
@@ -648,4 +879,4 @@ html_content = '''<!DOCTYPE html>
 with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("Dosya güncellendi! Mobil uyumlu, canvas boyutlandırma düzeltildi.")
+print("Dosya güncellendi!")
