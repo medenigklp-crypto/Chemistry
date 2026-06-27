@@ -4,7 +4,7 @@ html_content = '''<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Kimya - 3D Orbitaller & Videolar</title>
+    <title>Kimya - Gerçek 3D Küresel Orbitaller & Videolar</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -253,7 +253,7 @@ html_content = '''<!DOCTYPE html>
 </head>
 <body>
     <div class="header">
-        <h1>🧪 3D Atomik Orbitaller</h1>
+        <h1>🧪 Gerçek 3D Atomik Orbitaller</h1>
     </div>
 
     <div class="tabs">
@@ -343,7 +343,7 @@ html_content = '''<!DOCTYPE html>
         let animFrame = null;
 
         // 3D View parameters
-        let rotX = 0.4, rotY = 0.3; // Rotation angles
+        let rotX = 0.4, rotY = 0.3;
         let isDragging = false;
         let lastX = 0, lastY = 0;
 
@@ -396,29 +396,25 @@ html_content = '''<!DOCTYPE html>
         canvas.addEventListener('touchend', () => isDragging = false);
 
         // ===== 3D MATH =====
-        function project3D(x, y, z) {
+        function rotate3D(x, y, z) {
             // Rotate around X axis
             let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
             let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
             // Rotate around Y axis
             let x2 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
             let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
-            // Perspective projection
-            const scale = 280 / (280 + z2);
-            return {
-                x: W/2 + x2 * scale,
-                y: H/2 + y1 * scale,
-                z: z2,
-                scale: scale
-            };
+            return {x: x2, y: y1, z: z2};
         }
 
-        function rotatePoint(x, y, z, ax, ay) {
-            let y1 = y * Math.cos(ax) - z * Math.sin(ax);
-            let z1 = y * Math.sin(ax) + z * Math.cos(ax);
-            let x2 = x * Math.cos(ay) + z1 * Math.sin(ay);
-            let z2 = -x * Math.sin(ay) + z1 * Math.cos(ay);
-            return {x: x2, y: y1, z: z2};
+        function project(x, y, z) {
+            const r = rotate3D(x, y, z);
+            const scale = 300 / (350 + r.z);
+            return {
+                x: W/2 + r.x * scale,
+                y: H/2 + r.y * scale,
+                z: r.z,
+                scale: scale
+            };
         }
 
         // ===== ORBITAL DATA =====
@@ -504,7 +500,7 @@ html_content = '''<!DOCTYPE html>
             const d = ORBITALS[type];
             const sub = d.subs[idx];
             
-            document.getElementById('simTitle').textContent = sub.name + ' Orbitali (3D)';
+            document.getElementById('simTitle').textContent = sub.name + ' Orbitali (Gerçek 3D)';
             document.getElementById('pSub').textContent = sub.name;
             document.getElementById('pMl').textContent = sub.ml;
             document.getElementById('pDesc').textContent = sub.desc;
@@ -522,391 +518,306 @@ html_content = '''<!DOCTYPE html>
             c.fillRect(0, 0, W, H);
         }
 
-        function draw3DAxes() {
-            const axisLen = 120;
+        function drawAxes() {
+            const len = 130;
             const axes = [
-                {x: axisLen, y: 0, z: 0, label: 'x', col: '#ff6666'},
-                {x: 0, y: -axisLen, z: 0, label: 'y', col: '#66ff66'},
-                {x: 0, y: 0, z: axisLen, label: 'z', col: '#6666ff'}
+                {x: len, y: 0, z: 0, label: 'x', col: '#ff5555'},
+                {x: 0, y: -len, z: 0, label: 'y', col: '#55ff55'},
+                {x: 0, y: 0, z: len, label: 'z', col: '#5555ff'}
             ];
-            
-            c.strokeStyle = 'rgba(255,255,255,0.15)';
+            c.strokeStyle = 'rgba(255,255,255,0.12)';
             c.lineWidth = 1.5;
-            
             axes.forEach(ax => {
-                const p = project3D(ax.x, ax.y, ax.z);
-                const center = project3D(0, 0, 0);
+                const p = project(ax.x, ax.y, ax.z);
+                const o = project(0, 0, 0);
                 c.beginPath();
-                c.moveTo(center.x, center.y);
+                c.moveTo(o.x, o.y);
                 c.lineTo(p.x, p.y);
                 c.stroke();
-                
                 c.fillStyle = ax.col;
-                c.font = 'bold 12px sans-serif';
+                c.font = 'bold 11px sans-serif';
                 c.textAlign = 'center';
-                c.fillText(ax.label, p.x + 8, p.y - 8);
+                c.fillText(ax.label, p.x + 10, p.y - 5);
             });
         }
 
-        function draw3DNucleus() {
-            const p = project3D(0, 0, 0);
-            const r = 6 * p.scale;
+        function drawNucleus() {
+            const p = project(0, 0, 0);
+            const r = 7 * p.scale;
+            // Glow
             c.beginPath();
-            c.arc(p.x, p.y, r, 0, Math.PI*2);
-            c.fillStyle = '#ff4444';
+            c.arc(p.x, p.y, r + 8, 0, Math.PI*2);
+            c.fillStyle = 'rgba(255,255,255,0.08)';
             c.fill();
-            c.beginPath();
-            c.arc(p.x - 2, p.y - 2, r * 0.6, 0, Math.PI*2);
-            c.fillStyle = '#4488ff';
-            c.fill();
-            c.beginPath();
-            c.arc(p.x + 2, p.y + 2, r * 0.6, 0, Math.PI*2);
-            c.fillStyle = '#ff6666';
-            c.fill();
+            // Protons
+            c.beginPath(); c.arc(p.x - 2, p.y - 2, r * 0.7, 0, Math.PI*2);
+            c.fillStyle = '#ff3333'; c.fill();
+            c.beginPath(); c.arc(p.x + 2, p.y + 2, r * 0.7, 0, Math.PI*2);
+            c.fillStyle = '#3366ff'; c.fill();
+            c.beginPath(); c.arc(p.x, p.y, r * 0.5, 0, Math.PI*2);
+            c.fillStyle = '#ff5555'; c.fill();
         }
 
-        function draw3DEllipse(cx, cy, cz, rx, ry, rz, rgb, alpha, rotation) {
-            // Generate ellipse points in 3D
-            const points = [];
-            for (let i = 0; i <= 24; i++) {
-                const a = (Math.PI * 2 / 24) * i;
-                let x = rx * Math.cos(a);
-                let y = ry * Math.sin(a);
-                let z = 0;
-                
-                // Apply local rotation if provided
-                if (rotation) {
-                    const r = rotatePoint(x, y, z, rotation.rx || 0, rotation.ry || 0);
-                    x = r.x; y = r.y; z = r.z;
-                }
-                
-                const p = project3D(cx + x, cy + y, cz + z);
-                points.push(p);
-            }
+        // ===== DRAW 3D SPHERE (for s orbital) =====
+        function draw3DSphere(cx, cy, cz, radius, rgb, alpha) {
+            const center = project(cx, cy, cz);
+            const r = radius * center.scale;
             
-            // Draw filled
+            // Outer glow
+            const glow = c.createRadialGradient(
+                center.x - r * 0.3, center.y - r * 0.3, 3,
+                center.x, center.y, r + 15
+            );
+            glow.addColorStop(0, rgba(rgb, alpha * 0.3));
+            glow.addColorStop(1, rgba(rgb, 0));
             c.beginPath();
-            c.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) {
-                c.lineTo(points[i].x, points[i].y);
-            }
-            c.closePath();
-            
-            // Calculate average z for depth sorting approximation
-            let avgZ = 0;
-            points.forEach(p => avgZ += p.z);
-            avgZ /= points.length;
-            const depthAlpha = Math.max(0.1, Math.min(1, 1 - avgZ / 400));
-            
-            c.fillStyle = rgba(rgb, alpha * depthAlpha);
+            c.arc(center.x, center.y, r + 15, 0, Math.PI*2);
+            c.fillStyle = glow;
             c.fill();
-            c.strokeStyle = rgba(rgb, 0.4 * depthAlpha);
-            c.lineWidth = 1;
-            c.stroke();
             
-            return avgZ;
-        }
-
-        function draw3DSphere(cx, cy, cz, r, rgb, alpha) {
-            const p = project3D(cx, cy, cz);
-            const radius = r * p.scale;
+            // Main sphere with 3D shading
             const grad = c.createRadialGradient(
-                p.x - radius * 0.3, p.y - radius * 0.3, 2,
-                p.x, p.y, radius
+                center.x - r * 0.35, center.y - r * 0.35, 2,
+                center.x, center.y, r
             );
             grad.addColorStop(0, rgba(rgb, alpha));
-            grad.addColorStop(0.5, rgba(rgb, alpha * 0.4));
-            grad.addColorStop(1, rgba(rgb, alpha * 0.05));
+            grad.addColorStop(0.4, rgba(rgb, alpha * 0.5));
+            grad.addColorStop(0.8, rgba(rgb, alpha * 0.15));
+            grad.addColorStop(1, rgba(rgb, 0.02));
             
             c.beginPath();
-            c.arc(p.x, p.y, radius, 0, Math.PI*2);
+            c.arc(center.x, center.y, r, 0, Math.PI*2);
             c.fillStyle = grad;
             c.fill();
-            c.strokeStyle = rgba(rgb, 0.3);
-            c.lineWidth = 1;
+            
+            // 3D wireframe rings (latitude/longitude)
+            c.strokeStyle = rgba(rgb, 0.25);
+            c.lineWidth = 0.8;
+            
+            // Equator
+            const equatorPoints = [];
+            for (let i = 0; i <= 32; i++) {
+                const a = (Math.PI * 2 / 32) * i;
+                const p = project(cx + radius * Math.cos(a), cy + radius * Math.sin(a), cz);
+                equatorPoints.push(p);
+            }
+            c.beginPath();
+            c.moveTo(equatorPoints[0].x, equatorPoints[0].y);
+            for (let i = 1; i < equatorPoints.length; i++) c.lineTo(equatorPoints[i].x, equatorPoints[i].y);
+            c.closePath();
             c.stroke();
-        }
-
-        // ===== 3D ORBITAL DRAWERS =====
-
-        function draw3DSOrbital(rgb) {
-            const pulse = 1 + Math.sin(t * 2) * 0.05;
-            // Multiple concentric spheres for 3D effect
-            draw3DSphere(0, 0, 0, 70 * pulse, rgb, 0.6);
-            draw3DSphere(0, 0, 0, 50 * pulse, rgb, 0.3);
-            draw3DSphere(0, 0, 0, 30 * pulse, rgb, 0.15);
-            draw3DNucleus();
             
-            if (elecOn) {
-                const a1 = t * 2;
-                const a2 = t * 2 + Math.PI;
-                draw3DElectron(50 * Math.cos(a1), 50 * Math.sin(a1) * 0.6, 0);
-                draw3DElectron(50 * Math.cos(a2), 50 * Math.sin(a2) * 0.6, 0);
+            // Meridians
+            for (let m = 0; m < 4; m++) {
+                const angle = (Math.PI / 4) * m;
+                const meridianPoints = [];
+                for (let i = 0; i <= 32; i++) {
+                    const a = (Math.PI * 2 / 32) * i;
+                    const x = cx + radius * Math.cos(a) * Math.cos(angle);
+                    const y = cy + radius * Math.sin(a);
+                    const z = cz + radius * Math.cos(a) * Math.sin(angle);
+                    meridianPoints.push(project(x, y, z));
+                }
+                c.beginPath();
+                c.moveTo(meridianPoints[0].x, meridianPoints[0].y);
+                for (let i = 1; i < meridianPoints.length; i++) c.lineTo(meridianPoints[i].x, meridianPoints[i].y);
+                c.closePath();
+                c.strokeStyle = rgba(rgb, 0.15);
+                c.stroke();
             }
         }
 
-        function draw3DPOrbital(subIdx, rgb) {
-            draw3DAxes();
-            draw3DNucleus();
+        // ===== DRAW 3D LOBE (for p orbitals) =====
+        function draw3DLobe(cx, cy, cz, rx, ry, rz, rgb, alpha, rotXLocal, rotYLocal) {
+            // Generate 3D lobe surface as a mesh of points
+            const meshPoints = [];
+            const slices = 16;
+            const stacks = 12;
             
-            // p orbitals oriented along different axes
-            const orientations = [
-                {axis: 'x', angle: 0},
-                {axis: 'y', angle: Math.PI/2},
-                {axis: 'z', angle: Math.PI}
-            ];
-            const orient = orientations[subIdx];
-            
-            // Draw two lobes
-            const lobeDist = 55;
-            const lobeRx = 55, lobeRy = 24, lobeRz = 24;
-            
-            // Left/positive lobe
-            let lx = 0, ly = 0, lz = 0;
-            if (orient.axis === 'x') lx = -lobeDist;
-            else if (orient.axis === 'y') ly = -lobeDist;
-            else lz = -lobeDist;
-            
-            draw3DEllipse(lx, ly, lz, lobeRx, lobeRy, lobeRz, rgb, 0.7);
-            
-            // Right/negative lobe
-            lx = 0; ly = 0; lz = 0;
-            if (orient.axis === 'x') lx = lobeDist;
-            else if (orient.axis === 'y') ly = lobeDist;
-            else lz = lobeDist;
-            
-            draw3DEllipse(lx, ly, lz, lobeRx, lobeRy, lobeRz, rgb, 0.7);
-            
-            // Nodal plane
-            draw3DNodalPlane(orient.axis);
-            
-            if (elecOn) {
-                const a = t * 1.8;
-                const r = 65;
-                draw3DElectron(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                draw3DElectron(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
-
-        function draw3DDOrbital(subIdx, rgb) {
-            draw3DAxes();
-            draw3DNucleus();
-            
-            if (subIdx === 4) {
-                // ===== dz² =====
-                // Two main lobes along z-axis
-                draw3DEllipse(0, 0, -60, 26, 26, 50, rgb, 0.75);
-                draw3DEllipse(0, 0, 60, 26, 26, 50, rgb, 0.75);
-                
-                // Torus ring in xy plane
-                const torusPoints = [];
-                for (let i = 0; i <= 32; i++) {
-                    const a = (Math.PI * 2 / 32) * i;
-                    const tx = Math.cos(a) * 55;
-                    const ty = Math.sin(a) * 55;
-                    const tz = 0;
-                    const p = project3D(tx, ty, tz);
-                    torusPoints.push(p);
-                }
-                c.beginPath();
-                c.moveTo(torusPoints[0].x, torusPoints[0].y);
-                for (let i = 1; i < torusPoints.length; i++) {
-                    c.lineTo(torusPoints[i].x, torusPoints[i].y);
-                }
-                c.closePath();
-                c.fillStyle = rgba(rgb, 0.3);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.4);
-                c.lineWidth = 1.5;
-                c.stroke();
-                
-                // Inner torus ring
-                const innerPoints = [];
-                for (let i = 0; i <= 32; i++) {
-                    const a = (Math.PI * 2 / 32) * i;
-                    const tx = Math.cos(a) * 30;
-                    const ty = Math.sin(a) * 30;
-                    const p = project3D(tx, ty, 0);
-                    innerPoints.push(p);
-                }
-                c.beginPath();
-                c.moveTo(innerPoints[0].x, innerPoints[0].y);
-                for (let i = 1; i < innerPoints.length; i++) {
-                    c.lineTo(innerPoints[i].x, innerPoints[i].y);
-                }
-                c.closePath();
-                c.strokeStyle = rgba(rgb, 0.25);
-                c.lineWidth = 1;
-                c.stroke();
-                
-            } else if (subIdx === 3) {
-                // ===== dx²-y² =====
-                // Four lobes ON the axes
-                const positions = [
-                    {x: 45, y: 0, z: 0},
-                    {x: -45, y: 0, z: 0},
-                    {x: 0, y: 45, z: 0},
-                    {x: 0, y: -45, z: 0}
-                ];
-                
-                positions.forEach(pos => {
-                    draw3DEllipse(pos.x, pos.y, pos.z, 36, 22, 22, rgb, 0.72);
-                });
-                
-                // Nodal lines at 45°
-                draw3DNodalLine(45, 45, 0, -45, -45, 0);
-                draw3DNodalLine(-45, 45, 0, 45, -45, 0);
-                
-            } else {
-                // ===== dxy, dyz, dxz =====
-                // Four lobes BETWEEN axes
-                const baseAngles = [Math.PI/4, Math.PI/2, 0];
-                const angle = baseAngles[subIdx] || 0;
-                
-                for (let i = 0; i < 4; i++) {
-                    const a = (Math.PI / 2) * i + angle + Math.PI/4;
-                    const r = 42;
-                    const lx = Math.cos(a) * r;
-                    const ly = Math.sin(a) * r;
-                    const lz = subIdx === 1 ? Math.cos(a) * r * 0.5 : (subIdx === 2 ? Math.sin(a) * r * 0.5 : 0);
+            for (let i = 0; i <= slices; i++) {
+                for (let j = 0; j <= stacks; j++) {
+                    const u = (Math.PI * 2 / slices) * i;
+                    const v = (Math.PI / stacks) * j - Math.PI/2;
                     
-                    draw3DEllipse(lx, ly, lz, 32, 18, 18, rgb, 0.7);
-                }
-                
-                // Nodal lines along axes
-                if (subIdx === 0) {
-                    draw3DNodalLine(-60, 0, 0, 60, 0, 0);
-                    draw3DNodalLine(0, -60, 0, 0, 60, 0);
+                    let x = rx * Math.cos(v) * Math.cos(u);
+                    let y = ry * Math.cos(v) * Math.sin(u);
+                    let z = rz * Math.sin(v);
+                    
+                    // Apply local rotation
+                    if (rotXLocal || rotYLocal) {
+                        const r = rotate3D(x, y, z);
+                        x = r.x; y = r.y; z = r.z;
+                    }
+                    
+                    const p = project(cx + x, cy + y, cz + z);
+                    meshPoints.push({...p, u, v, x: cx+x, y: cy+y, z: cz+z});
                 }
             }
             
-            if (elecOn) {
-                const a = t * 1.5;
-                const r = 80;
-                draw3DElectron(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                draw3DElectron(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            // Draw filled triangles for 3D volume effect
+            for (let i = 0; i < slices; i++) {
+                for (let j = 0; j < stacks; j++) {
+                    const idx = i * (stacks + 1) + j;
+                    const p1 = meshPoints[idx];
+                    const p2 = meshPoints[idx + 1];
+                    const p3 = meshPoints[(i + 1) * (stacks + 1) + j];
+                    const p4 = meshPoints[(i + 1) * (stacks + 1) + j + 1];
+                    
+                    if (!p1 || !p2 || !p3 || !p4) continue;
+                    
+                    // Calculate average z for depth
+                    const avgZ = (p1.z + p2.z + p3.z + p4.z) / 4;
+                    const depth = Math.max(0.2, Math.min(1, 1 - (avgZ + 100) / 400));
+                    
+                    c.beginPath();
+                    c.moveTo(p1.x, p1.y);
+                    c.lineTo(p2.x, p2.y);
+                    c.lineTo(p4.x, p4.y);
+                    c.lineTo(p3.x, p3.y);
+                    c.closePath();
+                    
+                    c.fillStyle = rgba(rgb, alpha * depth * 0.6);
+                    c.fill();
+                }
+            }
+            
+            // Draw wireframe for definition
+            c.strokeStyle = rgba(rgb, 0.3);
+            c.lineWidth = 0.6;
+            for (let i = 0; i <= slices; i += 2) {
+                c.beginPath();
+                for (let j = 0; j <= stacks; j++) {
+                    const idx = i * (stacks + 1) + j;
+                    if (meshPoints[idx]) {
+                        if (j === 0) c.moveTo(meshPoints[idx].x, meshPoints[idx].y);
+                        else c.lineTo(meshPoints[idx].x, meshPoints[idx].y);
+                    }
+                }
+                c.stroke();
             }
         }
 
-        function draw3DFOrbital(subIdx, rgb) {
-            draw3DAxes();
-            draw3DNucleus();
+        // ===== DRAW 3D CLOVER (for d orbitals) =====
+        function draw3DClover(cx, cy, cz, rgb, baseRotation, isOnAxis) {
+            const lobes = [];
+            for (let i = 0; i < 4; i++) {
+                const angle = (Math.PI / 2) * i + baseRotation + (isOnAxis ? 0 : Math.PI/4);
+                const r = 42;
+                const lx = cx + Math.cos(angle) * r;
+                const ly = cy + Math.sin(angle) * r;
+                const lz = cz;
+                
+                // Each lobe is a 3D ellipsoid
+                draw3DLobe(lx, ly, lz, 32, 18, 18, rgb, 0.65);
+                
+                // Phase sign
+                const p = project(lx * 0.6, ly * 0.6, lz);
+                c.fillStyle = 'rgba(255,255,255,0.5)';
+                c.font = 'bold 10px sans-serif';
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                c.fillText(i % 2 === 0 ? '+' : '−', p.x, p.y);
+            }
+        }
+
+        // ===== DRAW 3D TORUS (for dz²) =====
+        function draw3DTorus(cx, cy, cz, majorR, minorR, rgb, alpha) {
+            const slices = 32;
+            const stacks = 16;
             
-            // f orbitals have 6-8 lobes with complex orientations
+            for (let i = 0; i < slices; i++) {
+                for (let j = 0; j < stacks; j++) {
+                    const u1 = (Math.PI * 2 / slices) * i;
+                    const u2 = (Math.PI * 2 / slices) * (i + 1);
+                    const v1 = (Math.PI * 2 / stacks) * j;
+                    const v2 = (Math.PI * 2 / stacks) * (j + 1);
+                    
+                    const points = [
+                        torusPoint(cx, cy, cz, majorR, minorR, u1, v1),
+                        torusPoint(cx, cy, cz, majorR, minorR, u2, v1),
+                        torusPoint(cx, cy, cz, majorR, minorR, u2, v2),
+                        torusPoint(cx, cy, cz, majorR, minorR, u1, v2)
+                    ];
+                    
+                    const avgZ = points.reduce((s, p) => s + p.z, 0) / 4;
+                    const depth = Math.max(0.15, Math.min(1, 1 - (avgZ + 80) / 350));
+                    
+                    c.beginPath();
+                    c.moveTo(points[0].x, points[0].y);
+                    for (let k = 1; k < 4; k++) c.lineTo(points[k].x, points[k].y);
+                    c.closePath();
+                    
+                    c.fillStyle = rgba(rgb, alpha * depth * 0.5);
+                    c.fill();
+                    c.strokeStyle = rgba(rgb, 0.2 * depth);
+                    c.lineWidth = 0.5;
+                    c.stroke();
+                }
+            }
+        }
+
+        function torusPoint(cx, cy, cz, majorR, minorR, u, v) {
+            const x = cx + (majorR + minorR * Math.cos(v)) * Math.cos(u);
+            const y = cy + (majorR + minorR * Math.cos(v)) * Math.sin(u);
+            const z = cz + minorR * Math.sin(v);
+            return project(x, y, z);
+        }
+
+        // ===== DRAW 3D F ORBITAL =====
+        function draw3DFOrbital(subIdx, rgb) {
             const configs = [
                 // fxyz - 8 lobes in octants
-                {count: 8, r: 38, w: 24, h: 14, d: 14, offset: Math.PI/8},
-                // fz(x²-y²) - 4 main + 4 small
-                {count: 8, r: 35, w: 22, h: 13, d: 13, offset: 0},
+                {count: 8, r: 38, rx: 24, ry: 14, rz: 14, offset: Math.PI/8},
+                // fz(x²-y²) - 8 lobes
+                {count: 8, r: 35, rx: 22, ry: 13, rz: 13, offset: 0},
                 // fy(3x²-y²) - 6 lobes
-                {count: 6, r: 38, w: 24, h: 14, d: 14, offset: Math.PI/6},
-                // fz³ - 2 main z-lobes + ring
-                {count: 6, r: 32, w: 20, h: 12, d: 12, offset: 0, special: 'z3'},
+                {count: 6, r: 38, rx: 24, ry: 14, rz: 14, offset: Math.PI/6},
+                // fz³ - special
+                {count: 6, r: 32, rx: 20, ry: 12, rz: 12, offset: 0, special: 'z3'},
                 // fx(3y²-x²) - 6 lobes
-                {count: 6, r: 38, w: 24, h: 14, d: 14, offset: 0},
-                // fz(x²-y²) variant - 4 lobes
-                {count: 4, r: 40, w: 26, h: 15, d: 15, offset: Math.PI/4},
-                // fx³ - 8 lobes along x
-                {count: 8, r: 35, w: 22, h: 13, d: 13, offset: 0, special: 'x3'}
+                {count: 6, r: 38, rx: 24, ry: 14, rz: 14, offset: 0},
+                // fz(x²-y²) - 4 lobes
+                {count: 4, r: 40, rx: 26, ry: 15, rz: 15, offset: Math.PI/4},
+                // fx³ - 8 lobes
+                {count: 8, r: 35, rx: 22, ry: 13, rz: 13, offset: 0, special: 'x3'}
             ];
             
             const cfg = configs[subIdx] || configs[0];
             
             if (cfg.special === 'z3') {
-                // fz³ special: two big z-lobes + ring
-                draw3DEllipse(0, 0, -55, 22, 22, 48, rgb, 0.7);
-                draw3DEllipse(0, 0, 55, 22, 22, 48, rgb, 0.7);
-                
-                // Middle ring lobes
-                for (let i = 0; i < 6; i++) {
-                    const a = (Math.PI * 2 / 6) * i;
-                    const lx = Math.cos(a) * 40;
-                    const ly = Math.sin(a) * 40;
-                    draw3DEllipse(lx, ly, 0, 18, 18, 12, rgb, 0.5);
-                }
+                // Two big z-lobes
+                draw3DLobe(0, 0, -60, 22, 22, 48, rgb, 0.7);
+                draw3DLobe(0, 0, 60, 22, 22, 48, rgb, 0.7);
+                // Middle ring
+                draw3DTorus(0, 0, 0, 40, 12, rgb, 0.4);
             } else if (cfg.special === 'x3') {
-                // fx³: lobes primarily along x-axis with complex pattern
                 for (let i = 0; i < 8; i++) {
                     const a = (Math.PI * 2 / 8) * i;
                     const r = 38;
                     const lx = Math.cos(a) * r * (Math.abs(Math.cos(a)) > 0.5 ? 1.3 : 0.7);
                     const ly = Math.sin(a) * r;
                     const lz = Math.sin(a * 2) * r * 0.3;
-                    draw3DEllipse(lx, ly, lz, 22, 13, 13, rgb, 0.65);
+                    draw3DLobe(lx, ly, lz, 22, 13, 13, rgb, 0.6);
                 }
             } else {
-                // Standard multi-lobe f orbital
                 for (let i = 0; i < cfg.count; i++) {
                     const a = (Math.PI * 2 / cfg.count) * i + cfg.offset + (subIdx * 0.2);
                     const lx = Math.cos(a) * cfg.r;
                     const ly = Math.sin(a) * cfg.r;
                     const lz = Math.sin(a * 2 + subIdx) * cfg.r * 0.4;
-                    
-                    draw3DEllipse(lx, ly, lz, cfg.w, cfg.h, cfg.d, rgb, 0.65);
+                    draw3DLobe(lx, ly, lz, cfg.rx, cfg.ry, cfg.rz, rgb, 0.6);
                 }
             }
             
-            // Inner structure for some f orbitals
             if (subIdx === 2 || subIdx === 3 || subIdx === 6) {
                 draw3DSphere(0, 0, 0, 15, rgb, 0.2);
             }
-            
-            if (elecOn) {
-                const a = t * 1.2;
-                const r = 90;
-                draw3DElectron(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                draw3DElectron(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
         }
 
-        function draw3DNodalPlane(axis) {
-            // Draw a transparent plane
-            const size = 80;
-            let points = [];
-            if (axis === 'x') {
-                for (let i = 0; i <= 8; i++) {
-                    for (let j = 0; j <= 8; j++) {
-                        points.push(project3D(0, -size + i*20, -size + j*20));
-                    }
-                }
-            } else if (axis === 'y') {
-                for (let i = 0; i <= 8; i++) {
-                    for (let j = 0; j <= 8; j++) {
-                        points.push(project3D(-size + i*20, 0, -size + j*20));
-                    }
-                }
-            } else {
-                for (let i = 0; i <= 8; i++) {
-                    for (let j = 0; j <= 8; j++) {
-                        points.push(project3D(-size + i*20, -size + j*20, 0));
-                    }
-                }
-            }
-            
-            points.forEach(p => {
-                c.beginPath();
-                c.arc(p.x, p.y, 1.5, 0, Math.PI*2);
-                c.fillStyle = 'rgba(255,255,255,0.08)';
-                c.fill();
-            });
-        }
-
-        function draw3DNodalLine(x1, y1, z1, x2, y2, z2) {
-            const p1 = project3D(x1, y1, z1);
-            const p2 = project3D(x2, y2, z2);
-            c.strokeStyle = 'rgba(255,255,255,0.12)';
-            c.lineWidth = 1;
-            c.setLineDash([4, 4]);
-            c.beginPath();
-            c.moveTo(p1.x, p1.y);
-            c.lineTo(p2.x, p2.y);
-            c.stroke();
-            c.setLineDash([]);
-        }
-
-        function draw3DElectron(x, y, z) {
-            const p = project3D(x, y, z);
-            const r = 4 * p.scale;
+        function drawElectron3D(x, y, z) {
+            if (!elecOn) return;
+            const p = project(x, y, z);
+            const r = 3.5 * p.scale;
             c.beginPath();
             c.arc(p.x, p.y, r + 4, 0, Math.PI*2);
             c.fillStyle = 'rgba(255,255,0,0.15)';
@@ -915,6 +826,126 @@ html_content = '''<!DOCTYPE html>
             c.arc(p.x, p.y, r, 0, Math.PI*2);
             c.fillStyle = '#ffff00';
             c.fill();
+        }
+
+        // ===== ORBITAL DRAWERS =====
+        function drawSOrbital(rgb) {
+            const pulse = 1 + Math.sin(t * 2) * 0.05;
+            draw3DSphere(0, 0, 0, 70 * pulse, rgb, 0.7);
+            draw3DSphere(0, 0, 0, 50 * pulse, rgb, 0.3);
+            drawNucleus();
+            
+            if (elecOn) {
+                const a1 = t * 2;
+                const a2 = t * 2 + Math.PI;
+                drawElectron3D(55 * Math.cos(a1), 55 * Math.sin(a1) * 0.6, 20 * Math.sin(a1));
+                drawElectron3D(55 * Math.cos(a2), 55 * Math.sin(a2) * 0.6, 20 * Math.sin(a2));
+            }
+        }
+
+        function drawPOrbital(subIdx, rgb) {
+            drawAxes();
+            drawNucleus();
+            
+            const lobeDist = 55;
+            const orientations = [
+                {lx: -lobeDist, ly: 0, lz: 0, rx: 55, ry: 24, rz: 24},
+                {lx: 0, ly: -lobeDist, lz: 0, rx: 24, ry: 55, rz: 24},
+                {lx: 0, ly: 0, lz: -lobeDist, rx: 24, ry: 24, rz: 55}
+            ];
+            const o = orientations[subIdx];
+            
+            // Positive lobe
+            draw3DLobe(o.lx, o.ly, o.lz, o.rx, o.ry, o.rz, rgb, 0.72);
+            // Negative lobe
+            draw3DLobe(-o.lx, -o.ly, -o.lz, o.rx, o.ry, o.rz, rgb, 0.72);
+            
+            // Nodal plane dots
+            drawNodalPlane(subIdx);
+            
+            if (elecOn) {
+                const a = t * 1.8;
+                const r = 68;
+                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
+                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            }
+        }
+
+        function drawDOrbital(subIdx, rgb) {
+            drawAxes();
+            drawNucleus();
+            
+            if (subIdx === 4) {
+                // dz²
+                draw3DLobe(0, 0, -60, 24, 24, 50, rgb, 0.75);
+                draw3DLobe(0, 0, 60, 24, 24, 50, rgb, 0.75);
+                draw3DTorus(0, 0, 0, 52, 14, rgb, 0.4);
+            } else if (subIdx === 3) {
+                // dx²-y² - on axes
+                draw3DClover(0, 0, 0, rgb, 0, true);
+                // Nodal lines at 45°
+                drawNodalLine3D(50, 50, 0, -50, -50, 0);
+                drawNodalLine3D(-50, 50, 0, 50, -50, 0);
+            } else {
+                // dxy, dyz, dxz - between axes
+                const rotations = [Math.PI/4, Math.PI/2, 0];
+                draw3DClover(0, 0, 0, rgb, rotations[subIdx], false);
+                if (subIdx === 0) {
+                    drawNodalLine3D(-60, 0, 0, 60, 0, 0);
+                    drawNodalLine3D(0, -60, 0, 0, 60, 0);
+                }
+            }
+            
+            if (elecOn) {
+                const a = t * 1.5;
+                const r = 82;
+                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
+                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            }
+        }
+
+        function drawFOrbital(subIdx, rgb) {
+            drawAxes();
+            drawNucleus();
+            draw3DFOrbital(subIdx, rgb);
+            
+            if (elecOn) {
+                const a = t * 1.2;
+                const r = 95;
+                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
+                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            }
+        }
+
+        function drawNodalPlane(subIdx) {
+            const size = 70;
+            const step = 10;
+            for (let i = -size; i <= size; i += step) {
+                for (let j = -size; j <= size; j += step) {
+                    let x = 0, y = 0, z = 0;
+                    if (subIdx === 0) { y = i; z = j; }
+                    else if (subIdx === 1) { x = i; z = j; }
+                    else { x = i; y = j; }
+                    const p = project(x, y, z);
+                    c.beginPath();
+                    c.arc(p.x, p.y, 1.2, 0, Math.PI*2);
+                    c.fillStyle = 'rgba(255,255,255,0.06)';
+                    c.fill();
+                }
+            }
+        }
+
+        function drawNodalLine3D(x1, y1, z1, x2, y2, z2) {
+            const p1 = project(x1, y1, z1);
+            const p2 = project(x2, y2, z2);
+            c.strokeStyle = 'rgba(255,255,255,0.12)';
+            c.lineWidth = 1;
+            c.setLineDash([4, 4]);
+            c.beginPath();
+            c.moveTo(p1.x, p1.y);
+            c.lineTo(p2.x, p2.y);
+            c.stroke();
+            c.setLineDash([]);
         }
 
         // ===== MAIN LOOP =====
@@ -941,10 +972,10 @@ html_content = '''<!DOCTYPE html>
             const rgb = d.color;
             
             switch (activeType) {
-                case 's': draw3DSOrbital(rgb); break;
-                case 'p': draw3DPOrbital(activeSub, rgb); break;
-                case 'd': draw3DDOrbital(activeSub, rgb); break;
-                case 'f': draw3DFOrbital(activeSub, rgb); break;
+                case 's': drawSOrbital(rgb); break;
+                case 'p': drawPOrbital(activeSub, rgb); break;
+                case 'd': drawDOrbital(activeSub, rgb); break;
+                case 'f': drawFOrbital(activeSub, rgb); break;
             }
             
             // Legend
@@ -1021,4 +1052,4 @@ html_content = '''<!DOCTYPE html>
 with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("Dosya güncellendi! Tüm orbitaller 3D, f orbitalleri düzeltildi.")
+print("Dosya güncellendi! Tüm orbitaller artık gerçek 3D hacimli (küresel/ellipsoidal).")
