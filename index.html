@@ -1,1 +1,939 @@
-.reveal .stretch,.reveal .r-stretch{max-width:none;max-height:none}.reveal pre.stretch code,.reveal pre.r-stretch code{box-sizing:border-box;height:100%;max-height:100%}.reveal .r-fit-text{white-space:nowrap;display:inline-block}.reveal .r-stack{grid-template-rows:100%;display:grid}.reveal .r-stack>*{grid-area:1/1;margin:auto}.reveal .r-vstack,.reveal .r-hstack{display:flex}.reveal .r-vstack img,.reveal .r-vstack video,.reveal .r-hstack img,.reveal .r-hstack video{object-fit:contain;min-width:0;min-height:0}.reveal .r-vstack{flex-direction:column;justify-content:center;align-items:center}.reveal .r-hstack{flex-direction:row;justify-content:center;align-items:center}.reveal .items-stretch{align-items:stretch}.reveal .items-start{align-items:flex-start}.reveal .items-center{align-items:center}.reveal .items-end{align-items:flex-end}.reveal .justify-between{justify-content:space-between}.reveal .justify-around{justify-content:space-around}.reveal .justify-start{justify-content:flex-start}.reveal .justify-center{justify-content:center}.reveal .justify-end{justify-content:flex-end}html.reveal-full-page{width:100%;height:100vh;height:calc(var(--vh,1vh) * 100);height:100dvh;overflow:hidden}.reveal-viewport{color:#000;--r-controls-spacing:12px;--r-overlay-header-height:40px;--r-overlay-margin:0px;--r-overlay-padding:6px;--r-overlay-gap:5px;background-color:#fff;height:100%;margin:0;line-height:1;position:relative;overflow:hidden}@media screen and (width<=1024px),(height<=768px){.reveal-viewport{--r-overlay-header-height:26px}}.reveal-viewport:fullscreen{width:100%!important;height:100%!important;top:0!important;left:0!important;transform:none!important}.reveal .fragment{transition:all .2s}.reveal .fragment:not(.custom){opacity:0;visibility:hidden;will-change:opacity}.reveal .fragment.visible{opacity:1;visibility:inherit}.reveal .fragment.disabled{transition:none}.reveal .fragment.grow{opacity:1;visibility:inherit}.reveal .fragment.grow.visible{transform:scale(1.3)}.reveal .fragment.shrink{opacity:1;visibility:inherit}.reveal .fragment.shrink.visible{transform:scale(.7)}.reveal .fragment.zoom-in{transform:scale(.1)}.reveal .fragment.zoom-in.visible{transform:none}.reveal .fragment.fade-out{opacity:1;visibility:inherit}.reveal .fragment.fade-out.visible{opacity:0;visibility:hidden}.reveal .fragment.semi-fade-out{opacity:1;visibility:inherit}.reveal .fragment.semi-fade-out.visible{opacity:.5;visibility:inherit}.reveal .fragment.strike{opacity:1;visibility:inherit}.reveal .fragment.strike.visible{text-decoration:line-through}.reveal .fragment.fade-up{transform:translateY(40px)}.reveal .fragment.fade-up.visible{transform:translate(0)}.reveal .fragment.fade-down{transform:translateY(-40px)}.reveal .fragment.fade-down.visible{transform:translate(0)}.reveal .fragment.fade-right{transform:translate(-40px)}.reveal .fragment.fade-right.visible{transform:translate(0)}.reveal .fragment.fade-left{transform:translate(40px)}.reveal .fragment.fade-left.visible{transform:translate(0)}.reveal .fragment.fade-in-then-out,.reveal .fragment.current-visible{opacity:0;visibility:hidden}.reveal .fragment.fade-in-then-out.current-fragment,.reveal .fragment.current-visible.current-fragment{opacity:1;visibility:inherit}.reveal .fragment.fade-in-then-semi-out{opacity:0;visibility:hidden}.reveal .fragment.fade-in-then-semi-out.visible{opacity:.5;visibility:inherit}.reveal .fragment.fade-in-then-semi-out.current-fragment,.reveal .fragment.highlight-red,.reveal .fragment.highlight-current-red,.reveal .fragment.highlight-green,.reveal .fragment.highlight-current-green,.reveal .fragment.highlight-blue,.reveal .fragment.highlight-current-blue{opacity:1;visibility:inherit}.reveal .fragment.highlight-red.visible{color:#ff2c2d}.reveal .fragment.highlight-green.visible{color:#17ff2e}.reveal .fragment.highlight-blue.visible{color:#1b91ff}.reveal .fragment.highlight-current-red.current-fragment{color:#ff2c2d}.reveal .fragment.highlight-current-green.current-fragment{color:#17ff2e}.reveal .fragment.highlight-current-blue.current-fragment{color:#1b91ff}.reveal:after{content:"";font-style:italic}.reveal iframe{z-index:1}.reveal a{position:relative}@keyframes bounce-right{0%,10%,25%,40%,50%{transform:translate(0)}20%{transform:translate(10px)}30%{transform:translate(-5px)}}@keyframes bounce-left{0%,10%,25%,40%,50%{transform:translate(0)}20%{transform:translate(-10px)}30%{transform:translate(5px)}}@keyframes bounce-down{0%,10%,25%,40%,50%{transform:translateY(0)}20%{transform:translateY(10px)}30%{transform:translateY(-5px)}}.reveal .controls{top:auto;bottom:var(--r-controls-spacing);right:var(--r-controls-spacing);z-index:11;color:#000;pointer-events:none;font-size:10px;display:none;position:absolute;left:auto}.reveal .controls button{cursor:pointer;color:currentColor;z-index:2;pointer-events:auto;font-size:inherit;visibility:hidden;opacity:0;-webkit-appearance:none;-webkit-tap-highlight-color:#0000;background-color:#0000;border:0;outline:0;padding:0;transition:color .2s,opacity .2s,transform .2s;position:absolute;transform:scale(.9999)}.reveal .controls .controls-arrow:before,.reveal .controls .controls-arrow:after{content:"";transform-origin:.2em;will-change:transform;background-color:currentColor;border-radius:.25em;width:2.6em;height:.5em;transition:all .15s,background-color .8s;position:absolute;top:0;left:0}.reveal .controls .controls-arrow{width:3.6em;height:3.6em;position:relative}.reveal .controls .controls-arrow:before{transform:translate(.5em)translateY(1.55em)rotate(45deg)}.reveal .controls .controls-arrow:after{transform:translate(.5em)translateY(1.55em)rotate(-45deg)}.reveal .controls .controls-arrow:hover:before{transform:translate(.5em)translateY(1.55em)rotate(40deg)}.reveal .controls .controls-arrow:hover:after{transform:translate(.5em)translateY(1.55em)rotate(-40deg)}.reveal .controls .controls-arrow:active:before{transform:translate(.5em)translateY(1.55em)rotate(36deg)}.reveal .controls .controls-arrow:active:after{transform:translate(.5em)translateY(1.55em)rotate(-36deg)}.reveal .controls .navigate-left{bottom:3.2em;right:6.4em;transform:translate(-10px)}.reveal .controls .navigate-left.highlight{animation:2s ease-out 50 both bounce-left}.reveal .controls .navigate-right{bottom:3.2em;right:0;transform:translate(10px)}.reveal .controls .navigate-right .controls-arrow{transform:rotate(180deg)}.reveal .controls .navigate-right.highlight{animation:2s ease-out 50 both bounce-right}.reveal .controls .navigate-up{bottom:6.4em;right:3.2em;transform:translateY(-10px)}.reveal .controls .navigate-up .controls-arrow{transform:rotate(90deg)}.reveal .controls .navigate-down{padding-bottom:1.4em;bottom:-1.4em;right:3.2em;transform:translateY(10px)}.reveal .controls .navigate-down .controls-arrow{transform:rotate(-90deg)}.reveal .controls .navigate-down.highlight{animation:2s ease-out 50 both bounce-down}.reveal .controls[data-controls-back-arrows=faded] .navigate-up.enabled{opacity:.3}.reveal .controls[data-controls-back-arrows=faded] .navigate-up.enabled:hover{opacity:1}.reveal .controls[data-controls-back-arrows=hidden] .navigate-up.enabled{opacity:0;visibility:hidden}.reveal .controls .enabled{visibility:visible;opacity:.9;cursor:pointer;transform:none}.reveal .controls .enabled.fragmented{opacity:.5}.reveal .controls .enabled:hover,.reveal .controls .enabled.fragmented:hover{opacity:1}.reveal:not(.rtl) .controls[data-controls-back-arrows=faded] .navigate-left.enabled{opacity:.3}.reveal:not(.rtl) .controls[data-controls-back-arrows=faded] .navigate-left.enabled:hover{opacity:1}.reveal:not(.rtl) .controls[data-controls-back-arrows=hidden] .navigate-left.enabled{opacity:0;visibility:hidden}.reveal.rtl .controls[data-controls-back-arrows=faded] .navigate-right.enabled{opacity:.3}.reveal.rtl .controls[data-controls-back-arrows=faded] .navigate-right.enabled:hover{opacity:1}.reveal.rtl .controls[data-controls-back-arrows=hidden] .navigate-right.enabled{opacity:0;visibility:hidden}.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-up,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-down{display:none}.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-left,.reveal:not(.has-vertical-slides) .controls .navigate-left{bottom:1.4em;right:5.5em}.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-right,.reveal:not(.has-vertical-slides) .controls .navigate-right{bottom:1.4em;right:.5em}.reveal:not(.has-horizontal-slides) .controls .navigate-up{bottom:5em;right:1.4em}.reveal:not(.has-horizontal-slides) .controls .navigate-down{bottom:.5em;right:1.4em}.reveal.has-dark-background .controls{color:#fff}.reveal.has-light-background .controls{color:#000}.reveal.no-hover .controls .controls-arrow:hover:before,.reveal.no-hover .controls .controls-arrow:active:before{transform:translate(.5em)translateY(1.55em)rotate(45deg)}.reveal.no-hover .controls .controls-arrow:hover:after,.reveal.no-hover .controls .controls-arrow:active:after{transform:translate(.5em)translateY(1.55em)rotate(-45deg)}@media screen and (width>=500px){.reveal-viewport{--r-controls-spacing:.8em}.reveal .controls[data-controls-layout=edges]{inset:0}.reveal .controls[data-controls-layout=edges] .navigate-left,.reveal .controls[data-controls-layout=edges] .navigate-right,.reveal .controls[data-controls-layout=edges] .navigate-up,.reveal .controls[data-controls-layout=edges] .navigate-down{bottom:auto;right:auto}.reveal .controls[data-controls-layout=edges] .navigate-left{top:50%;left:var(--r-controls-spacing);margin-top:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-right{top:50%;right:var(--r-controls-spacing);margin-top:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-up{top:var(--r-controls-spacing);margin-left:-1.8em;left:50%}.reveal .controls[data-controls-layout=edges] .navigate-down{bottom:calc(var(--r-controls-spacing) - 1.4em + .3em);margin-left:-1.8em;left:50%}}.reveal .progress{z-index:10;color:#fff;background-color:#0003;width:100%;height:3px;display:none;position:absolute;bottom:0;left:0}.reveal .progress:after{content:"";width:100%;height:10px;display:block;position:absolute;top:-10px}.reveal .progress span{transform-origin:0 0;background-color:currentColor;width:100%;height:100%;transition:transform .8s cubic-bezier(.26,.86,.44,.985);display:block;transform:scaleX(0)}@media (pointer:coarse){.reveal .controls{font-size:clamp(10px,2.5vmin,40px)}.reveal .progress{height:clamp(3px,.75vmin,10px)}}.reveal .slide-number{z-index:31;color:#fff;background-color:#0006;padding:5px;font-family:Helvetica,sans-serif;font-size:12px;line-height:1;display:block;position:absolute;bottom:8px;right:8px}.reveal .slide-number a{color:currentColor}.reveal .slide-number-delimiter{margin:0 3px}.reveal{touch-action:pinch-zoom;width:100%;height:100%;position:relative;overflow:hidden}.reveal.embedded{touch-action:pan-y}.reveal.embedded.is-vertical-slide{touch-action:none}.reveal .slides{pointer-events:none;z-index:1;text-align:center;perspective:600px;perspective-origin:50% 40%;width:100%;height:100%;margin:auto;position:absolute;inset:0;overflow:visible}.reveal .slides>section{perspective:600px}.reveal .slides>section,.reveal .slides>section>section{pointer-events:auto;z-index:10;transform-style:flat;width:100%;transition:transform-origin .8s cubic-bezier(.26,.86,.44,.985),transform .8s cubic-bezier(.26,.86,.44,.985),visibility .8s cubic-bezier(.26,.86,.44,.985),opacity .8s cubic-bezier(.26,.86,.44,.985);display:none;position:absolute}.reveal[data-transition-speed=fast] .slides section{transition-duration:.4s}.reveal[data-transition-speed=slow] .slides section{transition-duration:1.2s}.reveal .slides section[data-transition-speed=fast]{transition-duration:.4s}.reveal .slides section[data-transition-speed=slow]{transition-duration:1.2s}.reveal .slides>section.stack{pointer-events:none;height:100%;padding-top:0;padding-bottom:0}.reveal .slides>section.present,.reveal .slides>section>section.present{z-index:11;opacity:1;display:block}.reveal .slides>section:empty,.reveal .slides>section>section:empty,.reveal .slides>section[data-background-interactive],.reveal .slides>section>section[data-background-interactive]{pointer-events:none}.reveal.center,.reveal.center .slides,.reveal.center .slides section{min-height:0!important}.reveal .slides>section:not(.present),.reveal .slides>section>section:not(.present){pointer-events:none}.reveal.overview .slides>section,.reveal.overview .slides>section>section{pointer-events:auto}.reveal .slides>section.past,.reveal .slides>section.future,.reveal .slides>section.past>section,.reveal .slides>section.future>section,.reveal .slides>section>section.past,.reveal .slides>section>section.future{opacity:0}.reveal .slides>section[data-transition=slide].past,.reveal .slides>section[data-transition~=slide-out].past,.reveal.slide .slides>section:not([data-transition]).past{transform:translate(-150%)}.reveal .slides>section[data-transition=slide].future,.reveal .slides>section[data-transition~=slide-in].future,.reveal.slide .slides>section:not([data-transition]).future{transform:translate(150%)}.reveal .slides>section>section[data-transition=slide].past,.reveal .slides>section>section[data-transition~=slide-out].past,.reveal.slide .slides>section>section:not([data-transition]).past{transform:translateY(-150%)}.reveal .slides>section>section[data-transition=slide].future,.reveal .slides>section>section[data-transition~=slide-in].future,.reveal.slide .slides>section>section:not([data-transition]).future{transform:translateY(150%)}.reveal .slides>section[data-transition=linear].past,.reveal .slides>section[data-transition~=linear-out].past,.reveal.linear .slides>section:not([data-transition]).past{transform:translate(-150%)}.reveal .slides>section[data-transition=linear].future,.reveal .slides>section[data-transition~=linear-in].future,.reveal.linear .slides>section:not([data-transition]).future{transform:translate(150%)}.reveal .slides>section>section[data-transition=linear].past,.reveal .slides>section>section[data-transition~=linear-out].past,.reveal.linear .slides>section>section:not([data-transition]).past{transform:translateY(-150%)}.reveal .slides>section>section[data-transition=linear].future,.reveal .slides>section>section[data-transition~=linear-in].future,.reveal.linear .slides>section>section:not([data-transition]).future{transform:translateY(150%)}.reveal .slides section[data-transition=default].stack,.reveal.default .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=default].past,.reveal .slides>section[data-transition~=default-out].past,.reveal.default .slides>section:not([data-transition]).past{transform:translate(-100%)rotateY(-90deg)translate(-100%)}.reveal .slides>section[data-transition=default].future,.reveal .slides>section[data-transition~=default-in].future,.reveal.default .slides>section:not([data-transition]).future{transform:translate(100%)rotateY(90deg)translate(100%)}.reveal .slides>section>section[data-transition=default].past,.reveal .slides>section>section[data-transition~=default-out].past,.reveal.default .slides>section>section:not([data-transition]).past{transform:translateY(-300px)rotateX(70deg)translateY(-300px)}.reveal .slides>section>section[data-transition=default].future,.reveal .slides>section>section[data-transition~=default-in].future,.reveal.default .slides>section>section:not([data-transition]).future{transform:translateY(300px)rotateX(-70deg)translateY(300px)}.reveal .slides section[data-transition=convex].stack,.reveal.convex .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=convex].past,.reveal .slides>section[data-transition~=convex-out].past,.reveal.convex .slides>section:not([data-transition]).past{transform:translate(-100%)rotateY(-90deg)translate(-100%)}.reveal .slides>section[data-transition=convex].future,.reveal .slides>section[data-transition~=convex-in].future,.reveal.convex .slides>section:not([data-transition]).future{transform:translate(100%)rotateY(90deg)translate(100%)}.reveal .slides>section>section[data-transition=convex].past,.reveal .slides>section>section[data-transition~=convex-out].past,.reveal.convex .slides>section>section:not([data-transition]).past{transform:translateY(-300px)rotateX(70deg)translateY(-300px)}.reveal .slides>section>section[data-transition=convex].future,.reveal .slides>section>section[data-transition~=convex-in].future,.reveal.convex .slides>section>section:not([data-transition]).future{transform:translateY(300px)rotateX(-70deg)translateY(300px)}.reveal .slides section[data-transition=concave].stack,.reveal.concave .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=concave].past,.reveal .slides>section[data-transition~=concave-out].past,.reveal.concave .slides>section:not([data-transition]).past{transform:translate(-100%)rotateY(90deg)translate(-100%)}.reveal .slides>section[data-transition=concave].future,.reveal .slides>section[data-transition~=concave-in].future,.reveal.concave .slides>section:not([data-transition]).future{transform:translate(100%)rotateY(-90deg)translate(100%)}.reveal .slides>section>section[data-transition=concave].past,.reveal .slides>section>section[data-transition~=concave-out].past,.reveal.concave .slides>section>section:not([data-transition]).past{transform:translateY(-80%)rotateX(-70deg)translateY(-80%)}.reveal .slides>section>section[data-transition=concave].future,.reveal .slides>section>section[data-transition~=concave-in].future,.reveal.concave .slides>section>section:not([data-transition]).future{transform:translateY(80%)rotateX(70deg)translateY(80%)}.reveal .slides section[data-transition=zoom],.reveal.zoom .slides section:not([data-transition]){transition-timing-function:ease}.reveal .slides>section[data-transition=zoom].past,.reveal .slides>section[data-transition~=zoom-out].past,.reveal.zoom .slides>section:not([data-transition]).past{visibility:hidden;transform:scale(16)}.reveal .slides>section[data-transition=zoom].future,.reveal .slides>section[data-transition~=zoom-in].future,.reveal.zoom .slides>section:not([data-transition]).future{visibility:hidden;transform:scale(.2)}.reveal .slides>section>section[data-transition=zoom].past,.reveal .slides>section>section[data-transition~=zoom-out].past,.reveal.zoom .slides>section>section:not([data-transition]).past{transform:scale(16)}.reveal .slides>section>section[data-transition=zoom].future,.reveal .slides>section>section[data-transition~=zoom-in].future,.reveal.zoom .slides>section>section:not([data-transition]).future{transform:scale(.2)}.reveal.cube .slides{perspective:1300px}.reveal.cube .slides section{backface-visibility:hidden;box-sizing:border-box;min-height:700px;transform-style:preserve-3d;padding:30px}.reveal.center.cube .slides section{min-height:0}.reveal.cube .slides section:not(.stack):before{content:"";background:#0000001a;border-radius:4px;width:100%;height:100%;display:block;position:absolute;top:0;left:0;transform:translateZ(-20px)}.reveal.cube .slides section:not(.stack):after{content:"";z-index:1;background:0 0;border-radius:4px;width:90%;height:30px;display:block;position:absolute;bottom:0;left:5%;transform:translateZ(-90px)rotateX(65deg);box-shadow:0 95px 25px #0003}.reveal.cube .slides>section.stack{background:0 0;padding:0}.reveal.cube .slides>section.past{transform-origin:100% 0;transform:translate(-100%)rotateY(-90deg)}.reveal.cube .slides>section.future{transform-origin:0 0;transform:translate(100%)rotateY(90deg)}.reveal.cube .slides>section>section.past{transform-origin:0 100%;transform:translateY(-100%)rotateX(90deg)}.reveal.cube .slides>section>section.future{transform-origin:0 0;transform:translateY(100%)rotateX(-90deg)}.reveal.page .slides{perspective-origin:0%;perspective:3000px}.reveal.page .slides section{box-sizing:border-box;min-height:700px;transform-style:preserve-3d;padding:30px}.reveal.page .slides section.past{z-index:12}.reveal.page .slides section:not(.stack):before{content:"";background:#0000001a;width:100%;height:100%;display:block;position:absolute;top:0;left:0;transform:translateZ(-20px)}.reveal.page .slides section:not(.stack):after{content:"";z-index:1;background:0 0;border-radius:4px;width:90%;height:30px;display:block;position:absolute;bottom:0;left:5%;transform:translateZ(-90px)rotateX(65deg);box-shadow:0 95px 25px #0003}.reveal.page .slides>section.stack{background:0 0;padding:0}.reveal.page .slides>section.past{transform-origin:0 0;transform:translate(-40%)rotateY(-80deg)}.reveal.page .slides>section.future{transform-origin:100% 0;transform:translate(0,0)}.reveal.page .slides>section>section.past{transform-origin:0 0;transform:translateY(-40%)rotateX(80deg)}.reveal.page .slides>section>section.future{transform-origin:0 100%;transform:translate(0,0)}.reveal .slides section[data-transition=fade],.reveal.fade .slides section:not([data-transition]),.reveal.fade .slides>section>section:not([data-transition]){transition:opacity .5s;transform:none}.reveal.fade.overview .slides section,.reveal.fade.overview .slides>section>section{transition:none}.reveal .slides section[data-transition=none],.reveal.none .slides section:not([data-transition]){transition:none;transform:none}.reveal .pause-overlay{visibility:hidden;opacity:0;z-index:100;background:#000;width:100%;height:100%;transition:all 1s;position:absolute;top:0;left:0}.reveal .pause-overlay .resume-button{color:#ccc;cursor:pointer;background:0 0;border:2px solid #ccc;border-radius:2px;padding:6px 14px;font-size:16px;position:absolute;bottom:20px;right:20px}.reveal .pause-overlay .resume-button:hover{color:#fff;border-color:#fff}.reveal.paused .pause-overlay{visibility:visible;opacity:1}.reveal .no-transition,.reveal .no-transition *,.reveal .slides.disable-slide-transitions section{transition:none!important}.reveal .slides.disable-slide-transitions section{transform:none!important}.reveal .backgrounds{perspective:600px;width:100%;height:100%;position:absolute;top:0;left:0}.reveal .slide-background{opacity:0;visibility:hidden;background-color:#0000;width:100%;height:100%;transition:all .8s cubic-bezier(.26,.86,.44,.985);display:none;position:absolute;overflow:hidden}.reveal .slide-background-content{background-position:50%;background-repeat:no-repeat;background-size:cover;width:100%;height:100%;position:absolute}.reveal .slide-background.stack{display:block}.reveal .slide-background.present{opacity:1;visibility:visible;z-index:2}.print-pdf .reveal .slide-background{opacity:1!important;visibility:visible!important}.reveal .slide-background video{object-fit:cover;width:100%;max-width:none;height:100%;max-height:none;position:absolute;top:0;left:0}.reveal .slide-background[data-background-size=contain] video{object-fit:contain}.reveal[data-background-transition=none]>.backgrounds .slide-background:not([data-background-transition]),.reveal>.backgrounds .slide-background[data-background-transition=none]{transition:none}.reveal[data-background-transition=slide]>.backgrounds .slide-background:not([data-background-transition]),.reveal>.backgrounds .slide-background[data-background-transition=slide]{opacity:1}.reveal[data-background-transition=slide]>.backgrounds .slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background.past[data-background-transition=slide]{transform:translate(-100%)}.reveal[data-background-transition=slide]>.backgrounds .slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background.future[data-background-transition=slide]{transform:translate(100%)}.reveal[data-background-transition=slide]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=slide]{transform:translateY(-100%)}.reveal[data-background-transition=slide]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=slide]{transform:translateY(100%)}.reveal[data-background-transition=convex]>.backgrounds .slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background.past[data-background-transition=convex]{opacity:0;transform:translate(-100%)rotateY(-90deg)translate(-100%)}.reveal[data-background-transition=convex]>.backgrounds .slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background.future[data-background-transition=convex]{opacity:0;transform:translate(100%)rotateY(90deg)translate(100%)}.reveal[data-background-transition=convex]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=convex]{opacity:0;transform:translateY(-100%)rotateX(90deg)translateY(-100%)}.reveal[data-background-transition=convex]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=convex]{opacity:0;transform:translateY(100%)rotateX(-90deg)translateY(100%)}.reveal[data-background-transition=concave]>.backgrounds .slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background.past[data-background-transition=concave]{opacity:0;transform:translate(-100%)rotateY(90deg)translate(-100%)}.reveal[data-background-transition=concave]>.backgrounds .slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background.future[data-background-transition=concave]{opacity:0;transform:translate(100%)rotateY(-90deg)translate(100%)}.reveal[data-background-transition=concave]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=concave]{opacity:0;transform:translateY(-100%)rotateX(-90deg)translateY(-100%)}.reveal[data-background-transition=concave]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=concave]{opacity:0;transform:translateY(100%)rotateX(90deg)translateY(100%)}.reveal[data-background-transition=zoom]>.backgrounds .slide-background:not([data-background-transition]),.reveal>.backgrounds .slide-background[data-background-transition=zoom]{transition-timing-function:ease}.reveal[data-background-transition=zoom]>.backgrounds .slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background.past[data-background-transition=zoom]{opacity:0;visibility:hidden;transform:scale(16)}.reveal[data-background-transition=zoom]>.backgrounds .slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background.future[data-background-transition=zoom]{opacity:0;visibility:hidden;transform:scale(.2)}.reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=zoom]{opacity:0;visibility:hidden;transform:scale(16)}.reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]),.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=zoom]{opacity:0;visibility:hidden;transform:scale(.2)}.reveal[data-transition-speed=fast]>.backgrounds .slide-background{transition-duration:.4s}.reveal[data-transition-speed=slow]>.backgrounds .slide-background{transition-duration:1.2s}.reveal [data-auto-animate-target^=unmatched]{will-change:opacity}.reveal section[data-auto-animate]:not(.stack):not([data-auto-animate=running]) [data-auto-animate-target^=unmatched]{opacity:0}.reveal.overview{perspective-origin:50%;perspective:700px}.reveal.overview .slides section{cursor:pointer;box-sizing:border-box;height:100%;overflow:hidden;opacity:1!important;visibility:visible!important;top:0!important}.reveal.overview .slides section:hover,.reveal.overview .slides section.present{outline-offset:10px;outline:10px solid #96969699}.reveal.overview .slides section.present{outline:10px solid var(--r-link-color)}.reveal.overview .slides section .fragment{opacity:1;transition:none}.reveal.overview .slides section:after,.reveal.overview .slides section:before{display:none!important}.reveal.overview .slides>section.stack{background:0 0;outline:none;padding:0;overflow:visible;top:0!important}.reveal.overview .backgrounds{perspective:inherit}.reveal.overview .backgrounds .slide-background{opacity:1;visibility:visible;outline-offset:10px;outline:10px solid #9696961a}.reveal.overview .backgrounds .slide-background.stack{overflow:visible}.reveal.overview .slides section,.reveal.overview-deactivating .slides section,.reveal.overview .backgrounds .slide-background,.reveal.overview-deactivating .backgrounds .slide-background{transition:none}.reveal.rtl .slides,.reveal.rtl .slides h1,.reveal.rtl .slides h2,.reveal.rtl .slides h3,.reveal.rtl .slides h4,.reveal.rtl .slides h5,.reveal.rtl .slides h6{direction:rtl;font-family:sans-serif}.reveal.rtl pre,.reveal.rtl code{direction:ltr}.reveal.rtl ol,.reveal.rtl ul{text-align:right}.reveal.rtl .progress span{transform-origin:100% 0}.reveal.has-parallax-background .backgrounds{transition:all .8s}.reveal.has-parallax-background[data-transition-speed=fast] .backgrounds{transition-duration:.4s}.reveal.has-parallax-background[data-transition-speed=slow] .backgrounds{transition-duration:1.2s}@keyframes fade-in{0%{opacity:0}to{opacity:1}}@keyframes scale-up{0%{transform:scale(.95)}to{transform:scale(1)}}.reveal [data-preview-image],.reveal [data-preview-video],.reveal [data-preview-link]:not(a):not([data-preview-link=false]){cursor:zoom-in}.r-overlay{top:var(--r-overlay-margin);right:var(--r-overlay-margin);bottom:var(--r-overlay-margin);left:var(--r-overlay-margin);border-radius:min(var(--r-overlay-margin), 6px);z-index:99;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;background:#000000f2;font-family:ui-sans-serif,system-ui,-apple-system,Helvetica,sans-serif;transition:all .3s;animation:.3s fade-in;position:absolute}.r-overlay-viewport{top:var(--r-overlay-padding);right:var(--r-overlay-padding);bottom:var(--r-overlay-padding);left:var(--r-overlay-padding);gap:var(--r-overlay-gap);flex-direction:column;display:flex;position:absolute}.r-overlay-header{z-index:2;box-sizing:border-box;height:var(--r-overlay-header-height);justify-content:flex-end;align-items:center;gap:6px;display:flex}.r-overlay-header .r-overlay-header-button{all:unset;min-width:var(--r-overlay-header-height);min-height:var(--r-overlay-header-height);padding:0 calc(var(--r-overlay-header-height) / 4);opacity:1;cursor:pointer;box-sizing:border-box;border-radius:6px;justify-content:center;align-items:center;gap:8px;font-size:18px;display:flex}.r-overlay-header .r-overlay-header-button:hover{opacity:1;background-color:#ffffff26}.r-overlay-header .icon{background-position:50%;background-repeat:no-repeat;background-size:100%;width:20px;height:20px;display:inline-block}.r-overlay-close .icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTIuODU0IDIuODU0YS41LjUgMCAwIDAtLjcwOC0uNzA4TDcuNSA2Ljc5MyAyLjg1NCAyLjE0NmEuNS41IDAgMSAwLS43MDguNzA4TDYuNzkzIDcuNWwtNC42NDcgNC42NDZhLjUuNSAwIDAgMCAuNzA4LjcwOEw3LjUgOC4yMDdsNC42NDYgNC42NDdhLjUuNSAwIDAgMCAuNzA4LS43MDhMOC4yMDcgNy41bDQuNjQ3LTQuNjQ2WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+)}.r-overlay-external .icon{background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMyAyYTEgMSAwIDAgMC0xIDF2OWExIDEgMCAwIDAgMSAxaDlhMSAxIDAgMCAwIDEtMVY4LjVhLjUuNSAwIDAgMC0xIDBWMTJIM1YzaDMuNWEuNS41IDAgMCAwIDAtMUgzWm05Ljg1NC4xNDZhLjUuNSAwIDAgMSAuMTQ2LjM1MVY1LjVhLjUuNSAwIDAgMS0xIDBWMy43MDdMNi44NTQgOC44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhMMTEuMjkzIDNIOS41YS41LjUgMCAwIDEgMC0xaDNhLjQ5OS40OTkgMCAwIDEgLjM1NC4xNDZaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=)}.r-overlay-content{background-color:#141414cc;border-radius:6px;flex-grow:1;place-items:center;animation:.5s cubic-bezier(.26,.86,.44,.985) scale-up;display:grid;position:relative;overflow:hidden}.r-overlay-spinner{z-index:10;visibility:hidden;opacity:0;background-image:url(data:image/gif;base64,R0lGODlhIAAgAPMAAJmZmf%2F%2F%2F6%2Bvr8nJybW1tcDAwOjo6Nvb26ioqKOjo7Ozs%2FLy8vz8%2FAAAAAAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2FhpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh%2BQQJCgAAACwAAAAAIAAgAAAE5xDISWlhperN52JLhSSdRgwVo1ICQZRUsiwHpTJT4iowNS8vyW2icCF6k8HMMBkCEDskxTBDAZwuAkkqIfxIQyhBQBFvAQSDITM5VDW6XNE4KagNh6Bgwe60smQUB3d4Rz1ZBApnFASDd0hihh12BkE9kjAJVlycXIg7CQIFA6SlnJ87paqbSKiKoqusnbMdmDC2tXQlkUhziYtyWTxIfy6BE8WJt5YJvpJivxNaGmLHT0VnOgSYf0dZXS7APdpB309RnHOG5gDqXGLDaC457D1zZ%2FV%2FnmOM82XiHRLYKhKP1oZmADdEAAAh%2BQQJCgAAACwAAAAAIAAgAAAE6hDISWlZpOrNp1lGNRSdRpDUolIGw5RUYhhHukqFu8DsrEyqnWThGvAmhVlteBvojpTDDBUEIFwMFBRAmBkSgOrBFZogCASwBDEY%2FCZSg7GSE0gSCjQBMVG023xWBhklAnoEdhQEfyNqMIcKjhRsjEdnezB%2BA4k8gTwJhFuiW4dokXiloUepBAp5qaKpp6%2BHo7aWW54wl7obvEe0kRuoplCGepwSx2jJvqHEmGt6whJpGpfJCHmOoNHKaHx61WiSR92E4lbFoq%2BB6QDtuetcaBPnW6%2BO7wDHpIiK9SaVK5GgV543tzjgGcghAgAh%2BQQJCgAAACwAAAAAIAAgAAAE7hDISSkxpOrN5zFHNWRdhSiVoVLHspRUMoyUakyEe8PTPCATW9A14E0UvuAKMNAZKYUZCiBMuBakSQKG8G2FzUWox2AUtAQFcBKlVQoLgQReZhQlCIJesQXI5B0CBnUMOxMCenoCfTCEWBsJColTMANldx15BGs8B5wlCZ9Po6OJkwmRpnqkqnuSrayqfKmqpLajoiW5HJq7FL1Gr2mMMcKUMIiJgIemy7xZtJsTmsM4xHiKv5KMCXqfyUCJEonXPN2rAOIAmsfB3uPoAK%2B%2BG%2Bw48edZPK%2BM6hLJpQg484enXIdQFSS1u6UhksENEQAAIfkECQoAAAAsAAAAACAAIAAABOcQyEmpGKLqzWcZRVUQnZYg1aBSh2GUVEIQ2aQOE%2BG%2BcD4ntpWkZQj1JIiZIogDFFyHI0UxQwFugMSOFIPJftfVAEoZLBbcLEFhlQiqGp1Vd140AUklUN3eCA51C1EWMzMCezCBBmkxVIVHBWd3HHl9JQOIJSdSnJ0TDKChCwUJjoWMPaGqDKannasMo6WnM562R5YluZRwur0wpgqZE7NKUm%2BFNRPIhjBJxKZteWuIBMN4zRMIVIhffcgojwCF117i4nlLnY5ztRLsnOk%2BaV%2BoJY7V7m76PdkS4trKcdg0Zc0tTcKkRAAAIfkECQoAAAAsAAAAACAAIAAABO4QyEkpKqjqzScpRaVkXZWQEximw1BSCUEIlDohrft6cpKCk5xid5MNJTaAIkekKGQkWyKHkvhKsR7ARmitkAYDYRIbUQRQjWBwJRzChi9CRlBcY1UN4g0%2FVNB0AlcvcAYHRyZPdEQFYV8ccwR5HWxEJ02YmRMLnJ1xCYp0Y5idpQuhopmmC2KgojKasUQDk5BNAwwMOh2RtRq5uQuPZKGIJQIGwAwGf6I0JXMpC8C7kXWDBINFMxS4DKMAWVWAGYsAdNqW5uaRxkSKJOZKaU3tPOBZ4DuK2LATgJhkPJMgTwKCdFjyPHEnKxFCDhEAACH5BAkKAAAALAAAAAAgACAAAATzEMhJaVKp6s2nIkolIJ2WkBShpkVRWqqQrhLSEu9MZJKK9y1ZrqYK9WiClmvoUaF8gIQSNeF1Er4MNFn4SRSDARWroAIETg1iVwuHjYB1kYc1mwruwXKC9gmsJXliGxc%2BXiUCby9ydh1sOSdMkpMTBpaXBzsfhoc5l58Gm5yToAaZhaOUqjkDgCWNHAULCwOLaTmzswadEqggQwgHuQsHIoZCHQMMQgQGubVEcxOPFAcMDAYUA85eWARmfSRQCdcMe0zeP1AAygwLlJtPNAAL19DARdPzBOWSm1brJBi45soRAWQAAkrQIykShQ9wVhHCwCQCACH5BAkKAAAALAAAAAAgACAAAATrEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiRMDjI0Fd30%2FiI2UA5GSS5UDj2l6NoqgOgN4gksEBgYFf0FDqKgHnyZ9OX8HrgYHdHpcHQULXAS2qKpENRg7eAMLC7kTBaixUYFkKAzWAAnLC7FLVxLWDBLKCwaKTULgEwbLA4hJtOkSBNqITT3xEgfLpBtzE%2FjiuL04RGEBgwWhShRgQExHBAAh%2BQQJCgAAACwAAAAAIAAgAAAE7xDISWlSqerNpyJKhWRdlSAVoVLCWk6JKlAqAavhO9UkUHsqlE6CwO1cRdCQ8iEIfzFVTzLdRAmZX3I2SfZiCqGk5dTESJeaOAlClzsJsqwiJwiqnFrb2nS9kmIcgEsjQydLiIlHehhpejaIjzh9eomSjZR%2BipslWIRLAgMDOR2DOqKogTB9pCUJBagDBXR6XB0EBkIIsaRsGGMMAxoDBgYHTKJiUYEGDAzHC9EACcUGkIgFzgwZ0QsSBcXHiQvOwgDdEwfFs0sDzt4S6BK4xYjkDOzn0unFeBzOBijIm1Dgmg5YFQwsCMjp1oJ8LyIAACH5BAkKAAAALAAAAAAgACAAAATwEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiUd6GGl6NoiPOH16iZKNlH6KmyWFOggHhEEvAwwMA0N9GBsEC6amhnVcEwavDAazGwIDaH1ipaYLBUTCGgQDA8NdHz0FpqgTBwsLqAbWAAnIA4FWKdMLGdYGEgraigbT0OITBcg5QwPT4xLrROZL6AuQAPUS7bxLpoWidY0JtxLHKhwwMJBTHgPKdEQAACH5BAkKAAAALAAAAAAgACAAAATrEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiUd6GAULDJCRiXo1CpGXDJOUjY%2BYip9DhToJA4RBLwMLCwVDfRgbBAaqqoZ1XBMHswsHtxtFaH1iqaoGNgAIxRpbFAgfPQSqpbgGBqUD1wBXeCYp1AYZ19JJOYgH1KwA4UBvQwXUBxPqVD9L3sbp2BNk2xvvFPJd%2BMFCN6HAAIKgNggY0KtEBAAh%2BQQJCgAAACwAAAAAIAAgAAAE6BDISWlSqerNpyJKhWRdlSAVoVLCWk6JKlAqAavhO9UkUHsqlE6CwO1cRdCQ8iEIfzFVTzLdRAmZX3I2SfYIDMaAFdTESJeaEDAIMxYFqrOUaNW4E4ObYcCXaiBVEgULe0NJaxxtYksjh2NLkZISgDgJhHthkpU4mW6blRiYmZOlh4JWkDqILwUGBnE6TYEbCgevr0N1gH4At7gHiRpFaLNrrq8HNgAJA70AWxQIH1%2BvsYMDAzZQPC9VCNkDWUhGkuE5PxJNwiUK4UfLzOlD4WvzAHaoG9nxPi5d%2BjYUqfAhhykOFwJWiAAAIfkECQoAAAAsAAAAACAAIAAABPAQyElpUqnqzaciSoVkXVUMFaFSwlpOCcMYlErAavhOMnNLNo8KsZsMZItJEIDIFSkLGQoQTNhIsFehRww2CQLKF0tYGKYSg%2BygsZIuNqJksKgbfgIGepNo2cIUB3V1B3IvNiBYNQaDSTtfhhx0CwVPI0UJe0%2Bbm4g5VgcGoqOcnjmjqDSdnhgEoamcsZuXO1aWQy8KAwOAuTYYGwi7w5h%2BKr0SJ8MFihpNbx%2B4Erq7BYBuzsdiH1jCAzoSfl0rVirNbRXlBBlLX%2BBP0XJLAPGzTkAuAOqb0WT5AH7OcdCm5B8TgRwSRKIHQtaLCwg1RAAAOwAAAAAAAAAAAA%3D%3D);width:32px;height:32px;margin:-16px 0 0 -16px;display:block;position:absolute;top:50%;left:50%}.r-overlay-preview .r-overlay-content iframe{opacity:0;visibility:hidden;border:0;width:100%;max-width:100%;height:100%;max-height:100%;transition:all .3s}.r-overlay-preview[data-state=loaded] iframe{opacity:1;visibility:visible}.r-overlay-preview .r-overlay-content img,.r-overlay-preview .r-overlay-content video{object-fit:scale-down;width:100%;max-width:100%;height:100%;max-height:100%;margin:0;position:absolute}.r-overlay-preview[data-preview-fit=none] img,.r-overlay-preview[data-preview-fit=none] video{object-fit:none}.r-overlay-preview[data-preview-fit=scale-down] img,.r-overlay-preview[data-preview-fit=scale-down] video{object-fit:scale-down}.r-overlay-preview[data-preview-fit=contain] img,.r-overlay-preview[data-preview-fit=contain] video{object-fit:contain}.r-overlay-preview[data-preview-fit=cover] img,.r-overlay-preview[data-preview-fit=cover] video{object-fit:cover}.r-overlay-preview[data-state=loaded] .r-overlay-content-inner{z-index:-1;text-align:center;letter-spacing:normal;width:100%;position:absolute;top:45%;left:0}.r-overlay-preview .r-overlay-error{color:orange;font-size:18px}.r-overlay-preview .x-frame-error{opacity:0;transition:opacity .3s .3s}.r-overlay-preview[data-state=loaded] .x-frame-error{opacity:1}.r-overlay-preview[data-state=loading] .r-overlay-spinner{opacity:.6;visibility:visible}.r-overlay-help .r-overlay-content{overflow:auto}.r-overlay-help-content{text-align:center;letter-spacing:normal;max-width:560px;margin:auto;padding:20px 0}.r-overlay-help-content .title{margin-top:0;font-size:20px}.r-overlay-help .r-overlay-help-content table{border-collapse:collapse;text-align:left;border:1px solid #fff;font-size:16px}.r-overlay-help .r-overlay-help-content table th,.r-overlay-help .r-overlay-help-content table td{vertical-align:middle;border:1px solid #fff;width:240px;padding:14px}.r-overlay-help .r-overlay-help-content table th{padding-top:20px;padding-bottom:20px}.reveal .playback{z-index:30;cursor:pointer;-webkit-tap-highlight-color:#0000;transition:all .4s;position:absolute;bottom:20px;left:15px}.reveal.overview .playback{opacity:0;visibility:hidden}.reveal .hljs{min-height:100%}.reveal .hljs table{margin:initial}.reveal .hljs-ln-code,.reveal .hljs-ln-numbers{border:0;padding:0}.reveal .hljs-ln-numbers{opacity:.6;text-align:right;vertical-align:top;padding-right:.75em}.reveal .hljs.has-highlights tr:not(.highlight-line){opacity:.4}.reveal .hljs.has-highlights.fragment{transition:all .2s}.reveal .hljs:not(:first-child).fragment{box-sizing:border-box;width:100%;position:absolute;top:0;left:0}.reveal pre[data-auto-animate-target]{overflow:hidden}.reveal pre[data-auto-animate-target] code{height:100%}.reveal .roll{vertical-align:top;perspective:400px;perspective-origin:50%;line-height:1.2;display:inline-block;overflow:hidden}.reveal .roll:hover{text-shadow:none;background:0 0}.reveal .roll span{pointer-events:none;transform-origin:50% 0;transform-style:preserve-3d;backface-visibility:hidden;padding:0 2px;transition:all .4s;display:block;position:relative}.reveal .roll:hover span{background:#00000080;transform:translateZ(-45px)rotateX(90deg)}.reveal .roll span:after{content:attr(data-title);backface-visibility:hidden;transform-origin:50% 0;padding:0 2px;display:block;position:absolute;top:0;left:0;transform:translateY(110%)rotateX(-90deg)}.reveal aside.notes{display:none}.reveal .speaker-notes{z-index:1;color:#222;box-sizing:border-box;text-align:left;-webkit-overflow-scrolling:touch;background-color:#f5f5f5;border:1px solid #0000000d;width:33.3333%;height:100%;padding:14px 18px;font-family:Helvetica,sans-serif;font-size:18px;line-height:1.4;display:none;position:absolute;top:0;left:100%;overflow:auto}.reveal .speaker-notes .notes-placeholder{color:#ccc;font-style:italic}.reveal .speaker-notes:focus{outline:none}.reveal .speaker-notes:before{content:"Speaker notes";opacity:.5;margin-bottom:10px;display:block}.reveal.show-notes{max-width:75%;overflow:visible}.reveal.show-notes .speaker-notes{display:block}@media screen and (width>=1600px){.reveal .speaker-notes{font-size:20px}}@media screen and (width<=1024px){.reveal.show-notes{border-left:0;max-width:none;max-height:70vh;overflow:visible}.reveal.show-notes .speaker-notes{border:0;width:100%;height:30vh;top:100%;left:0}}@media screen and (width<=600px){.reveal.show-notes{max-height:60vh}.reveal.show-notes .speaker-notes{height:40vh;top:100%}.reveal .speaker-notes{font-size:14px}}.reveal .jump-to-slide{z-index:30;-webkit-tap-highlight-color:#0000;font-size:32px;position:absolute;top:15px;left:15px}.reveal .jump-to-slide-input{font-size:inherit;color:currentColor;background:0 0;border:0;padding:8px}.reveal .jump-to-slide-input::placeholder{color:currentColor;opacity:.5}.reveal.has-dark-background .jump-to-slide-input{color:#fff}.reveal.has-light-background .jump-to-slide-input{color:#222}.reveal .jump-to-slide-input:focus{outline:none}.reveal .r-overlay-button{all:unset;z-index:30;cursor:pointer;-webkit-tap-highlight-color:#0000;appearance:none;color:#fff;background:#000000b3;border-radius:5px;justify-content:center;align-items:center;padding:10px;font-size:.4em;display:flex;position:absolute}.reveal .r-overlay-button:hover{background:#000000e6}.reveal.has-light-background .r-overlay-button{color:#222;background:#ffffffb3}.reveal.has-light-background .r-overlay-button:hover{background:#ffffffe6}.reveal .r-media-play-button{bottom:20px;left:15px}.zoomed .reveal *,.zoomed .reveal :before,.zoomed .reveal :after{backface-visibility:visible!important}.zoomed .reveal .progress,.zoomed .reveal .controls{opacity:0}.zoomed .reveal .roll span{background:0 0}.zoomed .reveal .roll span:after,.reveal-viewport.loading-scroll-mode{visibility:hidden}.reveal-viewport.reveal-scroll{z-index:1;--r-scrollbar-width:7px;--r-scrollbar-trigger-size:5px;--r-controls-spacing:8px;margin:0 auto;overflow:hidden auto}@media screen and (width<=500px){.reveal-viewport.reveal-scroll{--r-scrollbar-width:3px;--r-scrollbar-trigger-size:3px}}.reveal-viewport.reveal-scroll .controls,.reveal-viewport.reveal-scroll .progress,.reveal-viewport.reveal-scroll .playback,.reveal-viewport.reveal-scroll .backgrounds,.reveal-viewport.reveal-scroll .slide-number,.reveal-viewport.reveal-scroll .speaker-notes{display:none!important}.reveal-viewport.reveal-scroll .r-overlay,.reveal-viewport.reveal-scroll .pause-overlay,.reveal-viewport.reveal-scroll .r-media-play-button{position:fixed}.reveal-viewport.reveal-scroll .reveal{touch-action:manipulation;overflow:visible}.reveal-viewport.reveal-scroll .slides{pointer-events:initial;perspective:none;perspective-origin:50%;margin:0;padding:0;display:block;position:static;top:auto;left:auto;overflow:visible;width:100%!important}.reveal-viewport.reveal-scroll .scroll-page{width:100%;height:calc(var(--page-height) + var(--page-scroll-padding));z-index:1;position:relative;overflow:visible}.reveal-viewport.reveal-scroll .scroll-page-sticky{height:var(--page-height);position:sticky;top:0}.reveal-viewport.reveal-scroll .scroll-page-content{width:100%;height:100%;position:absolute;top:0;left:0;overflow:hidden}.reveal-viewport.reveal-scroll .scroll-page section{visibility:visible!important;width:var(--slide-width)!important;height:var(--slide-height)!important;opacity:1!important;transform:scale(var(--slide-scale)) translate(-50%, -50%)!important;transform-style:flat!important;transform-origin:0 0!important;display:block!important;position:absolute!important;top:50%!important;left:50%!important}.reveal-viewport.reveal-scroll .slide-background{visibility:visible;opacity:1;touch-action:manipulation;width:100%;height:100%;position:absolute;top:0;left:0;z-index:auto!important;display:block!important}.reveal-viewport.reveal-scroll[data-scrollbar=true]::-webkit-scrollbar{display:none}.reveal-viewport.reveal-scroll[data-scrollbar=auto]::-webkit-scrollbar{display:none}.reveal-viewport.reveal-scroll[data-scrollbar=true],.reveal-viewport.reveal-scroll[data-scrollbar=auto]{scrollbar-width:none}.reveal.has-dark-background,.reveal-viewport.has-dark-background{--r-overlay-element-bg-color:240, 240, 240;--r-overlay-element-fg-color:0, 0, 0}.reveal.has-light-background,.reveal-viewport.has-light-background{--r-overlay-element-bg-color:0, 0, 0;--r-overlay-element-fg-color:240, 240, 240}.reveal-viewport.reveal-scroll .scrollbar{z-index:20;opacity:0;transition:all .3s;position:sticky;top:50%}.reveal-viewport.reveal-scroll .scrollbar.visible,.reveal-viewport.reveal-scroll .scrollbar:hover{opacity:1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-inner{width:var(--r-scrollbar-width);height:calc(var(--viewport-height) - var(--r-controls-spacing) * 2);right:var(--r-controls-spacing);border-radius:var(--r-scrollbar-width);z-index:10;position:absolute;top:0;transform:translateY(-50%)}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-playhead{width:var(--r-scrollbar-width);height:var(--r-scrollbar-width);border-radius:var(--r-scrollbar-width);background-color:rgba(var(--r-overlay-element-bg-color), 1);z-index:11;transition:background-color .2s;position:absolute;top:0;left:0}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide{background-color:rgba(var(--r-overlay-element-bg-color), .2);width:100%;box-shadow:0 0 0px 1px rgba(var(--r-overlay-element-fg-color), .1);border-radius:var(--r-scrollbar-width);transition:background-color .2s;position:absolute}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide:after{content:"";z-index:-1;background:0 0;width:200%;height:100%;position:absolute;top:0;left:-50%}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide:hover,.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active{background-color:rgba(var(--r-overlay-element-bg-color), .4)}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-trigger{width:100%;transition:background-color .2s;position:absolute}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active.has-triggers{background-color:rgba(var(--r-overlay-element-bg-color), .4);z-index:10}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger:after{content:"";width:var(--r-scrollbar-trigger-size);height:var(--r-scrollbar-trigger-size);background-color:rgba(var(--r-overlay-element-bg-color), 1);opacity:.4;border-radius:20px;transition:transform .2s,opacity .2s;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger.active:after,.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger.active~.scrollbar-trigger:after{opacity:1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger~.scrollbar-trigger.active:after{transform:translate(calc(var(--r-scrollbar-width) * -2), 0);background-color:rgba(var(--r-overlay-element-bg-color), 1)}html.reveal-print *{-webkit-print-color-adjust:exact}html.reveal-print{width:100%;height:100%;overflow:visible}html.reveal-print body{border:0;padding:0;overflow:visible;float:none!important;margin:0 auto!important}html.reveal-print .nestedarrow,html.reveal-print .reveal .controls,html.reveal-print .reveal .progress,html.reveal-print .reveal .playback,html.reveal-print .reveal.overview,html.reveal-print .state-background{display:none!important}html.reveal-print .reveal pre code{overflow:hidden!important}html.reveal-print .reveal{width:auto!important;height:auto!important;overflow:hidden!important}html.reveal-print .reveal .slides{pointer-events:initial;perspective:none;perspective-origin:50%;display:block;position:static;top:auto;left:auto;overflow:visible;zoom:1!important;width:100%!important;height:auto!important;margin:0!important;padding:0!important}html.reveal-print .reveal .slides .pdf-page{z-index:1;page-break-after:always;position:relative;overflow:hidden}html.reveal-print .reveal .slides .pdf-page:last-of-type{page-break-after:avoid}html.reveal-print .reveal .slides section{min-height:1px;visibility:visible!important;box-sizing:border-box!important;opacity:1!important;transform-style:flat!important;margin:0!important;padding:0!important;display:block!important;position:absolute!important;transform:none!important}html.reveal-print .reveal section.stack{page-break-after:avoid!important;height:auto!important;min-height:auto!important;margin:0!important;padding:0!important;position:relative!important}html.reveal-print .reveal img{box-shadow:none}html.reveal-print .reveal .backgrounds{display:none}html.reveal-print .reveal .slide-background{width:100%;height:100%;position:absolute;top:0;left:0;z-index:auto!important;display:block!important}html.reveal-print .reveal.show-notes{max-width:none;max-height:none}html.reveal-print .reveal .speaker-notes-pdf{z-index:100;width:100%;height:auto;max-height:none;display:block;inset:auto}html.reveal-print .reveal .speaker-notes-pdf[data-layout=separate-page]{color:inherit;page-break-after:always;background-color:#0000;border:0;padding:20px;position:relative}html.reveal-print .reveal .slide-number-pdf{visibility:visible;font-size:14px;display:block;position:absolute}html.reveal-print .aria-status{display:none}@media print{html:not(.print-pdf){width:auto;height:auto;overflow:visible}html:not(.print-pdf) body{margin:0;padding:0;overflow:visible}html:not(.print-pdf) .reveal{background:#fff;font-size:20pt}html:not(.print-pdf) .reveal .controls,html:not(.print-pdf) .reveal .state-background,html:not(.print-pdf) .reveal .progress,html:not(.print-pdf) .reveal .backgrounds,html:not(.print-pdf) .reveal .slide-number{display:none!important}html:not(.print-pdf) .reveal p,html:not(.print-pdf) .reveal td,html:not(.print-pdf) .reveal li{color:#000;font-size:20pt!important}html:not(.print-pdf) .reveal h1,html:not(.print-pdf) .reveal h2,html:not(.print-pdf) .reveal h3,html:not(.print-pdf) .reveal h4,html:not(.print-pdf) .reveal h5,html:not(.print-pdf) .reveal h6{text-align:left;letter-spacing:normal;height:auto;line-height:normal;color:#000!important}html:not(.print-pdf) .reveal h1{font-size:28pt!important}html:not(.print-pdf) .reveal h2{font-size:24pt!important}html:not(.print-pdf) .reveal h3{font-size:22pt!important}html:not(.print-pdf) .reveal h4{font-variant:small-caps;font-size:22pt!important}html:not(.print-pdf) .reveal h5{font-size:21pt!important}html:not(.print-pdf) .reveal h6{font-style:italic;font-size:20pt!important}html:not(.print-pdf) .reveal a:link,html:not(.print-pdf) .reveal a:visited{font-weight:700;text-decoration:underline;color:#000!important}html:not(.print-pdf) .reveal ul,html:not(.print-pdf) .reveal ol,html:not(.print-pdf) .reveal div,html:not(.print-pdf) .reveal p{visibility:visible;width:auto;height:auto;margin:0;display:block;position:static;overflow:visible;text-align:left!important}html:not(.print-pdf) .reveal pre,html:not(.print-pdf) .reveal table{margin-left:0;margin-right:0}html:not(.print-pdf) .reveal pre code{padding:20px}html:not(.print-pdf) .reveal blockquote{margin:20px 0}html:not(.print-pdf) .reveal .slides{perspective:none;perspective-origin:50%;zoom:1!important;text-align:left!important;width:auto!important;height:auto!important;margin-top:0!important;margin-left:0!important;padding:0!important;display:block!important;position:static!important;top:0!important;left:0!important;overflow:visible!important;transform:none!important}html:not(.print-pdf) .reveal .slides section{visibility:visible!important;z-index:auto!important;opacity:1!important;page-break-after:always!important;transform-style:flat!important;width:auto!important;height:auto!important;margin-top:0!important;margin-left:0!important;padding:60px 20px!important;transition:none!important;display:block!important;position:static!important;top:0!important;left:0!important;overflow:visible!important;transform:none!important}html:not(.print-pdf) .reveal .slides section.stack{padding:0!important}html:not(.print-pdf) .reveal .slides section:last-of-type{page-break-after:avoid!important}html:not(.print-pdf) .reveal .slides section .fragment{opacity:1!important;visibility:visible!important;transform:none!important}html:not(.print-pdf) .reveal .r-fit-text{white-space:normal!important}html:not(.print-pdf) .reveal section img{box-shadow:none;background:#fff;border:1px solid #666;margin:15px 0;display:block}html:not(.print-pdf) .reveal section small{font-size:.8em}html:not(.print-pdf) .reveal .hljs{white-space:pre-wrap;word-wrap:break-word;word-break:break-word;max-height:100%;font-size:15pt}html:not(.print-pdf) .reveal .hljs .hljs-ln-numbers{white-space:nowrap}html:not(.print-pdf) .reveal .hljs td{font-size:inherit!important;color:inherit!important}}
+
+html = '''<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kimya 12 - 3D Laboratuvar Malzemeleri</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 2px solid #00d4ff;
+        }
+        .header h1 {
+            font-size: 1.4rem;
+            color: #00d4ff;
+            text-shadow: 0 0 15px rgba(0,212,255,0.5);
+        }
+        .header p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+        }
+        .content { max-width: 900px; margin: 0 auto; padding: 15px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+        .item {
+            background: rgba(255,255,255,0.06);
+            border: 2px solid rgba(0,212,255,0.3);
+            border-radius: 16px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .item:active { transform: scale(0.95); }
+        .item.selected {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.15);
+            box-shadow: 0 0 25px rgba(0,212,255,0.3);
+        }
+        .item h3 {
+            font-size: 0.95rem;
+            color: #00d4ff;
+            margin-bottom: 6px;
+        }
+        .item canvas {
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 10px;
+            background: #050510;
+            border: 1px solid rgba(0,212,255,0.15);
+            touch-action: none;
+        }
+        .item p {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 6px;
+            line-height: 1.3;
+        }
+        .detail-panel {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .detail-panel.active { display: block; }
+        .detail-close {
+            position: fixed;
+            top: 15px; right: 15px;
+            width: 40px; height: 40px;
+            background: rgba(255,50,50,0.2);
+            border: 1px solid rgba(255,50,50,0.5);
+            border-radius: 50%;
+            color: #ff6666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin: 50px 0 15px;
+            text-shadow: 0 0 15px rgba(0,212,255,0.4);
+        }
+        .detail-canvas {
+            width: 100% !important;
+            max-width: 500px;
+            height: auto !important;
+            border-radius: 16px;
+            background: #050510;
+            border: 2px solid rgba(0,212,255,0.3);
+            display: block;
+            margin: 0 auto 20px;
+            touch-action: none;
+        }
+        .detail-props {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            border-left: 3px solid #7b2cbf;
+        }
+        .detail-props h3 {
+            color: #00d4ff;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .prop-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.85rem;
+        }
+        .prop-row:last-child { border-bottom: none; }
+        .prop-label { color: rgba(255,255,255,0.5); }
+        .prop-val { color: #00d4ff; font-weight: bold; }
+        .prop-desc {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0,212,255,0.05);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.7);
+        }
+        .hint-drag {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.75rem;
+            margin: 10px 0;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .ctrl-btn {
+            padding: 8px 16px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .ctrl-btn:active { background: rgba(0,212,255,0.3); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Kimya 12 - 3D Laboratuvar Malzemeleri</h1>
+        <p>Herhangi bir malzemeye dokunarak 3D detay görünümüne ulaşın</p>
+    </div>
+    <div class="content"><div class="grid" id="grid"></div></div>
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" onclick="closeDetail()">×</button>
+        <div class="detail-title" id="detailTitle"></div>
+        <canvas class="detail-canvas" id="detailCanvas" width="600" height="500"></canvas>
+        <p class="hint-drag">👆 İki parmakla zoom yapın · Tek parmakla döndürün</p>
+        <div class="controls">
+            <button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button>
+            <button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button>
+            <button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button>
+            <button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>
+        </div>
+        <div class="detail-props">
+            <h3>📋 Malzeme Özellikleri</h3>
+            <div class="prop-row"><span class="prop-label">Adı:</span><span class="prop-val" id="dName">-</span></div>
+            <div class="prop-row"><span class="prop-label">Türü:</span><span class="prop-val" id="dType">-</span></div>
+            <div class="prop-row"><span class="prop-label">Malzeme:</span><span class="prop-val" id="dMaterial">-</span></div>
+            <div class="prop-row"><span class="prop-label">Kullanım:</span><span class="prop-val" id="dUsage">-</span></div>
+            <div class="prop-desc" id="dDesc"></div>
+        </div>
+    </div>
+
+<script>
+// ===== 3D ENGINE =====
+let W=600, H=500, rotX=0.4, rotY=0.3, isDragging=false, lastX=0, lastY=0;
+let autoSpin=true, spd=1, t=0, activeItem=null, animFrame=null, zoom=1, startDist=0;
+
+function rotate3D(x,y,z){
+    let y1=y*Math.cos(rotX)-z*Math.sin(rotX);
+    let z1=y*Math.sin(rotX)+z*Math.cos(rotX);
+    let x2=x*Math.cos(rotY)+z1*Math.sin(rotY);
+    let z2=-x*Math.sin(rotY)+z1*Math.cos(rotY);
+    return {x:x2,y:y1,z:z2};
+}
+function project(x,y,z,cx,cy){
+    const r=rotate3D(x,y,z);
+    const scale=280*zoom/(350+r.z);
+    return {x:(cx||W/2)+r.x*scale,y:(cy||H/2)+r.y*scale,z:r.z,scale:scale};
+}
+function rgba(r,g,b,a){return `rgba(${r},${g},${b},${a})`;}
+
+function drawMesh(tris,baseR,baseG,baseB,alpha){
+    tris.sort((a,b)=>b.avgZ-a.avgZ);
+    tris.forEach(tri=>{
+        const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+150)/400));
+        c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+        c.fillStyle=rgba(baseR,baseG,baseB,alpha*depth*0.65);c.fill();
+        c.strokeStyle=rgba(baseR,baseG,baseB,0.3*depth);c.lineWidth=0.5;c.stroke();
+    });
+}
+
+function sphere(cx,cy,cz,rx,ry,rz,slices,stacks,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        for(let j=0;j<stacks;j++){
+            const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+            const v1=(Math.PI/stacks)*j-Math.PI/2,v2=(Math.PI/stacks)*(j+1)-Math.PI/2;
+            const pts=[
+                project(cx+rx*Math.cos(v1)*Math.cos(u1),cy+ry*Math.cos(v1)*Math.sin(u1),cz+rz*Math.sin(v1)),
+                project(cx+rx*Math.cos(v1)*Math.cos(u2),cy+ry*Math.cos(v1)*Math.sin(u2),cz+rz*Math.sin(v1)),
+                project(cx+rx*Math.cos(v2)*Math.cos(u2),cy+ry*Math.cos(v2)*Math.sin(u2),cz+rz*Math.sin(v2)),
+                project(cx+rx*Math.cos(v2)*Math.cos(u1),cy+ry*Math.cos(v2)*Math.sin(u1),cz+rz*Math.sin(v2))
+            ];
+            tris.push({p:[pts[0],pts[1],pts[2]],avgZ:(pts[0].z+pts[1].z+pts[2].z)/3});
+            tris.push({p:[pts[0],pts[2],pts[3]],avgZ:(pts[0].z+pts[2].z+pts[3].z)/3});
+        }
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+function cylinder(cx,cy,cz,r,h,slices,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
+        const p1=project(cx+x1,cy-h/2,cz+z1),p2=project(cx+x2,cy-h/2,cz+z2);
+        const p3=project(cx+x2,cy+h/2,cz+z2),p4=project(cx+x1,cy+h/2,cz+z1);
+        tris.push({p:[p1,p2,p3],avgZ:(p1.z+p2.z+p3.z)/3});
+        tris.push({p:[p1,p3,p4],avgZ:(p1.z+p3.z+p4.z)/3});
+        const pc=project(cx,cy+h/2,cz);tris.push({p:[pc,p4,p3],avgZ:(pc.z+p4.z+p3.z)/3});
+        const pb=project(cx,cy-h/2,cz);tris.push({p:[pb,p2,p1],avgZ:(pb.z+p2.z+p1.z)/3});
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+function hollowCylinder(cx,cy,cz,r,h,slices,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
+        const p1=project(cx+x1,cy-h/2,cz+z1),p2=project(cx+x2,cy-h/2,cz+z2);
+        const p3=project(cx+x2,cy+h/2,cz+z2),p4=project(cx+x1,cy+h/2,cz+z1);
+        tris.push({p:[p1,p2,p3],avgZ:(p1.z+p2.z+p3.z)/3});
+        tris.push({p:[p1,p3,p4],avgZ:(p1.z+p3.z+p4.z)/3});
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+function cone(cx,cy,cz,r,h,slices,color,alpha,flip){
+    const tris=[];
+    const topY=flip?cy-h:cy+h,baseY=flip?cy:cy;
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
+        const pt=project(cx,topY,cz),p1=project(cx+x1,baseY,cz+z1),p2=project(cx+x2,baseY,cz+z2);
+        tris.push({p:[pt,p2,p1],avgZ:(pt.z+p2.z+p1.z)/3});
+        if(!flip){const pc=project(cx,baseY,cz);tris.push({p:[pc,p1,p2],avgZ:(pc.z+p1.z+p2.z)/3});}
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+function torus(cx,cy,cz,majorR,minorR,slices,stacks,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        for(let j=0;j<stacks;j++){
+            const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+            const v1=(Math.PI*2/stacks)*j,v2=(Math.PI*2/stacks)*(j+1);
+            const pts=[
+                project(cx+(majorR+minorR*Math.cos(v1))*Math.cos(u1),cy+(majorR+minorR*Math.cos(v1))*Math.sin(u1),cz+minorR*Math.sin(v1)),
+                project(cx+(majorR+minorR*Math.cos(v1))*Math.cos(u2),cy+(majorR+minorR*Math.cos(v1))*Math.sin(u2),cz+minorR*Math.sin(v1)),
+                project(cx+(majorR+minorR*Math.cos(v2))*Math.cos(u2),cy+(majorR+minorR*Math.cos(v2))*Math.sin(u2),cz+minorR*Math.sin(v2)),
+                project(cx+(majorR+minorR*Math.cos(v2))*Math.cos(u1),cy+(majorR+minorR*Math.cos(v2))*Math.sin(u1),cz+minorR*Math.sin(v2))
+            ];
+            tris.push({p:[pts[0],pts[1],pts[2]],avgZ:(pts[0].z+pts[1].z+pts[2].z)/3});
+            tris.push({p:[pts[0],pts[2],pts[3]],avgZ:(pts[0].z+pts[2].z+pts[3].z)/3});
+        }
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+function tube(cx,cy,cz,r,path,color,alpha){
+    const tris=[],segs=path.length-1,slices=12;
+    for(let s=0;s<segs;s++){
+        const p1=path[s],p2=path[s+1];
+        const dx=p2.x-p1.x,dy=p2.y-p1.y,dz=p2.z-p1.z;
+        const len=Math.sqrt(dx*dx+dy*dy+dz*dz);
+        const nx=dx/len,ny=dy/len,nz=dz/len;
+        let perp1={x:0,y:0,z:0};
+        if(Math.abs(ny)<0.9)perp1={x:-nz,y:0,z:nx};else perp1={x:1,y:0,z:0};
+        const l1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
+        perp1.x/=l1;perp1.y/=l1;perp1.z/=l1;
+        const perp2={x:ny*perp1.z-nz*perp1.y,y:nz*perp1.x-nx*perp1.z,z:nx*perp1.y-ny*perp1.x};
+        for(let i=0;i<slices;i++){
+            const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+            const c1a=Math.cos(a1),s1a=Math.sin(a1),c2a=Math.cos(a2),s2a=Math.sin(a2);
+            const v1={x:cx+p1.x+r*(perp1.x*c1a+perp2.x*s1a),y:cy+p1.y+r*(perp1.y*c1a+perp2.y*s1a),z:cz+p1.z+r*(perp1.z*c1a+perp2.z*s1a)};
+            const v2={x:cx+p1.x+r*(perp1.x*c2a+perp2.x*s2a),y:cy+p1.y+r*(perp1.y*c2a+perp2.y*s2a),z:cz+p1.z+r*(perp1.z*c2a+perp2.z*s2a)};
+            const v3={x:cx+p2.x+r*(perp1.x*c2a+perp2.x*s2a),y:cy+p2.y+r*(perp1.y*c2a+perp2.y*s2a),z:cz+p2.z+r*(perp1.z*c2a+perp2.z*s2a)};
+            const v4={x:cx+p2.x+r*(perp1.x*c1a+perp2.x*s1a),y:cy+p2.y+r*(perp1.y*c1a+perp2.y*s1a),z:cz+p2.z+r*(perp1.z*c1a+perp2.z*s1a)};
+            const pv1=project(v1.x,v1.y,v1.z),pv2=project(v2.x,v2.y,v2.z),pv3=project(v3.x,v3.y,v3.z),pv4=project(v4.x,v4.y,v4.z);
+            tris.push({p:[pv1,pv2,pv3],avgZ:(pv1.z+pv2.z+pv3.z)/3});
+            tris.push({p:[pv1,pv3,pv4],avgZ:(pv1.z+pv3.z+pv4.z)/3});
+        }
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+function flatDisc(cx,cy,cz,r,color,alpha){
+    const tris=[],slices=16,pc=project(cx,cy,cz);
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const p1=project(cx+Math.cos(a1)*r,cy,cz+Math.sin(a1)*r),p2=project(cx+Math.cos(a2)*r,cy,cz+Math.sin(a2)*r);
+        tris.push({p:[pc,p1,p2],avgZ:(pc.z+p1.z+p2.z)/3});
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
+}
+
+// ===== MATERIAL COLORS =====
+const GLASS=[180,220,255],GLASS_DARK=[120,170,220],PORCELAIN=[245,245,250],PORCELAIN_DARK=[220,220,230];
+const METAL=[180,180,190],METAL_DARK=[120,120,130],WOOD=[160,110,60],PLASTIC=[255,255,255];
+const PLASTIC_GREEN=[50,180,80],PLASTIC_RED=[255,80,80],PLASTIC_ORANGE=[255,140,40],PAPER=[240,235,220];
+const FLAME=[255,180,50],FLAME_CORE=[255,100,30],AMYANT=[200,200,190];
+
+// ===== LAB ITEMS =====
+const ITEMS=[
+{
+    id:'beherglas',name:'Beherglas',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Karıştırma, Saklama, Isıtma',
+    desc:'Sıvı maddelerin karıştırılması, saklanması ve ısıtılması amacıyla kullanılan silindirik cam malzemedir. Üzerinde yaklaşık hacim göstergeleri bulunur.',
+    draw:function(){
+        hollowCylinder(0,0,0,55,130,24,GLASS,0.5);
+        sphere(0,65,0,55,15,55,16,8,GLASS,0.5);
+        hollowCylinder(0,-65,0,60,8,24,GLASS,0.55);
+        tube(0,0,0,5,[{x:55,y:-62,z:0},{x:72,y:-68,z:0}],GLASS,0.6);
+        for(let i=1;i<=5;i++){
+            const y=45-i*22;
+            const pts=[];
+            for(let a=0;a<10;a++){const ang=(Math.PI*2/10)*a;pts.push(project(56*Math.cos(ang),y,56*Math.sin(ang)));}
+            c.strokeStyle=rgba(100,150,200,0.45);c.lineWidth=1;
+            c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+            for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
+            c.closePath();c.stroke();
+        }
+    }
+},
+{
+    id:'erlenmayer',name:'Erlenmayer',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Titrasyon, Çözelti Hazırlama, Saklama',
+    desc:'Titrasiyon, çözelti hazırlama, saklama, çözme vb. işlemlerde kullanılır. Konik gövdesi karıştırmayı kolaylaştırır.',
+    draw:function(){
+        cone(0,25,0,70,80,24,GLASS,0.5,true);
+        hollowCylinder(0,-45,0,20,55,16,GLASS,0.5);
+        hollowCylinder(0,-72,0,24,6,16,GLASS,0.55);
+        flatDisc(0,25,0,70,GLASS,0.4);
+        for(let i=1;i<=4;i++){
+            const y=15-i*18;
+            const rAtY=70*(1-(y-25+80)/80);
+            const pts=[];
+            for(let a=0;a<8;a++){const ang=(Math.PI*2/8)*a;pts.push(project((rAtY+2)*Math.cos(ang),y,(rAtY+2)*Math.sin(ang)));}
+            c.strokeStyle=rgba(100,150,200,0.4);c.lineWidth=1;
+            c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+            for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
+            c.closePath();c.stroke();
+        }
+    }
+},
+{
+    id:'cambalon',name:'Cam Balon',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Çözelti Hazırlama, Isıtma, Kaynatma',
+    desc:'Çözelti hazırlama, saklama, ısıtma ve kaynatma amacıyla kullanılır. Yuvarlak gövdesi homojen ısı dağılımı sağlar.',
+    draw:function(){
+        sphere(0,10,0,70,60,70,20,14,GLASS,0.5);
+        hollowCylinder(0,-60,0,18,50,14,GLASS,0.5);
+        hollowCylinder(0,-85,0,22,5,14,GLASS,0.55);
+        flatDisc(0,70,0,70,GLASS,0.4);
+    }
+},
+{
+    id:'balonjoje',name:'Balon Joje',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Derişimli Çözelti Hazırlama, Saklama',
+    desc:'Derişimi belli çözeltilerin hazırlanması ve saklanmasında kullanılan cam malzemedir. Tek bir çizgi (mark) ile hassas hacim belirlenir.',
+    draw:function(){
+        sphere(0,30,0,45,35,45,18,12,GLASS,0.5);
+        cone(0,-5,0,45,35,18,GLASS,0.5,true);
+        hollowCylinder(0,-55,0,12,65,12,GLASS,0.5);
+        hollowCylinder(0,-87,0,15,5,12,GLASS,0.55);
+        cylinder(0,-92,0,13,12,12,[220,220,230],0.7);
+        const markY=-50;
+        const pts=[];
+        for(let a=0;a<10;a++){const ang=(Math.PI*2/10)*a;pts.push(project(14*Math.cos(ang),markY,14*Math.sin(ang)));}
+        c.strokeStyle=rgba(80,120,180,0.8);c.lineWidth=2.5;
+        c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+        for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
+        c.closePath();c.stroke();
+    }
+},
+{
+    id:'ayrma',name:'Ayırma Hunisi',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Heterojen Sıvı-Sıvı Karışım Ayırma',
+    desc:'Heterojen sıvı-sıvı karışımların ayrılmasında kullanılır. Musluklu yapısı alt tabakayı kontrollü boşaltmayı sağlar.',
+    draw:function(){
+        sphere(0,15,0,50,40,50,16,12,GLASS,0.5);
+        cone(0,-25,0,50,40,16,GLASS,0.5,true);
+        hollowCylinder(0,-65,0,8,25,10,GLASS,0.5);
+        cylinder(0,-90,0,16,15,10,GLASS_DARK,0.6);
+        cylinder(0,-90,0,4,30,8,[60,60,70],0.8);
+        cylinder(0,-90,0,22,5,8,[60,60,70],0.8);
+        cone(0,-97,0,8,18,10,GLASS,0.5,false);
+        cylinder(0,-67,0,12,10,10,[220,220,230],0.7);
+    }
+},
+{
+    id:'mezur',name:'Dereceli Silindir (Mezür)',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Sıvı Hacmi Ölçme',
+    desc:'Sıvıların hacmini ölçmek için kullanılan cam malzemedir. Hassas derecelendirmesi sayesinde yaklaşık hacim ölçümü yapılır.',
+    draw:function(){
+        hollowCylinder(0,0,0,28,160,20,GLASS,0.5);
+        cylinder(0,80,0,38,10,16,GLASS_DARK,0.6);
+        hollowCylinder(0,-80,0,32,6,16,GLASS,0.55);
+        tube(0,0,0,4,[{x:28,y:-75,z:0},{x:42,y:-82,z:0}],GLASS,0.6);
+        for(let i=0;i<16;i++){
+            const y=70-i*10;
+            const isMajor=i%5===0;
+            const markLen=isMajor?10:5;
+            c.strokeStyle=rgba(80,120,180,isMajor?0.6:0.3);
+            c.lineWidth=isMajor?1.5:0.8;
+            const p1=project(29,y,0),p2=project(29+markLen,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+},
+{
+    id:'sogutucu',name:'Soğutucu',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Buharın Sıvıya Dönüştürülmesi',
+    desc:'Isıtmayla buharlaşan çözücünün gaz fazından sıvı faza döndürülerek geri kazanılmasını sağlayan cam malzemedir.',
+    draw:function(){
+        hollowCylinder(0,0,0,10,130,14,GLASS,0.4);
+        hollowCylinder(0,0,0,38,90,18,GLASS,0.3);
+        const coilPts=[];
+        for(let i=0;i<=60;i++){
+            const ang=i*0.4;
+            const y=-35+i*1.2;
+            coilPts.push({x:26*Math.cos(ang),y:y,z:26*Math.sin(ang)});
+        }
+        tube(0,0,0,5,coilPts,GLASS,0.5);
+        cylinder(0,-65,0,18,18,10,GLASS,0.5);
+        cylinder(0,65,0,18,18,10,GLASS,0.5);
+        tube(0,0,0,6,[{x:40,y:-25,z:0},{x:55,y:-25,z:0}],GLASS,0.5);
+        tube(0,0,0,6,[{x:40,y:25,z:0},{x:55,y:25,z:0}],GLASS,0.5);
+    }
+},
+{
+    id:'huni',name:'Huni',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Süzme, Dar Ağızlı Kaba Boşaltma',
+    desc:'Süzme işleminde ve sıvıların dar ağızlı kaba boşaltılmasında kullanılır. Koni şekli süzgeç kağıdını destekler.',
+    draw:function(){
+        cone(0,-35,0,65,55,20,GLASS,0.5,true);
+        hollowCylinder(0,55,0,10,80,12,GLASS,0.5);
+        cone(0,95,0,10,10,10,GLASS,0.5,false);
+        hollowCylinder(0,-35,0,68,4,20,GLASS,0.55);
+    }
+},
+{
+    id:'camboru',name:'Cam Boru',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Tepkime Ortamları Bağlantısı',
+    desc:'Tepkime ortamları arasındaki bağlantıyı kurmada kullanılan U şeklindeki cam malzemedir.',
+    draw:function(){
+        const path=[];
+        for(let i=0;i<=40;i++){
+            const t=i/40;
+            if(t<0.25){path.push({x:-35,y:-50+t/0.25*100,z:0});}
+            else if(t<0.75){const ang=((t-0.25)/0.5)*Math.PI;path.push({x:-35+35*(1-Math.cos(ang)),y:50-35*Math.sin(ang),z:0});}
+            else{path.push({x:35,y:50-(t-0.75)/0.25*100,z:0});}
+        }
+        tube(0,0,0,12,path,GLASS,0.5);
+        hollowCylinder(0,-50,-35,14,8,12,GLASS,0.55);
+        hollowCylinder(0,-50,35,14,8,12,GLASS,0.55);
+    }
+},
+{
+    id:'buret',name:'Büret',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Titrasyonda Hassas Hacim Ölçümü',
+    desc:'Titrasiyon işleminde derişimi bilinmeyen maddelerin hacmini hassas ölçebilen cam malzemedir.',
+    draw:function(){
+        hollowCylinder(0,0,0,14,170,14,GLASS,0.5);
+        cone(0,-85,0,20,22,12,GLASS,0.5,true);
+        hollowCylinder(0,-85,0,22,4,12,GLASS,0.55);
+        cylinder(0,85,0,12,18,10,GLASS_DARK,0.6);
+        cylinder(0,85,0,4,25,8,[60,60,70],0.8);
+        cylinder(0,85,0,18,4,8,[60,60,70],0.8);
+        cone(0,93,0,12,14,10,GLASS,0.5,false);
+        for(let i=0;i<18;i++){
+            const y=75-i*9;
+            const isMajor=i%5===0;
+            const markLen=isMajor?7:3;
+            c.strokeStyle=rgba(80,120,180,isMajor?0.6:0.3);
+            c.lineWidth=isMajor?1.5:0.8;
+            const p1=project(15,y,0),p2=project(15+markLen,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+},
+{
+    id:'pipet',name:'Pipet',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Sıvıların Hassas Ölçümü ve Aktarımı',
+    desc:'Sıvıların hassas bir biçimde ölçülmesi ve aktarılmasına yarayan cam borudur.',
+    draw:function(){
+        hollowCylinder(0,0,0,7,150,14,GLASS,0.5);
+        sphere(0,0,0,20,16,20,14,10,GLASS,0.5);
+        hollowCylinder(0,-75,0,10,8,12,GLASS,0.55);
+        cone(0,75,0,7,15,10,GLASS,0.5,false);
+        for(let i=0;i<10;i++){
+            const y=-55+i*12;
+            c.strokeStyle=rgba(200,100,50,0.7);c.lineWidth=1.5;
+            const p1=project(8,y,0),p2=project(13,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+},
+{
+    id:'termometre',name:'Termometre',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Sıcaklık Ölçme',
+    desc:'Sıcaklık ölçmek için kullanılan dereceli cam malzemedir. İçinde cıva veya alkol bulunur.',
+    draw:function(){
+        hollowCylinder(0,0,0,10,150,14,GLASS,0.5);
+        sphere(0,80,0,20,22,20,12,10,GLASS,0.5);
+        sphere(0,80,0,16,18,16,10,8,[255,50,50],0.6);
+        hollowCylinder(0,35,0,3,75,8,[255,50,50],0.6);
+        for(let i=0;i<25;i++){
+            const y=65-i*5;
+            const isMajor=i%5===0;
+            const markLen=isMajor?9:4;
+            c.strokeStyle=rgba(80,80,80,isMajor?0.7:0.4);
+            c.lineWidth=isMajor?1.2:0.7;
+            const p1=project(11,y,0),p2=project(11+markLen,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+        cylinder(0,-75,0,12,8,10,GLASS_DARK,0.6);
+    }
+},
+{
+    id:'baget',name:'Baget',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Maddeleri Karıştırma',
+    desc:'Maddeleri karıştırmak için kullanılan çubuk şeklinde cam malzemedir.',
+    draw:function(){
+        cylinder(0,0,0,5,150,12,GLASS,0.6);
+        sphere(0,-75,0,5,7,5,8,6,GLASS,0.6);
+        sphere(0,75,0,5,7,5,8,6,GLASS,0.6);
+    }
+},
+{
+    id:'deneytipu',name:'Deney Tüpü',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Karıştırma, Isıtma, Soğutma',
+    desc:'Maddelerin karıştırılması, ısıtılması, soğutulması vb. amaçlarla kullanılan cam malzemedir.',
+    draw:function(){
+        const positions=[{x:-30,z:-20},{x:30,z:-20},{x:-30,z:20},{x:30,z:20},{x:0,z:0}];
+        positions.forEach((pos,idx)=>{
+            const h=55+Math.random()*10;
+            hollowCylinder(pos.x,-20+h/2,pos.z,9,h,12,GLASS,0.5);
+            sphere(pos.x,-20+h,pos.z,9,7,9,8,6,GLASS,0.5);
+            hollowCylinder(pos.x,-20,pos.z,11,3,12,GLASS,0.55);
+            if(idx%2===0){
+                const colors=[[255,100,100],[100,255,100],[100,100,255],[255,200,50],[200,100,255]];
+                const col=colors[idx];
+                hollowCylinder(pos.x,-20+h*0.35,pos.z,8,h*0.35,10,col,0.4);
+            }
+        });
+        cylinder(0,38,0,60,7,14,WOOD,0.8);
+        for(let i=0;i<5;i++){
+            const a=(Math.PI*2/5)*i;
+            const rx=32*Math.cos(a),rz=32*Math.sin(a);
+            flatDisc(rx,41,rz,10,[100,70,35],0.9);
+        }
+    }
+},
+{
+    id:'havan',name:'Havan',type:'Porselen Malzeme',material:'Porselen',
+    usage:'Katı Maddeleri Ezme, Toz Haline Getirme',
+    desc:'Katı maddeleri ezmek, toz hâline getirmek amacıyla kullanılır.',
+    draw:function(){
+        sphere(0,15,0,55,35,55,20,12,PORCELAIN,0.85);
+        sphere(0,10,0,42,25,42,18,10,PORCELAIN_DARK,0.9);
+        flatDisc(0,50,0,55,PORCELAIN,0.9);
+        cylinder(20,-5,0,10,55,10,PORCELAIN,0.85);
+        sphere(20,-35,0,14,16,14,10,8,PORCELAIN,0.85);
+        sphere(20,25,0,12,10,12,8,6,PORCELAIN,0.85);
+    }
+},
+{
+    id:'kroze',name:'Kroze',type:'Porselen/Metal Malzeme',material:'Porselen veya Metal',
+    usage:'Yüksek Sıcaklıkta Isıtma ve Yakma',
+    desc:'Yüksek sıcaklıkta ısıtma ve yakma işlemlerinde kullanılan porselen veya metal laboratuvar malzemesidir.',
+    draw:function(){
+        hollowCylinder(0,0,0,48,60,20,PORCELAIN,0.9);
+        cylinder(0,30,0,48,12,16,PORCELAIN_DARK,0.9);
+        hollowCylinder(0,-5,0,40,50,16,[200,200,210],0.95);
+        hollowCylinder(0,-30,0,52,6,20,PORCELAIN,0.9);
+        cone(0,-24,0,52,10,16,PORCELAIN,0.9,true);
+    }
+},
+{
+    id:'damlalik',name:'Damlalık',type:'Plastik Malzeme',material:'Plastik',
+    usage:'Küçük Hacimde Sıvı Aktarma',
+    desc:'Küçük hacimlerde sıvı aktarmak için kullanılan plastik malzemedir.',
+    draw:function(){
+        sphere(0,-30,0,22,18,22,14,10,PLASTIC,0.8);
+        hollowCylinder(0,10,0,5,40,10,GLASS,0.6);
+        cone(0,30,0,5,10,8,GLASS,0.6,false);
+        cylinder(0,-30,0,24,6,12,[40,40,40],0.9);
+    }
+},
+{
+    id:'spatul',name:'Spatül',type:'Plastik/Metal Malzeme',material:'Plastik veya Metal',
+    usage:'Toz veya Küçük Parçalı Katıları Alma',
+    desc:'Toz ya da küçük parçalı katıları almak için kullanılır.',
+    draw:function(){
+        cylinder(0,0,0,7,75,10,PLASTIC_RED,0.8);
+        sphere(0,42,0,16,5,10,10,6,PLASTIC_RED,0.8);
+        hollowCylinder(0,42,0,16,3,12,PLASTIC_RED,0.85);
+        for(let i=0;i<5;i++){
+            const y=-20+i*10;
+            hollowCylinder(0,y,0,8,2,10,[200,50,50],0.9);
+        }
+    }
+},
+{
+    id:'pisett',name:'Piset',type:'Plastik Malzeme',material:'Plastik',
+    usage:'Saf Su ve Yıkama Çözeltisi',
+    desc:'Genellikle saf su ve bazı durumlarda da yıkama çözeltisi kullanımı için tercih edilen plastik şişedir.',
+    draw:function(){
+        cylinder(0,10,0,32,55,16,PLASTIC_GREEN,0.7);
+        cone(0,-18,0,32,18,14,PLASTIC_GREEN,0.7,true);
+        hollowCylinder(0,-35,0,10,22,10,PLASTIC_GREEN,0.7);
+        cylinder(0,-46,0,14,10,10,[30,30,30],0.9);
+        tube(0,0,0,4,[{x:0,y:-46,z:0},{x:0,y:-75,z:0},{x:18,y:-80,z:0}],[200,200,200],0.6);
+        tube(0,0,0,3,[{x:18,y:-80,z:0},{x:28,y:-83,z:0}],[200,200,200],0.6);
+    }
+},
+{
+    id:'puar',name:'Puar',type:'Plastik Malzeme',material:'Plastik (Kauçuk)',
+    usage:'Pipetle Sıvı Çekme',
+    desc:'Pipetlerin arkasına takılarak sıvı veya çözeltilerin çekilmesinde kullanılan plastik malzemelerdir.',
+    draw:function(){
+        sphere(0,0,0,38,30,35,16,12,PLASTIC_ORANGE,0.7);
+        cylinder(0,-30,0,10,14,10,[200,100,30],0.8);
+        tube(0,0,0,6,[{x:0,y:-37,z:0},{x:0,y:-55,z:0}],PLASTIC_ORANGE,0.7);
+        const uPath=[];
+        for(let i=0;i<=20;i++){
+            const t=i/20;
+            const ang=t*Math.PI;
+            uPath.push({x:32*Math.sin(ang),y:-10-20*Math.cos(ang),z:0});
+        }
+        tube(0,0,0,6,uPath,PLASTIC_ORANGE,0.7);
+    }
+},
+{
+    id:'mikropipet',name:'Mikro Pipet',type:'Plastik Malzeme',material:'Plastik',
+    usage:'Küçük Hacimde Hassas Ölçüm',
+    desc:'Küçük hacimlerdeki sıvıları doğru ve hassas bir şekilde ölçmek ve aktarmak için kullanılan laboratuvar aletidir.',
+    draw:function(){
+        cylinder(0,0,0,14,85,12,PLASTIC,0.8);
+        cylinder(0,-48,0,10,14,10,[100,150,200],0.8);
+        cylinder(0,43,0,16,10,10,[150,150,150],0.8);
+        cone(0,51,0,6,18,8,[50,100,200],0.8,false);
+        flatDisc(0,-12,16,8,[50,50,50],0.9);
+        c.fillStyle='rgba(0,200,0,0.8)';
+        const p=project(0,-12,20);
+        c.font='bold 8px sans-serif';c.textAlign='center';
+        c.fillText('100',p.x,p.y);
+    }
+},
+{
+    id:'ispirtocagi',name:'İspirto Ocağı',type:'Cam/Metal Malzeme',material:'Cam ve Metal',
+    usage:'Isıtma Aracı',
+    desc:'Cam bir kabın içinde ispirto emdirilmiş fitil bulunan ısıtma aracıdır.',
+    draw:function(){
+        sphere(0,15,0,48,38,48,18,12,[160,140,100],0.4);
+        sphere(0,25,0,42,28,42,16,10,[200,180,100],0.3);
+        hollowCylinder(0,-25,0,8,32,10,METAL,0.8);
+        cylinder(0,-42,0,4,22,8,[240,240,220],0.9);
+        const flicker=Math.sin(t*8)*2;
+        cone(0,-58+flicker,0,10,28,10,FLAME,0.6,false);
+        cone(0,-58+flicker,0,5,16,8,FLAME_CORE,0.7,false);
+        cylinder(28,-22,0,12,16,8,METAL_DARK,0.8);
+        tube(0,0,0,1,[{x:20,y:-22,z:0},{x:14,y:-12,z:0}],METAL,0.8);
+    }
+},
+{
+    id:'bunzen',name:'Bunzen Bek',type:'Metal Malzeme',material:'Metal',
+    usage:'Isıtma ve Yakma',
+    desc:'Isıtma ve yakma işlemlerinde kullanılan gazlı ocaktır.',
+    draw:function(){
+        cylinder(0,55,0,60,14,16,METAL,0.8);
+        hollowCylinder(0,55,0,64,5,16,METAL_DARK,0.9);
+        hollowCylinder(0,0,0,14,95,14,METAL,0.8);
+        tube(0,0,0,6,[{x:14,y:20,z:0},{x:35,y:26,z:0}],METAL,0.8);
+        hollowCylinder(0,18,0,18,10,14,METAL_DARK,0.9);
+        tube(0,0,0,6,[{x:0,y:48,z:0},{x:0,y:58,z:0},{x:22,y:64,z:0}],METAL,0.8);
+        const flicker=Math.sin(t*10)*1.5;
+        cone(0,-52+flicker,0,9,25,10,[100,150,255],0.5,false);
+        cone(0,-52+flicker,0,4,13,8,FLAME_CORE,0.7,false);
+        cone(0,-48+flicker,0,3,8,6,[50,100,255],0.6,false);
+    }
+},
+{
+    id:'spor',name:'Spor (Destek)',type:'Metal Malzeme',material:'Metal',
+    usage:'Deney Düzeneklerinin Kurulması ve Sabitlenmesi',
+    desc:'Deney düzeneklerinin kurulması ve sabitlenmesi amacıyla kullanılan metal ayak ve çubuktan oluşan malzemedir.',
+    draw:function(){
+        flatDisc(0,75,0,45,METAL_DARK,0.9);
+        cylinder(0,75,0,45,4,16,METAL_DARK,0.9);
+        cylinder(0,15,0,6,120,10,METAL,0.8);
+        cylinder(0,-48,0,5,6,8,METAL_DARK,0.9);
+        for(let i=0;i<3;i++){
+            const a=(Math.PI*2/3)*i;
+            const fx=35*Math.cos(a),fz=35*Math.sin(a);
+            cylinder(fx,72,fz,4,12,8,METAL_DARK,0.9);
+        }
+    }
+},
+{
+    id:'kiskac',name:'Kıskaç',type:'Metal Malzeme',material:'Metal',
+    usage:'Laboratuvar Malzemelerini Sabitleme',
+    desc:'Çeşitli laboratuvar malzemelerini spora sabitlemek için kullanılır.',
+    draw:function(){
+        cylinder(0,0,0,8,50,10,METAL,0.8);
+        cylinder(0,-30,0,6,25,8,METAL_DARK,0.9);
+        cylinder(0,10,0,6,20,8,METAL_DARK,0.9);
+        cylinder(25,0,0,4,20,8,[80,60,40],0.9);
+        sphere(35,0,0,6,6,6,8,6,[80,60,40],0.9);
+        cylinder(-25,0,0,4,15,8,[80,60,40],0.9);
+        sphere(-32,0,0,5,5,5,8,6,[80,60,40],0.9);
+    }
+},
+{
+    id:'sacayagi',name:'Sacayağı',type:'Metal Malzeme',material:'Metal',
+    usage:'Isıtma İşleminde Kullanılan Destek',
+    desc:'Isıtma işleminde kullanılan metalden yapılmış malzemedir. Kroze veya beherglası tutar.',
+    draw:function(){
+        for(let i=0;i<3;i++){
+            const a=(Math.PI*2/3)*i;
+            const lx=30*Math.cos(a),lz=30*Math.sin(a);
+            const path=[{x:lx*0.3,y:40,z:lz*0.3},{x:lx,y:0,z:lz},{x:lx*1.3,y:-30,z:lz*1.3}];
+            tube(0,0,0,4,path,METAL,0.8);
+        }
+        torus(0,40,0,18,4,16,8,METAL,0.8);
+        cylinder(0,40,0,5,15,8,METAL_DARK,0.9);
+    }
+},
+{
+    id:'amyanttel',name:'Amyant Tel',type:'Tel Malzeme',material:'Demir Tel',
+    usage:'Isıtma Desteği',
+    desc:'Bunzen beki aleviyle ısıtma işlemlerinde cam malzemenin direkt alevle olan ilişkisini kesmek, ısının yavaş ve eşit dağılmasını sağlamak için kullanılan telden yapılmış malzemedir.',
+    draw:function(){
+        const size=50;
+        for(let i=-3;i<=3;i++){
+            const y=i*12;
+            const path1=[{x:-size,y:y,z:-size},{x:size,y:y,z:size}];
+            const path2=[{x:-size,y:y,z:size},{x:size,y:y,z:-size}];
+            tube(0,0,0,1.5,path1,AMYANT,0.7);
+            tube(0,0,0,1.5,path2,AMYANT,0.7);
+        }
+        const border=[{x:-size,y:-36,z:-size},{x:size,y:-36,z:-size},{x:size,y:-36,z:size},{x:-size,y:-36,z:size},{x:-size,y:-36,z:-size}];
+        for(let i=0;i<border.length-1;i++){
+            tube(0,0,0,2,[border[i],border[i+1]],AMYANT,0.8);
+        }
+    }
+},
+{
+    id:'suzgeckagidi',name:'Süzgeç Kağıdı',type:'Kağıt Malzeme',material:'Selüloz',
+    usage:'Katı ve Sıvıları Ayırma',
+    desc:'Katı ve sıvıları ayırmada kullanılan çeşitli gözenek boyutlu türleri olan filtre kağıdıdır.',
+    draw:function(){
+        const tris=[],slices=20;
+        for(let i=0;i<slices;i++){
+            const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+            const r1=45+Math.sin(a1*3)*3,r2=45+Math.sin(a2*3)*3;
+            const p0=project(0,0,0),p1=project(Math.cos(a1)*r1,Math.sin(a1)*r1*0.3,Math.sin(a1)*r1),p2=project(Math.cos(a2)*r2,Math.sin(a2)*r2*0.3,Math.sin(a2)*r2);
+            tris.push({p:[p0,p1,p2],avgZ:(p0.z+p1.z+p2.z)/3});
+        }
+        drawMesh(tris,240,235,220,0.9);
+        for(let i=0;i<4;i++){
+            const a=(Math.PI/4)*i;
+            const p1=project(-45*Math.cos(a),0,-45*Math.sin(a)),p2=project(45*Math.cos(a),0,45*Math.sin(a));
+            c.strokeStyle='rgba(200,195,180,0.5)';c.lineWidth=1;
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+}
+];
+
+// ===== GRID RENDERING =====
+const grid=document.getElementById('grid');
+const detailPanel=document.getElementById('detailPanel');
+const detailTitle=document.getElementById('detailTitle');
+const detailCanvas=document.getElementById('detailCanvas');
+const dc=detailCanvas.getContext('2d');
+
+function createItemCard(item,idx){
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`<h3>${item.name}</h3><canvas id="cv${idx}" width="200" height="160"></canvas><p>${item.desc.substring(0,60)}...</p>`;
+    div.onclick=()=>openDetail(idx);
+    return div;
+}
+ITEMS.forEach((item,i)=>{grid.appendChild(createItemCard(item,i));});
+
+function renderThumb(idx){
+    const cv=document.getElementById('cv'+idx);
+    if(!cv)return;
+    const ctx=cv.getContext('2d');
+    const oldC=c,oldW=W,oldH=H;
+    c=ctx;W=200;H=160;
+    rotX=0.4;rotY=0.3+idx*0.15;zoom=0.55;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#050510';ctx.fillRect(0,0,W,H);
+    ITEMS[idx].draw();
+    c=oldC;W=oldW;H=oldH;
+}
+
+// ===== DETAIL PANEL =====
+function openDetail(idx){
+    activeItem=idx;
+    const item=ITEMS[idx];
+    detailPanel.classList.add('active');
+    detailTitle.textContent=item.name;
+    document.getElementById('dName').textContent=item.name;
+    document.getElementById('dType').textContent=item.type;
+    document.getElementById('dMaterial').textContent=item.material;
+    document.getElementById('dUsage').textContent=item.usage;
+    document.getElementById('dDesc').textContent=item.desc;
+    rotX=0.4;rotY=0.3;zoom=1;t=0;
+    if(animFrame)cancelAnimationFrame(animFrame);
+    loopDetail();
+}
+function closeDetail(){
+    detailPanel.classList.remove('active');
+    activeItem=null;
+    if(animFrame)cancelAnimationFrame(animFrame);
+}
+function loopDetail(){
+    if(activeItem===null)return;
+    c=dc;W=600;H=500;
+    dc.clearRect(0,0,W,H);
+    dc.fillStyle='#050510';dc.fillRect(0,0,W,H);
+    if(autoSpin&&!isDragging){rotY+=0.008*spd;t+=0.015*spd;}else{t+=0.015*spd;}
+    ITEMS[activeItem].draw();
+    dc.fillStyle='rgba(255,255,255,0.25)';
+    dc.font='11px sans-serif';dc.textAlign='left';
+    dc.fillText('👆 Sürükleyerek 3D döndürün',10,H-10);
+    animFrame=requestAnimationFrame(loopDetail);
+}
+
+// ===== CONTROLS =====
+function toggleSpin(){autoSpin=!autoSpin;}
+function setSpeed(v){spd=v;}
+function resetView(){rotX=0.4;rotY=0.3;zoom=1;}
+
+// ===== MOUSE / TOUCH EVENTS =====
+detailCanvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY;});
+detailCanvas.addEventListener('mousemove',e=>{
+    if(!isDragging)return;
+    rotY+=(e.clientX-lastX)*0.01;rotX+=(e.clientY-lastY)*0.01;
+    lastX=e.clientX;lastY=e.clientY;
+});
+detailCanvas.addEventListener('mouseup',()=>isDragging=false);
+detailCanvas.addEventListener('mouseleave',()=>isDragging=false);
+
+detailCanvas.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){isDragging=true;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;}
+    else if(e.touches.length===2){
+        const dx=e.touches[0].clientX-e.touches[1].clientX;
+        const dy=e.touches[0].clientY-e.touches[1].clientY;
+        startDist=Math.sqrt(dx*dx+dy*dy);
+    }
+    e.preventDefault();
+},{passive:false});
+
+detailCanvas.addEventListener('touchmove',e=>{
+    if(e.touches.length===1&&isDragging){
+        rotY+=(e.touches[0].clientX-lastX)*0.015;rotX+=(e.touches[0].clientY-lastY)*0.015;
+        lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;
+    }else if(e.touches.length===2){
+        const dx=e.touches[0].clientX-e.touches[1].clientX;
+        const dy=e.touches[0].clientY-e.touches[1].clientY;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(startDist>0){zoom*=dist/startDist;zoom=Math.max(0.5,Math.min(3,zoom));}
+        startDist=dist;
+    }
+    e.preventDefault();
+},{passive:false});
+
+detailCanvas.addEventListener('touchend',e=>{isDragging=false;startDist=0;});
+detailCanvas.addEventListener('wheel',e=>{e.preventDefault();zoom+=e.deltaY*-0.001;zoom=Math.max(0.5,Math.min(3,zoom));});
+detailPanel.addEventListener('click',e=>{if(e.target===detailPanel)closeDetail();});
+
+let c=dc;
+setTimeout(()=>{ITEMS.forEach((_,i)=>renderThumb(i));},200);
+</script>
+</body>
+</html>'''
+
+output_path = '/mnt/agents/output/kimya12_3d_laboratuvar.html'
+with open(output_path, 'w', encoding='utf-8') as f:
+    f.write(html)
+
+print(f"✅ Dosya yazıldı: {output_path}")
+print(f"📊 Toplam boyut: {len(html):,} karakter")
+print(f"🧪 Toplam malzeme: {len(ITEMS)} adet")
+
