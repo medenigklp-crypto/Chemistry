@@ -1575,3 +1575,1212 @@ html_code = '''<!DOCTYPE html>
                         <div class="tool-btn" onclick="useTool('ph-paper')">
                             <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                             <span
+                                
+# Continue writing the HTML file - part 2
+html_part2 = '''                            <span>pH Kağıdı</span>
+                        </div>
+                        <div class="tool-btn" onclick="useTool('stirrer')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span>Karıştırıcı</span>
+                        </div>
+                        <div class="tool-btn" onclick="useTool('dropper')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span>Damlalık</span>
+                        </div>
+                        <div class="tool-btn" onclick="useTool('match')">
+                            <svg viewBox="0 0 24 24"><path d="M19.48 12.35c-1.57-4.08-7.16-4.3-5.81-10.23.1-.44-.37-.78-.75-.55C9.29 3.71 6.68 8 8.87 13.62c.18.46-.36.89-.75.59-1.81-1.37-2.99-3.79-2.76-6.36.06-.67-1.02-.67-1.08 0-.26 3.22 1.2 6.18 3.68 8.04 2.48 1.86 5.72 2.38 8.7 1.57 2.98-.81 5.38-3.02 6.42-5.83.22-.59-.56-1.11-.92-.64-.36.47-.78.91-1.28 1.56z"/></svg>
+                            <span>Kibrit</span>
+                        </div>
+                        <div class="tool-btn" onclick="useTool('ice')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span>Buz</span>
+                        </div>
+                        <div class="tool-btn" onclick="useTool('heat')">
+                            <svg viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
+                            <span>Isıtıcı</span>
+                        </div>
+                        <div class="tool-btn" onclick="useTool('indicator')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span>İndikatör</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reaction Tab -->
+                <div class="tab-panel" id="tab-reaction">
+                    <div class="reaction-info" id="reaction-info">
+                        <div class="reaction-equation" id="reaction-equation">Beher boş</div>
+                        <div class="reaction-details" id="reaction-details">
+                            Kimyasal eklemek için "Kimyasallar" sekmesini kullanın.
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: center; padding: 10px 0;">
+                        <button class="quick-btn" onclick="analyzeReaction()">🔬 Analiz Et</button>
+                        <button class="quick-btn" onclick="saveReaction()">💾 Kaydet</button>
+                    </div>
+                </div>
+
+                <!-- Demos Tab -->
+                <div class="tab-panel" id="tab-demos">
+                    <div class="demo-reactions">
+                        <div class="demo-btn" onclick="loadDemo('volcano')">
+                            <strong>🌋 Volkan</strong>
+                            NaHCO₃ + CH₃COOH
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('elephant')">
+                            <strong>🐘 Fil Dişi</strong>
+                            H₂O₂ + KI
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('thermite')">
+                            <strong>🔥 Termit</strong>
+                            Fe₂O₃ + Al
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('crystal')">
+                            <strong>💎 Kristal</strong>
+                            CuSO₄ · 5H₂O
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('phoenix')">
+                            <strong>🔥 Phoenix</strong>
+                            KMnO₄ + Glycerin
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('chameleon')">
+                            <strong>🦎 Bukalemun</strong>
+                            KMnO₄ + NaOH
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('golden')">
+                            <strong>✨ Altın Yağmur</strong>
+                            Pb(NO₃)₂ + KI
+                        </div>
+                        <div class="demo-btn" onclick="loadDemo('chemilum')">
+                            <strong>💡 Kimilüminesans</strong>
+                            Luminol + H₂O₂
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-panel" id="tab-history">
+                    <div class="history-list" id="history-list">
+                        <div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.4); font-size: 13px;">
+                            Henüz işlem geçmişi yok.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STATE ====================
+        const state = {
+            beaker: {
+                contents: [],
+                volume: 0,
+                temperature: 25,
+                ph: 7,
+                color: null,
+                precipitate: false,
+                gas: false,
+                burning: false
+            },
+            settings: {
+                sound: true,
+                vibration: true,
+                autoReact: true,
+                tilt: true,
+                animSpeed: 1,
+                liquidOpacity: 0.8,
+                themeColor: '#ff6b35'
+            },
+            history: [],
+            savedReactions: JSON.parse(localStorage.getItem('labsim_saved') || '[]'),
+            currentCategory: 'all',
+            isShaking: false,
+            isHeating: false
+        };
+
+        // ==================== CHEMICAL DATABASE ====================
+        const chemicals = [
+            { id: 'h2o', name: 'H₂O', formula: 'H₂O', type: 'liquid', category: 'base', color: 'transparent', ph: 7, state: 'liquid' },
+            { id: 'hcl', name: 'HCl', formula: 'HCl', type: 'acid', category: 'acid', color: 'transparent', ph: 1, state: 'liquid' },
+            { id: 'naoh', name: 'NaOH', formula: 'NaOH', type: 'base', category: 'base', color: 'transparent', ph: 14, state: 'solid' },
+            { id: 'h2so4', name: 'H₂SO₄', formula: 'H₂SO₄', type: 'acid', category: 'acid', color: 'transparent', ph: 0, state: 'liquid' },
+            { id: 'na', name: 'Na', formula: 'Na', type: 'metal', category: 'metal', color: '#C0C0C0', ph: null, state: 'solid' },
+            { id: 'k', name: 'K', formula: 'K', type: 'metal', category: 'metal', color: '#C0C0C0', ph: null, state: 'solid' },
+            { id: 'al', name: 'Al', formula: 'Al', type: 'metal', category: 'metal', color: '#D4D4D4', ph: null, state: 'solid' },
+            { id: 'fe', name: 'Fe', formula: 'Fe', type: 'metal', category: 'metal', color: '#8B4513', ph: null, state: 'solid' },
+            { id: 'cu', name: 'Cu', formula: 'Cu', type: 'metal', category: 'metal', color: '#B87333', ph: null, state: 'solid' },
+            { id: 'zn', name: 'Zn', formula: 'Zn', type: 'metal', category: 'metal', color: '#C0C0C0', ph: null, state: 'solid' },
+            { id: 'mg', name: 'Mg', formula: 'Mg', type: 'metal', category: 'metal', color: '#C0C0C0', ph: null, state: 'solid' },
+            { id: 'cacl2', name: 'CaCl₂', formula: 'CaCl₂', type: 'salt', category: 'salt', color: 'transparent', ph: 7, state: 'solid' },
+            { id: 'nacl', name: 'NaCl', formula: 'NaCl', type: 'salt', category: 'salt', color: 'white', ph: 7, state: 'solid' },
+            { id: 'agno3', name: 'AgNO₃', formula: 'AgNO₃', type: 'salt', category: 'salt', color: 'white', ph: 7, state: 'solid' },
+            { id: 'cuso4', name: 'CuSO₄', formula: 'CuSO₄', type: 'salt', category: 'salt', color: '#4169E1', ph: 5, state: 'solid' },
+            { id: 'feso4', name: 'FeSO₄', formula: 'FeSO₄', type: 'salt', category: 'salt', color: '#90EE90', ph: 5, state: 'solid' },
+            { id: 'kno3', name: 'KNO₃', formula: 'KNO₃', type: 'salt', category: 'salt', color: 'white', ph: 7, state: 'solid' },
+            { id: 'kmno4', name: 'KMnO₄', formula: 'KMnO₄', type: 'salt', category: 'salt', color: '#800080', ph: 7, state: 'solid' },
+            { id: 'h2o2', name: 'H₂O₂', formula: 'H₂O₂', type: 'liquid', category: 'acid', color: 'transparent', ph: 4, state: 'liquid' },
+            { id: 'ch3cooh', name: 'CH₃COOH', formula: 'CH₃COOH', type: 'acid', category: 'acid', color: 'transparent', ph: 3, state: 'liquid' },
+            { id: 'nahco3', name: 'NaHCO₃', formula: 'NaHCO₃', type: 'salt', category: 'salt', color: 'white', ph: 8, state: 'solid' },
+            { id: 'caco3', name: 'CaCO₃', formula: 'CaCO₃', type: 'salt', category: 'salt', color: 'white', ph: 9, state: 'solid' },
+            { id: 'c2h5oh', name: 'C₂H₅OH', formula: 'C₂H₅OH', type: 'organic', category: 'organic', color: 'transparent', ph: 7, state: 'liquid' },
+            { id: 'ch4', name: 'CH₄', formula: 'CH₄', type: 'gas', category: 'organic', color: 'transparent', ph: 7, state: 'gas' },
+            { id: 'o2', name: 'O₂', formula: 'O₂', type: 'gas', category: 'gas', color: 'transparent', ph: 7, state: 'gas' },
+            { id: 'co2', name: 'CO₂', formula: 'CO₂', type: 'gas', category: 'gas', color: 'transparent', ph: 4, state: 'gas' },
+            { id: 'cl2', name: 'Cl₂', formula: 'Cl₂', type: 'gas', category: 'gas', color: '#98FB98', ph: 2, state: 'gas' },
+            { id: 'nh3', name: 'NH₃', formula: 'NH₃', type: 'gas', category: 'gas', color: 'transparent', ph: 11, state: 'gas' },
+            { id: 'hno3', name: 'HNO₃', formula: 'HNO₃', type: 'acid', category: 'acid', color: 'transparent', ph: 0, state: 'liquid' },
+            { id: 'koh', name: 'KOH', formula: 'KOH', type: 'base', category: 'base', color: 'transparent', ph: 14, state: 'solid' },
+            { id: 'caoh2', name: 'Ca(OH)₂', formula: 'Ca(OH)₂', type: 'base', category: 'base', color: 'white', ph: 12, state: 'solid' },
+            { id: 'fe2o3', name: 'Fe₂O₃', formula: 'Fe₂O₃', type: 'oxide', category: 'metal', color: '#8B0000', ph: null, state: 'solid' },
+            { id: 'al2o3', name: 'Al₂O₃', formula: 'Al₂O₃', type: 'oxide', category: 'metal', color: 'white', ph: null, state: 'solid' },
+            { id: 'ki', name: 'KI', formula: 'KI', type: 'salt', category: 'salt', color: 'white', ph: 7, state: 'solid' },
+            { id: 'pbno32', name: 'Pb(NO₃)₂', formula: 'Pb(NO₃)₂', type: 'salt', category: 'salt', color: 'white', ph: 5, state: 'solid' },
+            { id: 'glycerin', name: 'Gliserin', formula: 'C₃H₅(OH)₃', type: 'organic', category: 'organic', color: 'transparent', ph: 7, state: 'liquid' },
+            { id: 'luminol', name: 'Luminol', formula: 'C₈H₇N₃O₂', type: 'organic', category: 'organic', color: 'white', ph: 7, state: 'solid' },
+            { id: 'phenol', name: 'Fenolftalein', formula: 'C₂₀H₁₄O₄', type: 'indicator', category: 'organic', color: 'transparent', ph: 7, state: 'liquid' },
+            { id: 'methyl', name: 'Metil Oranj', formula: 'C₁₄H₁₄N₃NaO₃S', type: 'indicator', category: 'organic', color: 'orange', ph: 3, state: 'liquid' }
+        ];
+
+        // ==================== REACTION DATABASE ====================
+        const reactions = [
+            {
+                reactants: ['na', 'h2o'],
+                products: ['naoh', 'h2'],
+                equation: '2Na + 2H₂O → 2NaOH + H₂↑',
+                color: 'transparent',
+                tempChange: 80,
+                gas: true,
+                precipitate: false,
+                description: 'Sodyum su ile şiddetli reaksiyona girer. Hidrojen gazı açığa çıkar ve çözelti ısınır.'
+            },
+            {
+                reactants: ['k', 'h2o'],
+                products: ['koh', 'h2'],
+                equation: '2K + 2H₂O → 2KOH + H₂↑',
+                color: 'transparent',
+                tempChange: 90,
+                gas: true,
+                precipitate: false,
+                description: 'Potasyum su ile çok şiddetli reaksiyona girer. Patlayıcı hidrojen gazı açığa çıkar.'
+            },
+            {
+                reactants: ['hcl', 'naoh'],
+                products: ['nacl', 'h2o'],
+                equation: 'HCl + NaOH → NaCl + H₂O',
+                color: 'transparent',
+                tempChange: 15,
+                gas: false,
+                precipitate: false,
+                description: 'Nötralleşme reaksiyonu. Tuz ve su oluşur. Çözelti ısınır.'
+            },
+            {
+                reactants: ['h2so4', 'naoh'],
+                products: ['na2so4', 'h2o'],
+                equation: 'H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O',
+                color: 'transparent',
+                tempChange: 20,
+                gas: false,
+                precipitate: false,
+                description: 'Güçlü asit-baz nötralleşmesi. Sıcaklık artar.'
+            },
+            {
+                reactants: ['agno3', 'nacl'],
+                products: ['agcl', 'nano3'],
+                equation: 'AgNO₃ + NaCl → AgCl↓ + NaNO₃',
+                color: 'white',
+                tempChange: 5,
+                gas: false,
+                precipitate: true,
+                precipitateColor: 'white',
+                description: 'Gümüş klorür çökelir. Beyaz bir çökelti oluşur.'
+            },
+            {
+                reactants: ['cuso4', 'fe'],
+                products: ['feso4', 'cu'],
+                equation: 'CuSO₄ + Fe → FeSO₄ + Cu',
+                color: '#90EE90',
+                tempChange: 10,
+                gas: false,
+                precipitate: false,
+                description: 'Demir bakır sülfat çözeltisinde çözünür. Bakır çökelir, çözelti yeşil renk alır.'
+            },
+            {
+                reactants: ['zn', 'hcl'],
+                products: ['zncl2', 'h2'],
+                equation: 'Zn + 2HCl → ZnCl₂ + H₂↑',
+                color: 'transparent',
+                tempChange: 20,
+                gas: true,
+                precipitate: false,
+                description: 'Çinko asitte çözünür. Hidrojen gazı açığa çıkar.'
+            },
+            {
+                reactants: ['mg', 'hcl'],
+                products: ['mgcl2', 'h2'],
+                equation: 'Mg + 2HCl → MgCl₂ + H₂↑',
+                color: 'transparent',
+                tempChange: 25,
+                gas: true,
+                precipitate: false,
+                description: 'Magnezyum asitte çözünür. Hidrojen gazı açığa çıkar, çözelti ısınır.'
+            },
+            {
+                reactants: ['al', 'hcl'],
+                products: ['alcl3', 'h2'],
+                equation: '2Al + 6HCl → 2AlCl₃ + 3H₂↑',
+                color: 'transparent',
+                tempChange: 30,
+                gas: true,
+                precipitate: false,
+                description: 'Alüminyum asitte çözünür. Yoğun hidrojen gazı açığa çıkar.'
+            },
+            {
+                reactants: ['naoh', 'cuso4'],
+                products: ['cuoh2', 'na2so4'],
+                equation: '2NaOH + CuSO₄ → Cu(OH)₂↓ + Na₂SO₄',
+                color: '#4169E1',
+                tempChange: 5,
+                gas: false,
+                precipitate: true,
+                precipitateColor: '#4169E1',
+                description: 'Bakır hidroksit çökelir. Mavi çökelti oluşur.'
+            },
+            {
+                reactants: ['caco3', 'hcl'],
+                products: ['cacl2', 'h2o', 'co2'],
+                equation: 'CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑',
+                color: 'transparent',
+                tempChange: 10,
+                gas: true,
+                precipitate: false,
+                description: 'Kalsiyum karbonat asitte çözünür. Karbondioksit gazı açığa çıkar.'
+            },
+            {
+                reactants: ['nahco3', 'ch3cooh'],
+                products: ['ch3coona', 'h2o', 'co2'],
+                equation: 'NaHCO₃ + CH₃COOH → CH₃COONa + H₂O + CO₂↑',
+                color: 'transparent',
+                tempChange: -5,
+                gas: true,
+                precipitate: false,
+                description: 'Volkan deneyi! Köpüren reaksiyon. Endotermik - sıcaklık düşer.'
+            },
+            {
+                reactants: ['h2o2', 'ki'],
+                products: ['koh', 'i2', 'o2'],
+                equation: '2H₂O₂ + 2KI → 2KOH + I₂ + O₂↑',
+                color: '#8B4513',
+                tempChange: 40,
+                gas: true,
+                precipitate: false,
+                description: 'Fil dişi macunu deneyi! Yoğun köpük ve ısı açığa çıkar.'
+            },
+            {
+                reactants: ['fe2o3', 'al'],
+                products: ['al2o3', 'fe'],
+                equation: 'Fe₂O₃ + 2Al → Al₂O₃ + 2Fe',
+                color: '#FF4500',
+                tempChange: 200,
+                gas: false,
+                precipitate: false,
+                description: 'Termit reaksiyonu! Çok yüksek sıcaklık (2500°C). Demir erir.'
+            },
+            {
+                reactants: ['pbno32', 'ki'],
+                products: ['pbi2', 'kno3'],
+                equation: 'Pb(NO₃)₂ + 2KI → PbI₂↓ + 2KNO₃',
+                color: '#FFD700',
+                tempChange: 5,
+                gas: false,
+                precipitate: true,
+                precipitateColor: '#FFD700',
+                description: 'Altın yağmuru! Sarı parlak çökelti oluşur.'
+            },
+            {
+                reactants: ['kmno4', 'glycerin'],
+                products: ['k2co3', 'mno2', 'co2', 'h2o'],
+                equation: '14KMnO₄ + 4C₃H₅(OH)₃ → 7K₂CO₃ + 14MnO₂ + 5CO₂ + 16H₂O',
+                color: '#FF4500',
+                tempChange: 150,
+                gas: true,
+                precipitate: false,
+                description: 'Phoenix reaksiyonu! KMnO₄ gliserinle kendiliğinden tutuşur.'
+            },
+            {
+                reactants: ['luminol', 'h2o2'],
+                products: ['aminophtalate', 'n2', 'h2o'],
+                equation: 'Luminol + H₂O₂ → Aminoftalat + N₂ + Işık',
+                color: '#00FFFF',
+                tempChange: 10,
+                gas: true,
+                precipitate: false,
+                description: 'Kimilüminesans! Mavi-yeşil ışık yayılır.'
+            }
+        ];
+
+        // ==================== DEMO PRESETS ====================
+        const demos = {
+            volcano: {
+                name: 'Volkan Deneyi',
+                chemicals: ['nahco3', 'ch3cooh'],
+                description: 'Sodyum bikarbonat ve asetik asit reaksiyonu'
+            },
+            elephant: {
+                name: 'Fil Dişi Macunu',
+                chemicals: ['h2o2', 'ki'],
+                description: 'Hidrojen peroksit ve potasyum iyodür'
+            },
+            thermite: {
+                name: 'Termit Reaksiyonu',
+                chemicals: ['fe2o3', 'al'],
+                description: 'Demir oksit ve alüminyum tozu'
+            },
+            crystal: {
+                name: 'Kristal Büyütme',
+                chemicals: ['cuso4', 'h2o'],
+                description: 'Bakır sülfat pentahidrat kristalleri'
+            },
+            phoenix: {
+                name: 'Phoenix Reaksiyonu',
+                chemicals: ['kmno4', 'glycerin'],
+                description: 'Potasyum permanganat ve gliserin'
+            },
+            chameleon: {
+                name: 'Bukalemun Reaksiyonu',
+                chemicals: ['kmno4', 'naoh'],
+                description: 'Potasyum permanganat ve sodyum hidroksit'
+            },
+            golden: {
+                name: 'Altın Yağmuru',
+                chemicals: ['pbno32', 'ki'],
+                description: 'Kurşun nitrat ve potasyum iyodür'
+            },
+            chemilum: {
+                name: 'Kimilüminesans',
+                chemicals: ['luminol', 'h2o2'],
+                description: 'Luminol ve hidrojen peroksit'
+            }
+        };
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 800);
+            }, 2500);
+
+            renderChemicals();
+            updateBeakerDisplay();
+            setupTiltDetection();
+            setupShakeDetection();
+        });
+
+        // ==================== RENDER CHEMICALS ====================
+        function renderChemicals(filter = '', category = 'all') {
+            const grid = document.getElementById('chemical-grid');
+            grid.innerHTML = '';
+
+            let filtered = chemicals;
+            
+            if (category !== 'all') {
+                filtered = filtered.filter(c => c.category === category);
+            }
+            
+            if (filter) {
+                filtered = filtered.filter(c => 
+                    c.name.toLowerCase().includes(filter.toLowerCase()) ||
+                    c.formula.toLowerCase().includes(filter.toLowerCase())
+                );
+            }
+
+            filtered.forEach(chem => {
+                const item = document.createElement('div');
+                item.className = 'chemical-item';
+                item.onclick = () => addChemical(chem.id);
+                
+                const iconClass = chem.state === 'solid' ? 'solid' : 
+                                 chem.state === 'gas' ? 'gas' : 
+                                 chem.type === 'metal' ? 'metal' : 'liquid';
+                
+                item.innerHTML = `
+                    <div class="chemical-icon ${iconClass}" style="${chem.color !== 'transparent' && chem.color !== 'white' ? `background: ${chem.color}; color: #fff;` : ''}">${chem.formula.substring(0, 2)}</div>
+                    <div class="chemical-name">${chem.name}</div>
+                `;
+                
+                grid.appendChild(item);
+            });
+        }
+
+        // ==================== ADD CHEMICAL ====================
+        function addChemical(chemId) {
+            const chem = chemicals.find(c => c.id === chemId);
+            if (!chem) return;
+
+            state.beaker.contents.push(chemId);
+            state.beaker.volume = Math.min(state.beaker.volume + 50, 500);
+            
+            // Update pH
+            if (chem.ph !== null) {
+                const currentPh = state.beaker.ph;
+                const newPh = (currentPh + chem.ph) / 2;
+                state.beaker.ph = Math.round(newPh * 10) / 10;
+            }
+
+            // Update temperature
+            if (chem.state === 'solid') {
+                state.beaker.temperature -= 2;
+            } else {
+                state.beaker.temperature += 1;
+            }
+
+            // Update color
+            if (chem.color !== 'transparent' && chem.color !== 'white') {
+                state.beaker.color = chem.color;
+            }
+
+            addToHistory(`${chem.name} eklendi`);
+            showToast(`${chem.name} eklendi`, 'info');
+            
+            updateBeakerDisplay();
+            
+            if (state.settings.autoReact) {
+                checkReactions();
+            }
+            
+            // Vibration
+            if (state.settings.vibration && navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // ==================== CHECK REACTIONS ====================
+        function checkReactions() {
+            const contents = state.beaker.contents;
+            
+            for (const reaction of reactions) {
+                const hasAllReactants = reaction.reactants.every(r => contents.includes(r));
+                
+                if (hasAllReactants) {
+                    // Perform reaction
+                    performReaction(reaction);
+                    return;
+                }
+            }
+            
+            updateReactionInfo();
+        }
+
+        // ==================== PERFORM REACTION ====================
+        function performReaction(reaction) {
+            // Remove reactants
+            reaction.reactants.forEach(r => {
+                const idx = state.beaker.contents.indexOf(r);
+                if (idx > -1) state.beaker.contents.splice(idx, 1);
+            });
+            
+            // Add products
+            state.beaker.contents.push(...reaction.products);
+            
+            // Update properties
+            state.beaker.temperature += reaction.tempChange;
+            state.beaker.temperature = Math.max(0, Math.min(300, state.beaker.temperature));
+            
+            if (reaction.color) {
+                state.beaker.color = reaction.color;
+            }
+            
+            state.beaker.gas = reaction.gas;
+            state.beaker.precipitate = reaction.precipitate;
+            
+            // Effects
+            if (reaction.tempChange > 50) {
+                flashEffect();
+                createSmoke();
+            }
+            
+            if (reaction.gas) {
+                createBubbles(10);
+            }
+            
+            if (reaction.precipitate) {
+                createPrecipitate(reaction.precipitateColor);
+            }
+            
+            if (reaction.tempChange > 100) {
+                createSparks();
+            }
+            
+            addToHistory(`Reaksiyon: ${reaction.equation}`);
+            showToast('Reaksiyon gerçekleşti!', 'success');
+            
+            updateBeakerDisplay();
+            updateReactionInfo(reaction);
+            
+            if (state.settings.vibration && navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+        }
+
+        // ==================== UPDATE BEAKER DISPLAY ====================
+        function updateBeakerDisplay() {
+            const liquid = document.getElementById('liquid');
+            const volumeDisplay = document.getElementById('volume-display');
+            const tempFill = document.getElementById('temp-fill');
+            const phMarker = document.getElementById('ph-marker');
+            const phLabel = document.getElementById('ph-label');
+            
+            // Volume
+            const volumePercent = (state.beaker.volume / 500) * 100;
+            liquid.style.height = volumePercent + '%';
+            volumeDisplay.textContent = state.beaker.volume + ' mL';
+            
+            // Color
+            if (state.beaker.color) {
+                liquid.style.background = `linear-gradient(180deg, ${state.beaker.color}cc 0%, ${state.beaker.color}99 100%)`;
+            } else {
+                liquid.style.background = `linear-gradient(180deg, rgba(255,107,53,0.3) 0%, rgba(255,107,53,0.1) 100%)`;
+            }
+            
+            // Temperature
+            const tempPercent = (state.beaker.temperature / 300) * 100;
+            tempFill.style.height = tempPercent + '%';
+            
+            if (state.beaker.temperature > 100) {
+                tempFill.style.background = 'linear-gradient(180deg, #ff0000 0%, #ff6b35 100%)';
+            } else if (state.beaker.temperature > 50) {
+                tempFill.style.background = 'linear-gradient(180deg, #ff6b35 0%, #f7931e 100%)';
+            } else {
+                tempFill.style.background = 'linear-gradient(180deg, #ff6b35 0%, #f7931e 100%)';
+            }
+            
+            // pH
+            const phPercent = ((14 - state.beaker.ph) / 14) * 100;
+            phMarker.style.top = phPercent + '%';
+            phLabel.textContent = 'pH ' + state.beaker.ph;
+            
+            // Bubbles
+            if (state.beaker.gas) {
+                createBubbles(5);
+            }
+        }
+
+        // ==================== UPDATE REACTION INFO ====================
+        function updateReactionInfo(reaction = null) {
+            const equationEl = document.getElementById('reaction-equation');
+            const detailsEl = document.getElementById('reaction-details');
+            
+            if (reaction) {
+                equationEl.textContent = reaction.equation;
+                detailsEl.innerHTML = `
+                    <strong>Tip:</strong> ${getReactionType(reaction)}<br>
+                    <strong>Sıcaklık Değişimi:</strong> ${reaction.tempChange > 0 ? '+' : ''}${reaction.tempChange}°C<br>
+                    <strong>Gaz:</strong> ${reaction.gas ? 'Evet' : 'Hayır'}<br>
+                    <strong>Çökelti:</strong> ${reaction.precipitate ? 'Evet' : 'Hayır'}<br>
+                    <strong>Açıklama:</strong> ${reaction.description}
+                `;
+            } else if (state.beaker.contents.length === 0) {
+                equationEl.textContent = 'Beher boş';
+                detailsEl.textContent = 'Kimyasal eklemek için "Kimyasallar" sekmesini kullanın.';
+            } else {
+                const contents = state.beaker.contents.map(id => chemicals.find(c => c.id === id)?.name).filter(Boolean);
+                equationEl.textContent = contents.join(' + ');
+                detailsEl.innerHTML = `
+                    <strong>Hacim:</strong> ${state.beaker.volume} mL<br>
+                    <strong>Sıcaklık:</strong> ${state.beaker.temperature}°C<br>
+                    <strong>pH:</strong> ${state.beaker.ph}<br>
+                    <strong>İçerik:</strong> ${contents.join(', ')}
+                `;
+            }
+        }
+
+        function getReactionType(reaction) {
+            if (reaction.tempChange > 50) return 'Ekzotermik (Aşırı)';
+            if (reaction.tempChange > 0) return 'Ekzotermik';
+            if (reaction.tempChange < 0) return 'Endotermik';
+            return 'Nötr';
+        }
+
+        // ==================== TOOLS ====================
+        function useTool(tool) {
+            switch(tool) {
+                case 'thermometer':
+                    showToast(`Sıcaklık: ${state.beaker.temperature}°C`, 'info');
+                    break;
+                case 'ph-paper':
+                    showToast(`pH: ${state.beaker.ph}`, 'info');
+                    break;
+                case 'stirrer':
+                    shakeBeaker();
+                    break;
+                case 'dropper':
+                    showToast('Damlalık: Tek tek damla ekleyin', 'info');
+                    break;
+                case 'match':
+                    igniteMatch();
+                    break;
+                case 'ice':
+                    coolBeaker();
+                    break;
+                case 'heat':
+                    heatBeaker();
+                    break;
+                case 'indicator':
+                    showIndicator();
+                    break;
+            }
+            addToHistory(`Araç kullanıldı: ${tool}`);
+        }
+
+        function heatBeaker() {
+            state.beaker.temperature += 50;
+            state.beaker.temperature = Math.min(300, state.beaker.temperature);
+            createBubbles(8);
+            showToast('Isıtılıyor... Sıcaklık: ' + state.beaker.temperature + '°C', 'warning');
+            updateBeakerDisplay();
+        }
+
+        function coolBeaker() {
+            state.beaker.temperature -= 30;
+            state.beaker.temperature = Math.max(0, state.beaker.temperature);
+            showToast('Soğutuluyor... Sıcaklık: ' + state.beaker.temperature + '°C', 'info');
+            updateBeakerDisplay();
+        }
+
+        function showIndicator() {
+            let color = 'Yeşil';
+            if (state.beaker.ph < 4) color = 'Kırmızı (Asit)';
+            else if (state.beaker.ph < 7) color = 'Turuncu (Zayıf Asit)';
+            else if (state.beaker.ph > 10) color = 'Mor (Güçlü Baz)';
+            else if (state.beaker.ph > 7) color = 'Mavi (Baz)';
+            
+            showToast(`İndikatör rengi: ${color}`, 'info');
+        }
+
+        // ==================== SHAKE ====================
+        function shakeBeaker() {
+            if (state.isShaking) return;
+            state.isShaking = true;
+            
+            const wrapper = document.getElementById('beaker-wrapper');
+            wrapper.classList.add('shake');
+            
+            createBubbles(15);
+            
+            // Mix contents
+            if (state.beaker.contents.length > 1) {
+                state.beaker.temperature += 5;
+                checkReactions();
+            }
+            
+            setTimeout(() => {
+                wrapper.classList.remove('shake');
+                state.isShaking = false;
+            }, 500);
+            
+            addToHistory('Beher sallandı');
+            showToast('Beher sallandı!', 'info');
+            
+            if (state.settings.vibration && navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+        }
+
+        // ==================== IGNITE ====================
+        function igniteMatch() {
+            const flame = document.getElementById('match-flame');
+            flame.classList.add('active');
+            
+            state.beaker.burning = true;
+            
+            // Check for combustible reactions
+            const hasCombustible = state.beaker.contents.some(id => {
+                const chem = chemicals.find(c => c.id === id);
+                return chem && (chem.type === 'gas' || chem.id === 'ch4' || chem.id === 'h2');
+            });
+            
+            if (hasCombustible) {
+                setTimeout(() => {
+                    flashEffect();
+                    createSparks();
+                    state.beaker.temperature += 100;
+                    showToast('TUTUŞMA!', 'warning');
+                    updateBeakerDisplay();
+                }, 500);
+            }
+            
+            setTimeout(() => {
+                flame.classList.remove('active');
+                state.beaker.burning = false;
+            }, 3000);
+            
+            addToHistory('Kibrit yakıldı');
+        }
+
+        // ==================== RESET ====================
+        function resetBeaker() {
+            state.beaker = {
+                contents: [],
+                volume: 0,
+                temperature: 25,
+                ph: 7,
+                color: null,
+                precipitate: false,
+                gas: false,
+                burning: false
+            };
+            
+            document.getElementById('precipitate').innerHTML = '';
+            document.getElementById('smoke-particles').innerHTML = '';
+            document.getElementById('liquid-bubbles').innerHTML = '';
+            
+            updateBeakerDisplay();
+            updateReactionInfo();
+            addToHistory('Beher sıfırlandı');
+            showToast('Beher boşaltıldı', 'info');
+        }
+
+        // ==================== VISUAL EFFECTS ====================
+        function flashEffect() {
+            const flash = document.getElementById('reaction-flash');
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 500);
+        }
+
+        function createBubbles(count) {
+            const container = document.getElementById('liquid-bubbles');
+            
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'liquid-bubble';
+                    bubble.style.left = Math.random() * 80 + 10 + '%';
+                    bubble.style.width = Math.random() * 8 + 4 + 'px';
+                    bubble.style.height = bubble.style.width;
+                    bubble.style.animationDuration = Math.random() * 2 + 1 + 's';
+                    container.appendChild(bubble);
+                    
+                    setTimeout(() => bubble.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        function createPrecipitate(color) {
+            const container = document.getElementById('precipitate');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'precipitate-particle';
+                particle.style.left = Math.random() * 90 + 5 + '%';
+                particle.style.bottom = Math.random() * 20 + 'px';
+                particle.style.width = Math.random() * 6 + 3 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = color || '#fff';
+                particle.style.animationDelay = Math.random() * 0.5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function createSmoke() {
+            const container = document.getElementById('smoke-particles');
+            
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const smoke = document.createElement('div');
+                    smoke.className = 'smoke-particle';
+                    smoke.style.left = Math.random() * 80 + 10 + '%';
+                    smoke.style.bottom = '100%';
+                    smoke.style.width = Math.random() * 20 + 10 + 'px';
+                    smoke.style.height = smoke.style.width;
+                    smoke.style.animationDuration = Math.random() * 2 + 2 + 's';
+                    container.appendChild(smoke);
+                    
+                    setTimeout(() => smoke.remove(), 4000);
+                }, i * 200);
+            }
+        }
+
+        function createSparks() {
+            const container = document.getElementById('beaker-glass');
+            
+            for (let i = 0; i < 20; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                spark.style.left = '50%';
+                spark.style.bottom = '50%';
+                spark.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+                spark.style.setProperty('--ty', (Math.random() - 0.5) * 200 + 'px');
+                container.appendChild(spark);
+                
+                setTimeout(() => spark.remove(), 800);
+            }
+        }
+
+        // ==================== TILT DETECTION ====================
+        function setupTiltDetection() {
+            if (!state.settings.tilt) return;
+            
+            let lastBeta = 0;
+            let lastGamma = 0;
+            
+            window.addEventListener('deviceorientation', (e) => {
+                const beta = e.beta; // Front-back
+                const gamma = e.gamma; // Left-right
+                
+                if (Math.abs(beta - lastBeta) > 5 || Math.abs(gamma - lastGamma) > 5) {
+                    const indicator = document.getElementById('tilt-indicator');
+                    
+                    if (Math.abs(beta) > 45 || Math.abs(gamma) > 45) {
+                        indicator.classList.add('show');
+                        indicator.textContent = 'Dökülüyor... ↗';
+                        
+                        // Pour out
+                        if (state.beaker.volume > 0) {
+                            state.beaker.volume -= 20;
+                            state.beaker.volume = Math.max(0, state.beaker.volume);
+                            
+                            if (state.beaker.volume === 0) {
+                                state.beaker.contents = [];
+                                state.beaker.color = null;
+                                state.beaker.temperature = 25;
+                                state.beaker.ph = 7;
+                            }
+                            
+                            updateBeakerDisplay();
+                        }
+                    } else {
+                        indicator.classList.remove('show');
+                    }
+                }
+                
+                lastBeta = beta;
+                lastGamma = gamma;
+            });
+        }
+
+        // ==================== SHAKE DETECTION ====================
+        function setupShakeDetection() {
+            let lastX = 0, lastY = 0, lastZ = 0;
+            let shakeThreshold = 15;
+            
+            window.addEventListener('devicemotion', (e) => {
+                const acc = e.accelerationIncludingGravity;
+                if (!acc) return;
+                
+                const deltaX = Math.abs(acc.x - lastX);
+                const deltaY = Math.abs(acc.y - lastY);
+                const deltaZ = Math.abs(acc.z - lastZ);
+                
+                if (deltaX > shakeThreshold || deltaY > shakeThreshold || deltaZ > shakeThreshold) {
+                    if (!state.isShaking) {
+                        shakeBeaker();
+                    }
+                }
+                
+                lastX = acc.x;
+                lastY = acc.y;
+                lastZ = acc.z;
+            });
+        }
+
+        // ==================== TABS ====================
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // ==================== FILTERING ====================
+        function filterChemicals(query) {
+            renderChemicals(query, state.currentCategory);
+        }
+
+        function filterCategory(category, el) {
+            state.currentCategory = category;
+            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderChemicals(document.getElementById('chem-search').value, category);
+        }
+
+        // ==================== DEMOS ====================
+        function loadDemo(demoId) {
+            const demo = demos[demoId];
+            if (!demo) return;
+            
+            resetBeaker();
+            
+            setTimeout(() => {
+                demo.chemicals.forEach((chemId, index) => {
+                    setTimeout(() => {
+                        addChemical(chemId);
+                    }, index * 800);
+                });
+            }, 500);
+            
+            showToast(`${demo.name} yükleniyor...`, 'info');
+            addToHistory(`Demo yüklendi: ${demo.name}`);
+        }
+
+        // ==================== HISTORY ====================
+        function addToHistory(action) {
+            const time = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            state.history.unshift({ time, action });
+            
+            if (state.history.length > 50) {
+                state.history.pop();
+            }
+            
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            
+            if (state.history.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.4); font-size: 13px;">Henüz işlem geçmişi yok.</div>';
+                return;
+            }
+            
+            list.innerHTML = state.history.map(h => `
+                <div class="history-item">
+                    <span class="history-time">${h.time}</span>
+                    <span class="history-action">${h.action}</span>
+                </div>
+            `).join('');
+        }
+
+        // ==================== SAVE/LOAD ====================
+        function saveCurrentState() {
+            const stateData = {
+                contents: state.beaker.contents,
+                volume: state.beaker.volume,
+                temperature: state.beaker.temperature,
+                ph: state.beaker.ph,
+                color: state.beaker.color,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('labsim_state', JSON.stringify(stateData));
+            showToast('Durum kaydedildi', 'success');
+        }
+
+        function saveReaction() {
+            const contents = state.beaker.contents.map(id => chemicals.find(c => c.id === id)?.name).filter(Boolean);
+            if (contents.length === 0) {
+                showToast('Kaydedilecek reaksiyon yok', 'warning');
+                return;
+            }
+            
+            const reaction = {
+                id: Date.now(),
+                name: contents.join(' + '),
+                formula: contents.join(' + '),
+                timestamp: new Date().toLocaleString('tr-TR')
+            };
+            
+            state.savedReactions.push(reaction);
+            localStorage.setItem('labsim_saved', JSON.stringify(state.savedReactions));
+            showToast('Reaksiyon kaydedildi', 'success');
+        }
+
+        function showSavedReactions() {
+            const list = document.getElementById('saved-reactions-list');
+            
+            if (state.savedReactions.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.4); font-size: 13px;">Henüz kaydedilmiş reaksiyon yok.</div>';
+            } else {
+                list.innerHTML = state.savedReactions.map(r => `
+                    <div class="saved-reaction-item">
+                        <div>
+                            <div class="saved-reaction-name">${r.name}</div>
+                            <div class="saved-reaction-formula">${r.timestamp}</div>
+                        </div>
+                        <button class="delete-saved" onclick="deleteSavedReaction(${r.id})">×</button>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('saved-modal').classList.add('open');
+        }
+
+        function deleteSavedReaction(id) {
+            state.savedReactions = state.savedReactions.filter(r => r.id !== id);
+            localStorage.setItem('labsim_saved', JSON.stringify(state.savedReactions));
+            showSavedReactions();
+            showToast('Reaksiyon silindi', 'info');
+        }
+
+        function analyzeReaction() {
+            if (state.beaker.contents.length === 0) {
+                showToast('Analiz edilecek içerik yok', 'warning');
+                return;
+            }
+            
+            const contents = state.beaker.contents.map(id => chemicals.find(c => c.id === id));
+            const analysis = [];
+            
+            if (state.beaker.ph < 3) analysis.push('Güçlü asit çözeltisi');
+            else if (state.beaker.ph < 7) analysis.push('Asit çözeltisi');
+            else if (state.beaker.ph > 11) analysis.push('Güçlü baz çözeltisi');
+            else if (state.beaker.ph > 7) analysis.push('Baz çözeltisi');
+            else analysis.push('Nötr çözelti');
+            
+            if (state.beaker.temperature > 80) analysis.push('Yüksek sıcaklık');
+            if (state.beaker.gas) analysis.push('Gaz açığa çıkıyor');
+            if (state.beaker.precipitate) analysis.push('Çökelti var');
+            
+            showToast(`Analiz: ${analysis.join(', ')}`, 'info');
+        }
+
+        // ==================== SETTINGS ====================
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('open');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('open');
+        }
+
+        function toggleSetting(setting) {
+            state.settings[setting] = !state.settings[setting];
+            const toggle = document.getElementById(setting + '-toggle');
+            toggle.classList.toggle('active', state.settings[setting]);
+            
+            const names = {
+                'sound': 'Ses',
+                'vibration': 'Titreşim',
+                'auto-react': 'Otomatik Reaksiyon',
+                'tilt': 'Eğim Algılama'
+            };
+            
+            showToast(`${names[setting]}: ${state.settings[setting] ? 'Açık' : 'Kapalı'}`, 'info');
+        }
+
+        function updateAnimSpeed(val) {
+            state.settings.animSpeed = parseFloat(val);
+            document.getElementById('anim-speed-value').textContent = val + 'x';
+        }
+
+        function updateLiquidOpacity(val) {
+            state.settings.liquidOpacity = parseFloat(val);
+            document.getElementById('liquid-opacity-value').textContent = val;
+            
+            const liquid = document.getElementById('liquid');
+            liquid.style.opacity = val;
+        }
+
+        function changeTheme(color, el) {
+            state.settings.themeColor = color;
+            
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            // Update CSS variables dynamically
+            const style = document.createElement('style');
+            style.textContent = `
+                .app-title, .panel-title, .modal-title, .reaction-equation, .tab-btn.active, 
+                .cat-tab.active, .chemical-item:hover, .tool-btn:hover, .quick-btn:hover,
+                .loading-text, .volume-display, .ph-label, .temp-label {
+                    color: ${color} !important;
+                }
+                .menu-btn, .settings-btn, .close-panel, .modal-close, .toggle.active::after,
+                .slider::-webkit-slider-thumb, .tab-btn:hover, .tab-btn.active {
+                    border-color: ${color} !important;
+                }
+                .loading-beaker, .beaker-glass, .beaker-glass::before {
+                    border-color: ${color} !important;
+                }
+                .loading-liquid {
+                    background: linear-gradient(180deg, ${color} 0%, ${color}dd 50%, ${color}aa 100%) !important;
+                }
+                .toggle.active {
+                    background: ${color} !important;
+                }
+                .slider::-webkit-slider-thumb {
+                    background: ${color} !important;
+                }
+                .temp-fill {
+                    background: linear-gradient(180deg, ${color} 0%, ${color}dd 100%) !important;
+                }
+            `;
+            
+            // Remove old theme style
+            const oldStyle = document.getElementById('theme-style');
+            if (oldStyle) oldStyle.remove();
+            
+            style.id = 'theme-style';
+            document.head.appendChild(style);
+            
+            showToast('Tema rengi değiştirildi', 'success');
+        }
+
+        // ==================== SIDE PANEL ====================
+        function openSidePanel() {
+            document.getElementById('side-panel').classList.add('open');
+            document.getElementById('side-panel-overlay').classList.add('open');
+        }
+
+        function closeSidePanel() {
+            document.getElementById('side-panel').classList.remove('open');
+            document.getElementById('side-panel-overlay').classList.remove('open');
+        }
+
+        document.getElementById('side-panel-overlay').addEventListener('click', closeSidePanel);
+
+        // ==================== MODALS ====================
+        function closeSavedModal() {
+            document.getElementById('saved-modal').classList.remove('open');
+        }
+
+        function showAbout() {
+            showToast('LabSim v1.0 - Mobil Kimya Laboratuvarı', 'info');
+        }
+
+        function showHelp() {
+            showToast('Kimyasal eklemek için tıklayın, sallamak için cihazı sallayın!', 'info');
+        }
+
+        // ==================== TOAST ====================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSettings();
+                closeSavedModal();
+                closeSidePanel();
+            }
+            if (e.key === ' ') {
+                e.preventDefault();
+                shakeBeaker();
+            }
+            if (e.key === 'r' || e.key === 'R') {
+                resetBeaker();
+            }
+        });
+    </script>
+</body>
+</html>'''
+
+# Write the complete file
+with open('/mnt/agents/output/labsim.html', 'w', encoding='utf-8') as f:
+    # We need to reconstruct the full HTML from the first part and second part
+    # Let me write it all at once properly
+    pass
+
+print("Part 2 prepared")
+
+
