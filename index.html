@@ -1,1089 +1,271 @@
-
-html_content = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Kimya - Gerçek 3D Orbitaller & Videolar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roni 3D Kimya Laboratuvarı - Orbital Simülasyonu</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
+            margin: 0;
+            overflow: hidden;
+            background-color: #0d1117;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
-            min-height: 100vh;
         }
-        .header {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0,0,0,0.4);
-            border-bottom: 2px solid #00d4ff;
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
         }
-        .header h1 {
-            font-size: 1.4rem;
-            color: #00d4ff;
-            text-shadow: 0 0 15px rgba(0,212,255,0.5);
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-        }
-        .tab-btn {
-            padding: 10px 25px;
-            border: 2px solid #00d4ff;
-            background: rgba(0,212,255,0.1);
-            color: #00d4ff;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
-        .tab-btn.active {
-            background: #00d4ff;
-            color: #000;
-        }
-        .content { max-width: 900px; margin: 0 auto; padding: 0 15px 30px; }
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
-
-        .type-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .type-card {
-            background: rgba(255,255,255,0.06);
-            border: 2px solid rgba(0,212,255,0.3);
-            border-radius: 16px;
-            padding: 18px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .type-card:active { transform: scale(0.95); }
-        .type-card.selected {
-            border-color: #00d4ff;
-            background: rgba(0,212,255,0.15);
-            box-shadow: 0 0 25px rgba(0,212,255,0.3);
-        }
-        .type-card h3 {
-            font-size: 2rem;
-            color: #00d4ff;
-            margin-bottom: 4px;
-        }
-        .type-card p {
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .sub-orbital-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            min-height: 50px;
-        }
-        .sub-btn {
-            padding: 10px 18px;
-            border: 2px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.7);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .sub-btn:active { transform: scale(0.95); }
-        .sub-btn.selected {
-            border-color: #00ff88;
-            background: rgba(0,255,136,0.15);
-            color: #00ff88;
-            box-shadow: 0 0 15px rgba(0,255,136,0.3);
-        }
-
-        .sim-box {
-            background: rgba(0,0,0,0.5);
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .sim-title {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #00d4ff;
-            margin-bottom: 10px;
-        }
-        #orbitalCanvas {
-            display: block;
-            width: 100% !important;
-            height: auto !important;
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(22, 27, 34, 0.85);
+            padding: 20px;
             border-radius: 12px;
-            background: #050510;
-            border: 1px solid rgba(0,212,255,0.2);
-            touch-action: none;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 320px;
         }
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        .ctrl-btn {
-            padding: 8px 16px;
-            background: rgba(0,212,255,0.1);
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 20px;
-            color: #00d4ff;
-            font-size: 0.8rem;
+        h2 { margin: 0 0 10px 0; font-size: 18px; color: #58a6ff; }
+        p { font-size: 13px; color: #8b949e; margin: 0 0 15px 0; line-height: 1.4; }
+        select {
+            width: 100%;
+            padding: 10px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
             cursor: pointer;
         }
-        .ctrl-btn:active { background: rgba(0,212,255,0.3); }
-        .hint-drag {
-            text-align: center;
-            color: rgba(255,255,255,0.3);
-            font-size: 0.75rem;
-            margin-top: 8px;
-        }
-
-        .props {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 18px;
-            border-left: 3px solid #7b2cbf;
-        }
-        .props h3 {
-            color: #00d4ff;
-            margin-bottom: 12px;
-            font-size: 1rem;
-        }
-        .prop-row {
+        select:focus { border-color: #58a6ff; }
+        #legend {
+            margin-top: 15px;
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-size: 0.85rem;
+            font-size: 12px;
         }
-        .prop-row:last-child { border-bottom: none; }
-        .prop-label { color: rgba(255,255,255,0.5); }
-        .prop-val { color: #00d4ff; font-weight: bold; }
-        .prop-desc {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(0,212,255,0.05);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .video-input {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .video-input h2 {
-            color: #00d4ff;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        .video-input input {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 10px;
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            font-size: 0.9rem;
-        }
-        .video-input input::placeholder { color: rgba(255,255,255,0.3); }
-        .btn-add {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .hint { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px; }
-        .videos-grid { display: grid; gap: 15px; }
-        .video-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .video-card video {
-            width: 100%;
-            display: block;
-            background: #000;
-        }
-        .video-info { padding: 12px; }
-        .video-info h4 { color: #00d4ff; font-size: 0.95rem; margin-bottom: 4px; }
-        .video-info p { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
-        .video-actions { padding: 0 12px 12px; }
-        .btn-del {
-            padding: 6px 14px;
-            background: rgba(255,50,50,0.15);
-            border: 1px solid rgba(255,50,50,0.4);
-            border-radius: 8px;
-            color: #ff6666;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .empty {
-            text-align: center;
-            padding: 50px 20px;
-            color: rgba(255,255,255,0.3);
-        }
+        .legend-item { display: flex; align-items: center; }
+        .box { width: 12px; height: 12px; margin-right: 6px; border-radius: 3px; }
+        .pos { background: #ff7b72; }
+        .neg { background: #58a6ff; }
     </style>
+    <!-- Three.js ve OrbitControls CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-    <div class="header">
-        <h1>🧪 Gerçek 3D Atomik Orbitaller</h1>
-    </div>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('orbitals')">🔬 Orbitaller</button>
-        <button class="tab-btn" onclick="switchTab('videos')">🎬 Videolar</button>
-    </div>
+    <div id="canvas-container"></div>
 
-    <div class="content">
-        <div id="orbitals" class="tab-panel active">
-            <div class="type-grid">
-                <div class="type-card" onclick="pickType('s', this)">
-                    <h3>s</h3>
-                    <p>1 Orbital · 2e⁻</p>
-                </div>
-                <div class="type-card" onclick="pickType('p', this)">
-                    <h3>p</h3>
-                    <p>3 Orbital · 6e⁻</p>
-                </div>
-                <div class="type-card" onclick="pickType('d', this)">
-                    <h3>d</h3>
-                    <p>5 Orbital · 10e⁻</p>
-                </div>
-                <div class="type-card" onclick="pickType('f', this)">
-                    <h3>f</h3>
-                    <p>7 Orbital · 14e⁻</p>
-                </div>
-            </div>
+    <div id="ui-panel">
+        <h2>Orbital Seçimi</h2>
+        <p>Görselleştirmek istediğiniz atomik orbitali seçin. Fare ile döndürebilir ve yakınlaşabilirsiniz.</p>
+        <select id="orbital-select">
+            <!-- S Orbitali -->
+            <optgroup label="S Orbitali (l=0)">
+                <option value="s">1s / 2s / 3s (Küresel)</option>
+            </optgroup>
+            <!-- P Orbitalleri -->
+            <optgroup label="P Orbitalleri (l=1)">
+                <option value="px">px</option>
+                <option value="py" selected>py</option>
+                <option value="pz">pz</option>
+            </optgroup>
+            <!-- D Orbitalleri -->
+            <optgroup label="D Orbitalleri (l=2)">
+                <option value="dxy">dxy</option>
+                <option value="dxz">dxz</option>
+                <option value="dyz">dyz</option>
+                <option value="dx2y2">dx2-y2</option>
+                <option value="dz2">dz2</option>
+            </optgroup>
+            <!-- F Orbitalleri -->
+            <optgroup label="F Orbitalleri (l=3)">
+                <option value="fz3">fz3</option>
+                <option value="fxz2">fxz2</option>
+                <option value="fyz2">fyz2</option>
+                <option value="fxyz">fxyz</option>
+                <option value="fz_x2y2">f_z(x2-y2)</option>
+                <option value="fx_x2_3y2">f_x(x2-3y2)</option>
+                <option value="fy_3x2_y2">f_y(3x2-y2)</option>
+            </optgroup>
+        </select>
 
-            <div class="sub-orbital-grid" id="subGrid"></div>
-
-            <div class="sim-box">
-                <div class="sim-title" id="simTitle">Bir orbital türü seçin</div>
-                <canvas id="orbitalCanvas" width="600" height="420"></canvas>
-                <p class="hint-drag">👆 Ekrana dokunarak 3D döndürün</p>
-                <div class="controls">
-                    <button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button>
-                    <button class="ctrl-btn" onclick="toggleElec()">⚡ Elektronlar</button>
-                    <button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button>
-                    <button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button>
-                    <button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>
-                </div>
-            </div>
-
-            <div class="props">
-                <h3>📋 Orbital Özellikleri</h3>
-                <div class="prop-row"><span class="prop-label">Tip:</span><span class="prop-val" id="pType">-</span></div>
-                <div class="prop-row"><span class="prop-label">Alt Orbital:</span><span class="prop-val" id="pSub">-</span></div>
-                <div class="prop-row"><span class="prop-label">l (Açısal Momentum):</span><span class="prop-val" id="pL">-</span></div>
-                <div class="prop-row"><span class="prop-label">mₗ (Manyetik):</span><span class="prop-val" id="pMl">-</span></div>
-                <div class="prop-row"><span class="prop-label">Maks. Elektron:</span><span class="prop-val" id="pElec">-</span></div>
-                <div class="prop-row"><span class="prop-label">Şekil:</span><span class="prop-val" id="pShape">-</span></div>
-                <div class="prop-desc" id="pDesc">Bir orbital türü seçin, ardından alt orbital butonlarından birine tıklayın.</div>
-            </div>
-        </div>
-
-        <div id="videos" class="tab-panel">
-            <div class="video-input">
-                <h2>🎥 Video Ekle</h2>
-                <input type="text" id="vUrl" placeholder="GitHub raw video URL...">
-                <input type="text" id="vTitle" placeholder="Video başlığı...">
-                <button class="btn-add" onclick="addVid()">➕ Ekle</button>
-                <p class="hint">💡 GitHub'daki videonun raw linkini yapıştırın</p>
-            </div>
-            <div class="videos-grid" id="vGrid">
-                <div class="empty">
-                    <p>Henüz video yok</p>
-                    <p style="font-size:0.8rem;margin-top:5px;">Yukarıya URL ekleyin</p>
-                </div>
-            </div>
+        <div id="legend">
+            <div class="legend-item"><div class="box pos"></div> (+) Dalga Fazı</div>
+            <div class="legend-item"><div class="box neg"></div> (-) Dalga Fazı</div>
         </div>
     </div>
 
     <script>
-        function switchTab(name) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(name).classList.add('active');
-            event.target.classList.add('active');
+        // --- Sahne Kurulumu ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0d1117);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(5, 4, 7);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // --- Işıklandırma ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight1.position.set(5, 10, 7);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
+        dirLight2.position.set(-5, -5, -5);
+        scene.add(dirLight2);
+
+        // --- Eksen Çizgileri ---
+        const axesHelper = new THREE.AxesHelper(3);
+        scene.add(axesHelper);
+
+        // --- Matematiksel Küresel Harmonik Fonksiyonları ---
+        // u -> theta (0 - PI), v -> phi (0 - 2PI)
+        function getOrbitalRadius(type, theta, phi) {
+            let r = 0;
+            switch(type) {
+                case 's':     return { r: 1.0, sign: 1 };
+                
+                case 'px':    r = Math.sin(theta) * Math.cos(phi); break;
+                case 'py':    r = Math.sin(theta) * Math.sin(phi); break;
+                case 'pz':    r = Math.cos(theta); break;
+                
+                case 'dxy':   r = Math.pow(Math.sin(theta), 2) * Math.sin(2 * phi); break;
+                case 'dxz':   r = Math.sin(2 * theta) * Math.cos(phi); break;
+                case 'dyz':   r = Math.sin(2 * theta) * Math.sin(phi); break;
+                case 'dx2y2': r = Math.pow(Math.sin(theta), 2) * Math.cos(2 * phi); break;
+                case 'dz2':   r = 0.5 * (3 * Math.pow(Math.cos(theta), 2) - 1); break;
+                
+                case 'fz3':        r = 0.5 * Math.cos(theta) * (5 * Math.pow(Math.cos(theta), 2) - 3); break;
+                case 'fxz2':       r = 0.25 * Math.sin(theta) * (5 * Math.pow(Math.cos(theta), 2) - 1) * Math.cos(phi); break;
+                case 'fyz2':       r = 0.25 * Math.sin(theta) * (5 * Math.pow(Math.cos(theta), 2) - 1) * Math.sin(phi); break;
+                case 'fxyz':       r = Math.pow(Math.sin(theta), 2) * Math.cos(theta) * Math.sin(2 * phi); break;
+                case 'fz_x2y2':    r = Math.pow(Math.sin(theta), 2) * Math.cos(theta) * Math.cos(2 * phi); break;
+                case 'fx_x2_3y2':  r = Math.pow(Math.sin(theta), 3) * Math.cos(3 * phi); break;
+                case 'fy_3x2_y2':  r = Math.pow(Math.sin(theta), 3) * Math.sin(3 * phi); break;
+            }
+            return { r: Math.abs(r) * 2, sign: Math.sign(r) }; 
         }
 
-        const canvas = document.getElementById('orbitalCanvas');
-        const c = canvas.getContext('2d');
-        let W = 600, H = 420;
-        let activeType = null, activeSub = null;
-        let t = 0, autoSpin = true, elecOn = true, spd = 1;
-        let animFrame = null;
+        // --- Mesh Oluşturma Fonksiyonu ---
+        let currentMesh = null;
 
-        let rotX = 0.4, rotY = 0.3;
-        let isDragging = false;
-        let lastX = 0, lastY = 0;
+        function createOrbitalMesh(type) {
+            if (currentMesh) scene.remove(currentMesh);
 
-        function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            W = rect.width;
-            H = rect.height;
-            c.scale(dpr, dpr);
+            const uSegments = 120;
+            const vSegments = 120;
+            
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            const indices = [];
+
+            const colorPos = new THREE.Color(0xff7b72); // Pozitif faz (Turuncu/Kırmızımsı)
+            const colorNeg = new THREE.Color(0x58a6ff); // Negatif faz (Mavi)
+
+            // Vertexleri ve Renkleri Oluşturma
+            for (let i = 0; i <= uSegments; i++) {
+                const theta = (i / uSegments) * Math.PI;
+                for (let j = 0; j <= vSegments; j++) {
+                    const phi = (j / vSegments) * 2 * Math.PI;
+
+                    const data = getOrbitalRadius(type, theta, phi);
+                    const r = data.r;
+                    const sign = data.sign;
+
+                    // Küreselden Kartezyene Dönüşüm
+                    const x = r * Math.sin(theta) * Math.cos(phi);
+                    const z = r * Math.sin(theta) * Math.sin(phi); // Three.js'te yukarı eksen Y'dir, formülde Z derinliktir
+                    const y = r * Math.cos(theta);
+
+                    positions.push(x, y, z);
+
+                    // Faza göre renk atama
+                    if (sign >= 0) {
+                        colors.push(colorPos.r, colorPos.g, colorPos.b);
+                    } else {
+                        colors.push(colorNeg.r, colorNeg.g, colorNeg.b);
+                    }
+                }
+            }
+
+            // İndisleri (Yüzey Üçgenlerini) Tanımlama
+            for (let i = 0; i < uSegments; i++) {
+                for (let j = 0; j < vSegments; j++) {
+                    const a = i * (vSegments + 1) + j;
+                    const b = i * (vSegments + 1) + j + 1;
+                    const c = (i + 1) * (vSegments + 1) + j;
+                    const d = (i + 1) * (vSegments + 1) + j + 1;
+
+                    // Çift taraflı düzgün görünüm için iki üçgen
+                    indices.push(a, c, b);
+                    indices.push(b, c, d);
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+
+            // Malzeme Ayarı (Çift taraflı render ve pürüzsüz gölgelendirme için)
+            const material = new THREE.MeshStandardMaterial({
+                vertexColors: true,
+                side: THREE.DoubleSide,
+                roughness: 0.4,
+                metalness: 0.1,
+                wireframe: false // Çizgisel görmek isterseniz true yapabilirsiniz
+            });
+
+            currentMesh = new THREE.Mesh(geometry, material);
+            scene.add(currentMesh);
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
 
-        canvas.addEventListener('mousedown', e => {
-            isDragging = true;
-            lastX = e.clientX;
-            lastY = e.clientY;
+        // --- Başlangıç ve Seçim Dinleyicisi ---
+        const select = document.getElementById('orbital-select');
+        createOrbitalMesh(select.value);
+
+        select.addEventListener('change', (e) => {
+            createOrbitalMesh(e.target.value);
         });
-        canvas.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastX;
-            const dy = e.clientY - lastY;
-            rotY += dx * 0.01;
-            rotX += dy * 0.01;
-            lastX = e.clientX;
-            lastY = e.clientY;
+
+        // --- Ekran Boyutu Değişimi ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
-        canvas.addEventListener('mouseup', () => isDragging = false);
-        canvas.addEventListener('mouseleave', () => isDragging = false);
-        
-        canvas.addEventListener('touchstart', e => {
-            isDragging = true;
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-            e.preventDefault();
-        }, {passive: false});
-        canvas.addEventListener('touchmove', e => {
-            if (!isDragging) return;
-            const dx = e.touches[0].clientX - lastX;
-            const dy = e.touches[0].clientY - lastY;
-            rotY += dx * 0.015;
-            rotX += dy * 0.015;
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-            e.preventDefault();
-        }, {passive: false});
-        canvas.addEventListener('touchend', () => isDragging = false);
 
-        function rotate3D(x, y, z) {
-            let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
-            let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
-            let x2 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
-            let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
-            return {x: x2, y: y1, z: z2};
-        }
-
-        function project(x, y, z) {
-            const r = rotate3D(x, y, z);
-            const scale = 280 / (350 + r.z);
-            return {
-                x: W/2 + r.x * scale,
-                y: H/2 + r.y * scale,
-                z: r.z,
-                scale: scale
-            };
-        }
-
-        const ORBITALS = {
-            s: {
-                subs: [{ name: '1s', ml: 0, desc: '1s orbitali en düşük enerjili orbitaldir. Çekirdek etrafında küresel simetriye sahiptir. 2 elektron barındırır.' }],
-                l: 0, max: 2, shape: 'Küresel',
-                color: [0, 212, 255]
-            },
-            p: {
-                subs: [
-                    { name: 'px', ml: -1, desc: 'px orbitali x-ekseni boyunca uzanan çift loblu (dumbbell) şeklindedir.' },
-                    { name: 'py', ml: 0, desc: 'py orbitali y-ekseni boyunca uzanan çift loblu şeklindedir.' },
-                    { name: 'pz', ml: +1, desc: 'pz orbitali z-ekseni boyunca uzanan çift loblu şeklindedir.' }
-                ],
-                l: 1, max: 6, shape: 'Çift Loblu (Dumbbell)',
-                color: [255, 107, 107]
-            },
-            d: {
-                subs: [
-                    { name: 'dxy', ml: -2, desc: 'dxy orbitali x ve y eksenleri ARASINDA (45°) yer alan dört yapraklı şeklindedir.' },
-                    { name: 'dyz', ml: -1, desc: 'dyz orbitali y ve z eksenleri arasında yer alan dört yapraklı şeklindedir.' },
-                    { name: 'dxz', ml: 0, desc: 'dxz orbitali x ve z eksenleri arasında yer alan dört yapraklı şeklindedir.' },
-                    { name: 'dx²-y²', ml: +1, desc: 'dx²-y² orbitali x ve y eksenleri ÜZERİNDE yer alan dört yapraklı şeklindedir.' },
-                    { name: 'dz²', ml: +2, desc: 'dz² orbitali z-ekseni boyunca iki büyük lob ve ortada bir halka (torus) şeklindedir.' }
-                ],
-                l: 2, max: 10, shape: 'Klover / Torus',
-                color: [34, 180, 80]
-            },
-            f: {
-                subs: [
-                    { name: 'fxyz', ml: -3, desc: 'fxyz orbitali üç eksenin köşegenleri boyunca yönelmiş karmaşık yapıdadır.' },
-                    { name: 'fz(x²-y²)', ml: -2, desc: 'fz(x²-y²) orbitali z-ekseni etrafında dört yapraklı simetrik yapıya sahiptir.' },
-                    { name: 'fy(3x²-y²)', ml: -1, desc: 'fy(3x²-y²) orbitali y-ekseni boyunca uzanan karmaşık yapıdadır.' },
-                    { name: 'fz³', ml: 0, desc: 'fz³ orbitali z-ekseni boyunca uzanan, merkezi halkalı karmaşık yapıdadır.' },
-                    { name: 'fx(3y²-x²)', ml: +1, desc: 'fx(3y²-x²) orbitali x-ekseni boyunca uzanan karmaşık yapıdadır.' },
-                    { name: 'fz(x²-y²)', ml: +2, desc: 'fz(x²-y²) orbitali z-ekseni etrafında dört yapraklı yapıdadır.' },
-                    { name: 'fx³', ml: +3, desc: 'fx³ orbitali x-ekseni boyunca uzanan, en karmaşık f orbitalidir.' }
-                ],
-                l: 3, max: 14, shape: 'Çok Karmaşık (8 Lob)',
-                color: [168, 85, 247]
+        // --- Animasyon Döngüsü ---
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Orbitalin kendi etrafında yavaşça dönmesi için (opsiyonel)
+            if (currentMesh) {
+                currentMesh.rotation.y += 0.003;
             }
-        };
 
-        function rgba(rgb, a) { return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`; }
-
-        function pickType(type, el) {
-            activeType = type;
-            activeSub = null;
-            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            
-            const d = ORBITALS[type];
-            document.getElementById('simTitle').textContent = type.toUpperCase() + ' Orbitalleri';
-            
-            const grid = document.getElementById('subGrid');
-            grid.innerHTML = '';
-            d.subs.forEach((sub, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'sub-btn';
-                btn.textContent = sub.name;
-                btn.onclick = function() { pickSub(type, i, this); };
-                grid.appendChild(btn);
-            });
-            
-            document.getElementById('pType').textContent = type.toUpperCase();
-            document.getElementById('pSub').textContent = 'Seçiniz';
-            document.getElementById('pL').textContent = d.l;
-            document.getElementById('pMl').textContent = d.subs.map(s => s.ml).join(', ');
-            document.getElementById('pElec').textContent = d.max;
-            document.getElementById('pShape').textContent = d.shape;
-            document.getElementById('pDesc').textContent = 'Yukarıdaki butonlardan bir alt orbital seçin.';
-            
-            t = 0;
-            rotX = 0.4; rotY = 0.3;
+            controls.update();
+            renderer.render(scene, camera);
         }
-
-        function pickSub(type, idx, el) {
-            activeSub = idx;
-            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-            
-            const d = ORBITALS[type];
-            const sub = d.subs[idx];
-            
-            document.getElementById('simTitle').textContent = sub.name + ' Orbitali (Gerçek 3D)';
-            document.getElementById('pSub').textContent = sub.name;
-            document.getElementById('pMl').textContent = sub.ml;
-            document.getElementById('pDesc').textContent = sub.desc;
-            
-            t = 0;
-            rotX = 0.4; rotY = 0.3;
-            if (animFrame) cancelAnimationFrame(animFrame);
-            loop();
-        }
-
-        function clear() {
-            c.clearRect(0, 0, W, H);
-            c.fillStyle = '#050510';
-            c.fillRect(0, 0, W, H);
-        }
-
-        function drawAxes() {
-            const len = 140;
-            const axes = [
-                {x: len, y: 0, z: 0, label: 'x', col: '#ff5555'},
-                {x: 0, y: -len, z: 0, label: 'y', col: '#55ff55'},
-                {x: 0, y: 0, z: len, label: 'z', col: '#5555ff'}
-            ];
-            c.strokeStyle = 'rgba(255,255,255,0.12)';
-            c.lineWidth = 1.5;
-            axes.forEach(ax => {
-                const p = project(ax.x, ax.y, ax.z);
-                const o = project(0, 0, 0);
-                c.beginPath();
-                c.moveTo(o.x, o.y);
-                c.lineTo(p.x, p.y);
-                c.stroke();
-                c.fillStyle = ax.col;
-                c.font = 'bold 11px sans-serif';
-                c.textAlign = 'center';
-                c.fillText(ax.label, p.x + 10, p.y - 5);
-            });
-        }
-
-        function drawNucleus() {
-            const p = project(0, 0, 0);
-            const r = 8 * p.scale;
-            c.beginPath();
-            c.arc(p.x, p.y, r + 10, 0, Math.PI*2);
-            c.fillStyle = 'rgba(255,255,255,0.08)';
-            c.fill();
-            c.beginPath(); c.arc(p.x - 2, p.y - 2, r * 0.7, 0, Math.PI*2);
-            c.fillStyle = '#ff3333'; c.fill();
-            c.beginPath(); c.arc(p.x + 2, p.y + 2, r * 0.7, 0, Math.PI*2);
-            c.fillStyle = '#3366ff'; c.fill();
-            c.beginPath(); c.arc(p.x, p.y, r * 0.5, 0, Math.PI*2);
-            c.fillStyle = '#ff5555'; c.fill();
-        }
-
-        function draw3DEllipsoid(cx, cy, cz, rx, ry, rz, rgb, alpha, rotLocalX, rotLocalY) {
-            const slices = 20;
-            const stacks = 14;
-            const triangles = [];
-            
-            for (let i = 0; i < slices; i++) {
-                for (let j = 0; j < stacks; j++) {
-                    const u1 = (Math.PI * 2 / slices) * i;
-                    const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI / stacks) * j - Math.PI/2;
-                    const v2 = (Math.PI / stacks) * (j + 1) - Math.PI/2;
-                    
-                    const corners = [
-                        spherePoint(cx, cy, cz, rx, ry, rz, u1, v1, rotLocalX, rotLocalY),
-                        spherePoint(cx, cy, cz, rx, ry, rz, u2, v1, rotLocalX, rotLocalY),
-                        spherePoint(cx, cy, cz, rx, ry, rz, u2, v2, rotLocalX, rotLocalY),
-                        spherePoint(cx, cy, cz, rx, ry, rz, u1, v2, rotLocalX, rotLocalY)
-                    ];
-                    
-                    triangles.push({
-                        p: [corners[0], corners[1], corners[2]],
-                        avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
-                    });
-                    triangles.push({
-                        p: [corners[0], corners[2], corners[3]],
-                        avgZ: (corners[0].z + corners[2].z + corners[3].z) / 3
-                    });
-                }
-            }
-            
-            triangles.sort((a, b) => b.avgZ - a.avgZ);
-            
-            triangles.forEach(tri => {
-                const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 120) / 350));
-                
-                c.beginPath();
-                c.moveTo(tri.p[0].x, tri.p[0].y);
-                c.lineTo(tri.p[1].x, tri.p[1].y);
-                c.lineTo(tri.p[2].x, tri.p[2].y);
-                c.closePath();
-                
-                c.fillStyle = rgba(rgb, alpha * depth * 0.55);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.25 * depth);
-                c.lineWidth = 0.4;
-                c.stroke();
-            });
-        }
-
-        function spherePoint(cx, cy, cz, rx, ry, rz, u, v, rotLX, rotLY) {
-            let x = rx * Math.cos(v) * Math.cos(u);
-            let y = ry * Math.cos(v) * Math.sin(u);
-            let z = rz * Math.sin(v);
-            
-            if (rotLX || rotLY) {
-                let y1 = y * Math.cos(rotLX || 0) - z * Math.sin(rotLX || 0);
-                let z1 = y * Math.sin(rotLX || 0) + z * Math.cos(rotLX || 0);
-                let x2 = x * Math.cos(rotLY || 0) + z1 * Math.sin(rotLY || 0);
-                let z2 = -x * Math.sin(rotLY || 0) + z1 * Math.cos(rotLY || 0);
-                x = x2; y = y1; z = z2;
-            }
-            
-            return project(cx + x, cy + y, cz + z);
-        }
-
-        // ===== HEMISPHERICAL CAP LOBE =====
-        // Creates a lobe with a hemispherical cap at origin, then elongated body
-        function draw3DLobe(cx, cy, cz, length, radius, rgb, alpha, direction) {
-            const slices = 22;
-            const stacks = 16;
-            const triangles = [];
-            
-            const capRadius = radius * 0.55; // Radius of hemispherical cap at origin
-            
-            for (let i = 0; i < slices; i++) {
-                for (let j = 0; j < stacks; j++) {
-                    const u1 = (Math.PI * 2 / slices) * i;
-                    const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI / stacks) * j; // 0 to PI (full lobe)
-                    const v2 = (Math.PI / stacks) * (j + 1);
-                    
-                    const corners = [
-                        lobePoint(cx, cy, cz, length, radius, capRadius, u1, v1, direction),
-                        lobePoint(cx, cy, cz, length, radius, capRadius, u2, v1, direction),
-                        lobePoint(cx, cy, cz, length, radius, capRadius, u2, v2, direction),
-                        lobePoint(cx, cy, cz, length, radius, capRadius, u1, v2, direction)
-                    ];
-                    
-                    triangles.push({
-                        p: [corners[0], corners[1], corners[2]],
-                        avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
-                    });
-                    triangles.push({
-                        p: [corners[0], corners[2], corners[3]],
-                        avgZ: (corners[0].z + corners[2].z + corners[3].z) / 3
-                    });
-                }
-            }
-            
-            triangles.sort((a, b) => b.avgZ - a.avgZ);
-            
-            triangles.forEach(tri => {
-                const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 120) / 350));
-                c.beginPath();
-                c.moveTo(tri.p[0].x, tri.p[0].y);
-                c.lineTo(tri.p[1].x, tri.p[1].y);
-                c.lineTo(tri.p[2].x, tri.p[2].y);
-                c.closePath();
-                c.fillStyle = rgba(rgb, alpha * depth * 0.6);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.3 * depth);
-                c.lineWidth = 0.5;
-                c.stroke();
-            });
-        }
-
-        function lobePoint(cx, cy, cz, length, radius, capRadius, u, v, dir) {
-            let r, dist, x, y, z;
-            
-            // Build perpendicular vectors (used in both sections)
-            let perp1 = {x: 0, y: 0, z: 0};
-            let perp2 = {x: 0, y: 0, z: 0};
-            
-            if (Math.abs(dir.y) < 0.9) {
-                perp1 = {x: -dir.z, y: 0, z: dir.x};
-            } else {
-                perp1 = {x: 1, y: 0, z: 0};
-            }
-            
-            const len1 = Math.sqrt(perp1.x*perp1.x + perp1.y*perp1.y + perp1.z*perp1.z);
-            perp1.x /= len1; perp1.y /= len1; perp1.z /= len1;
-            
-            perp2.x = dir.y * perp1.z - dir.z * perp1.y;
-            perp2.y = dir.z * perp1.x - dir.x * perp1.z;
-            perp2.z = dir.x * perp1.y - dir.y * perp1.x;
-            
-            if (v <= Math.PI / 2) {
-                // ===== HEMISPHERICAL CAP SECTION =====
-                // v: 0 to PI/2 → cap from origin to cap boundary
-                const capAngle = v; // 0 to PI/2
-                const capDist = capRadius * Math.sin(capAngle); // cross-section radius at this angle
-                const capDepth = capRadius * (1 - Math.cos(capAngle)); // distance along direction from origin
-                
-                x = cx + dir.x * capDepth + perp1.x * capDist * Math.cos(u) + perp2.x * capDist * Math.sin(u);
-                y = cy + dir.y * capDepth + perp1.y * capDist * Math.cos(u) + perp2.y * capDist * Math.sin(u);
-                z = cz + dir.z * capDepth + perp1.z * capDist * Math.cos(u) + perp2.z * capDist * Math.sin(u);
-                
-            } else {
-                // ===== ELONGATED BODY SECTION =====
-                // v: PI/2 to PI → body from cap boundary to tip
-                const bodyParam = (v - Math.PI/2) / (Math.PI/2); // 0 to 1
-                
-                // Smooth transition: radius starts at capRadius and grows to full radius
-                r = capRadius + (radius - capRadius) * Math.sin(bodyParam * Math.PI / 2);
-                
-                // Distance from origin: starts at capRadius and extends to full length
-                dist = capRadius + (length - capRadius) * bodyParam;
-                
-                x = cx + dir.x * dist + perp1.x * r * Math.cos(u) + perp2.x * r * Math.sin(u);
-                y = cy + dir.y * dist + perp1.y * r * Math.cos(u) + perp2.y * r * Math.sin(u);
-                z = cz + dir.z * dist + perp1.z * r * Math.cos(u) + perp2.z * r * Math.sin(u);
-            }
-            
-            return project(x, y, z);
-        }
-
-        function draw3DTorus(cx, cy, cz, majorR, minorR, rgb, alpha) {
-            const slices = 24;
-            const stacks = 12;
-            const triangles = [];
-            
-            for (let i = 0; i < slices; i++) {
-                for (let j = 0; j < stacks; j++) {
-                    const u1 = (Math.PI * 2 / slices) * i;
-                    const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI * 2 / stacks) * j;
-                    const v2 = (Math.PI * 2 / stacks) * (j + 1);
-                    
-                    const corners = [
-                        torusPoint(cx, cy, cz, majorR, minorR, u1, v1),
-                        torusPoint(cx, cy, cz, majorR, minorR, u2, v1),
-                        torusPoint(cx, cy, cz, majorR, minorR, u2, v2),
-                        torusPoint(cx, cy, cz, majorR, minorR, u1, v2)
-                    ];
-                    
-                    triangles.push({
-                        p: [corners[0], corners[1], corners[2]],
-                        avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
-                    });
-                    triangles.push({
-                        p: [corners[0], corners[2], corners[3]],
-                        avgZ: (corners[0].z + corners[2].z + corners[3].z) / 3
-                    });
-                }
-            }
-            
-            triangles.sort((a, b) => b.avgZ - a.avgZ);
-            
-            triangles.forEach(tri => {
-                const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 100) / 350));
-                c.beginPath();
-                c.moveTo(tri.p[0].x, tri.p[0].y);
-                c.lineTo(tri.p[1].x, tri.p[1].y);
-                c.lineTo(tri.p[2].x, tri.p[2].y);
-                c.closePath();
-                c.fillStyle = rgba(rgb, alpha * depth * 0.5);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.2 * depth);
-                c.lineWidth = 0.5;
-                c.stroke();
-            });
-        }
-
-        function torusPoint(cx, cy, cz, majorR, minorR, u, v) {
-            const x = cx + (majorR + minorR * Math.cos(v)) * Math.cos(u);
-            const y = cy + (majorR + minorR * Math.cos(v)) * Math.sin(u);
-            const z = cz + minorR * Math.sin(v);
-            return project(x, y, z);
-        }
-
-        function drawElectron3D(x, y, z) {
-            if (!elecOn) return;
-            const p = project(x, y, z);
-            const r = 4 * p.scale;
-            c.beginPath();
-            c.arc(p.x, p.y, r + 5, 0, Math.PI*2);
-            c.fillStyle = 'rgba(255,255,0,0.15)';
-            c.fill();
-            c.beginPath();
-            c.arc(p.x, p.y, r, 0, Math.PI*2);
-            c.fillStyle = '#ffff00';
-            c.fill();
-        }
-
-        function drawSOrbital(rgb) {
-            const pulse = 1 + Math.sin(t * 2) * 0.04;
-            draw3DEllipsoid(0, 0, 0, 85 * pulse, 85 * pulse, 85 * pulse, rgb, 0.75);
-            drawNucleus();
-            
-            if (elecOn) {
-                const a1 = t * 2;
-                const a2 = t * 2 + Math.PI;
-                drawElectron3D(65 * Math.cos(a1), 65 * Math.sin(a1) * 0.6, 25 * Math.sin(a1));
-                drawElectron3D(65 * Math.cos(a2), 65 * Math.sin(a2) * 0.6, 25 * Math.sin(a2));
-            }
-        }
-
-        function drawPOrbital(subIdx, rgb) {
-            drawAxes();
-            drawNucleus();
-            
-            const lobeLen = 75;
-            const lobeRad = 32;
-            
-            const dirs = [
-                {x: 1, y: 0, z: 0},
-                {x: 0, y: 1, z: 0},
-                {x: 0, y: 0, z: 1}
-            ];
-            const dir = dirs[subIdx];
-            
-            draw3DLobe(0, 0, 0, lobeLen, lobeRad, rgb, 0.78, dir);
-            draw3DLobe(0, 0, 0, lobeLen, lobeRad, rgb, 0.78, {x: -dir.x, y: -dir.y, z: -dir.z});
-            
-            drawNodalPlane(subIdx);
-            
-            if (elecOn) {
-                const a = t * 1.8;
-                const r = 85;
-                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
-
-        function drawDOrbital(subIdx, rgb) {
-            drawAxes();
-            drawNucleus();
-            
-            if (subIdx === 4) {
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x: 0, y: 0, z: 1});
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x: 0, y: 0, z: -1});
-                draw3DTorus(0, 0, 0, 55, 16, rgb, 0.45);
-                
-            } else if (subIdx === 3) {
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 1, y: 0, z: 0});
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: -1, y: 0, z: 0});
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 0, y: 1, z: 0});
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 0, y: -1, z: 0});
-                
-                drawNodalLine3D(55, 55, 0, -55, -55, 0);
-                drawNodalLine3D(-55, 55, 0, 55, -55, 0);
-                
-            } else {
-                const planeDirs = [
-                    [
-                        {x: 0.707, y: 0.707, z: 0},
-                        {x: -0.707, y: 0.707, z: 0},
-                        {x: -0.707, y: -0.707, z: 0},
-                        {x: 0.707, y: -0.707, z: 0}
-                    ],
-                    [
-                        {x: 0, y: 0.707, z: 0.707},
-                        {x: 0, y: -0.707, z: 0.707},
-                        {x: 0, y: -0.707, z: -0.707},
-                        {x: 0, y: 0.707, z: -0.707}
-                    ],
-                    [
-                        {x: 0.707, y: 0, z: 0.707},
-                        {x: -0.707, y: 0, z: 0.707},
-                        {x: -0.707, y: 0, z: -0.707},
-                        {x: 0.707, y: 0, z: -0.707}
-                    ]
-                ];
-                
-                const dirs = planeDirs[subIdx];
-                dirs.forEach((dir, i) => {
-                    draw3DLobe(0, 0, 0, 68, 25, rgb, 0.72, dir);
-                });
-                
-                if (subIdx === 0) {
-                    drawNodalLine3D(-70, 0, 0, 70, 0, 0);
-                    drawNodalLine3D(0, -70, 0, 0, 70, 0);
-                }
-            }
-            
-            if (elecOn) {
-                const a = t * 1.5;
-                const r = 95;
-                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
-
-        function drawFOrbital(subIdx, rgb) {
-            drawAxes();
-            drawNucleus();
-            
-            const configs = [
-                { dirs: [
-                    {x:0.577,y:0.577,z:0.577}, {x:-0.577,y:0.577,z:0.577},
-                    {x:-0.577,y:-0.577,z:0.577}, {x:0.577,y:-0.577,z:0.577},
-                    {x:0.577,y:0.577,z:-0.577}, {x:-0.577,y:0.577,z:-0.577},
-                    {x:-0.577,y:-0.577,z:-0.577}, {x:0.577,y:-0.577,z:-0.577}
-                ], len: 62, rad: 22 },
-                { dirs: [
-                    {x:0.707,y:0,z:0.707}, {x:-0.707,y:0,z:0.707},
-                    {x:0,y:0.707,z:0.707}, {x:0,y:-0.707,z:0.707},
-                    {x:0.707,y:0,z:-0.707}, {x:-0.707,y:0,z:-0.707},
-                    {x:0,y:0.707,z:-0.707}, {x:0,y:-0.707,z:-0.707}
-                ], len: 58, rad: 20 },
-                { dirs: [
-                    {x:0.866,y:0.5,z:0}, {x:-0.866,y:0.5,z:0},
-                    {x:0,y:1,z:0}, {x:0.866,y:-0.5,z:0},
-                    {x:-0.866,y:-0.5,z:0}, {x:0,y:-1,z:0}
-                ], len: 60, rad: 21 },
-                { dirs: [
-                    {x:0,y:0,z:1}, {x:0,y:0,z:-1}
-                ], len: 75, rad: 26, special: 'z3' },
-                { dirs: [
-                    {x:1,y:0,z:0}, {x:0.5,y:0.866,z:0},
-                    {x:0.5,y:-0.866,z:0}, {x:-0.5,y:0.866,z:0},
-                    {x:-0.5,y:-0.866,z:0}, {x:-1,y:0,z:0}
-                ], len: 60, rad: 21 },
-                { dirs: [
-                    {x:0.707,y:0,z:0.707}, {x:-0.707,y:0,z:0.707},
-                    {x:0.707,y:0,z:-0.707}, {x:-0.707,y:0,z:-0.707}
-                ], len: 65, rad: 23 },
-                { dirs: [
-                    {x:1,y:0,z:0}, {x:0.707,y:0.707,z:0},
-                    {x:0.707,y:0,z:0.707}, {x:0.707,y:0,z:-0.707},
-                    {x:0.707,y:-0.707,z:0}, {x:0,y:1,z:0},
-                    {x:0,y:0,z:1}, {x:0,y:0,z:-1}
-                ], len: 58, rad: 20 }
-            ];
-            
-            const cfg = configs[subIdx] || configs[0];
-            
-            if (cfg.special === 'z3') {
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x:0,y:0,z:1});
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x:0,y:0,z:-1});
-                for (let i = 0; i < 6; i++) {
-                    const a = (Math.PI * 2 / 6) * i;
-                    const dir = {x: Math.cos(a), y: Math.sin(a), z: 0};
-                    draw3DLobe(0, 0, 0, 35, 14, rgb, 0.5, dir);
-                }
-            } else {
-                cfg.dirs.forEach(dir => {
-                    draw3DLobe(0, 0, 0, cfg.len, cfg.rad, rgb, 0.68, dir);
-                });
-            }
-            
-            if (subIdx === 2 || subIdx === 3 || subIdx === 6) {
-                draw3DEllipsoid(0, 0, 0, 18, 18, 18, rgb, 0.2);
-            }
-            
-            if (elecOn) {
-                const a = t * 1.2;
-                const r = 105;
-                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
-
-        function drawNodalPlane(subIdx) {
-            const size = 75;
-            const step = 12;
-            for (let i = -size; i <= size; i += step) {
-                for (let j = -size; j <= size; j += step) {
-                    let x = 0, y = 0, z = 0;
-                    if (subIdx === 0) { y = i; z = j; }
-                    else if (subIdx === 1) { x = i; z = j; }
-                    else { x = i; y = j; }
-                    const p = project(x, y, z);
-                    c.beginPath();
-                    c.arc(p.x, p.y, 1.5, 0, Math.PI*2);
-                    c.fillStyle = 'rgba(255,255,255,0.07)';
-                    c.fill();
-                }
-            }
-        }
-
-        function drawNodalLine3D(x1, y1, z1, x2, y2, z2) {
-            const p1 = project(x1, y1, z1);
-            const p2 = project(x2, y2, z2);
-            c.strokeStyle = 'rgba(255,255,255,0.12)';
-            c.lineWidth = 1;
-            c.setLineDash([4, 4]);
-            c.beginPath();
-            c.moveTo(p1.x, p1.y);
-            c.lineTo(p2.x, p2.y);
-            c.stroke();
-            c.setLineDash([]);
-        }
-
-        function loop() {
-            clear();
-            
-            if (!activeType || activeSub === null) {
-                c.fillStyle = 'rgba(255,255,255,0.3)';
-                c.font = 'bold 15px sans-serif';
-                c.textAlign = 'center';
-                c.fillText('Bir orbital türü ve alt orbital seçin', W/2, H/2);
-                animFrame = requestAnimationFrame(loop);
-                return;
-            }
-            
-            if (autoSpin && !isDragging) {
-                rotY += 0.008 * spd;
-                t += 0.015 * spd;
-            } else {
-                t += 0.015 * spd;
-            }
-            
-            const d = ORBITALS[activeType];
-            const rgb = d.color;
-            
-            switch (activeType) {
-                case 's': drawSOrbital(rgb); break;
-                case 'p': drawPOrbital(activeSub, rgb); break;
-                case 'd': drawDOrbital(activeSub, rgb); break;
-                case 'f': drawFOrbital(activeSub, rgb); break;
-            }
-            
-            c.textAlign = 'left';
-            c.font = '10px sans-serif';
-            c.fillStyle = 'rgba(255,255,255,0.35)';
-            c.fillText('🔴 Proton  🔵 Nötron', 10, 18);
-            c.fillStyle = '#ffff00';
-            c.fillText('● Elektron', 10, 34);
-            c.fillStyle = 'rgba(255,255,255,0.25)';
-            c.fillText('👆 Sürükleyerek 3D döndürün', 10, H - 10);
-            
-            animFrame = requestAnimationFrame(loop);
-        }
-
-        function toggleSpin() { autoSpin = !autoSpin; }
-        function toggleElec() { elecOn = !elecOn; }
-        function setSpeed(v) { spd = v; }
-        function resetView() { rotX = 0.4; rotY = 0.3; }
-
-        loop();
-
-        let videos = JSON.parse(localStorage.getItem('chemVids') || '[]');
-
-        function addVid() {
-            const url = document.getElementById('vUrl').value.trim();
-            const title = document.getElementById('vTitle').value.trim() || 'Video';
-            if (!url) { alert('URL girin!'); return; }
-            let u = url;
-            if (u.includes('github.com') && u.includes('/blob/')) {
-                u = u.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-            }
-            videos.unshift({ id: Date.now(), url: u, title, date: new Date().toLocaleDateString('tr-TR') });
-            localStorage.setItem('chemVids', JSON.stringify(videos));
-            document.getElementById('vUrl').value = '';
-            document.getElementById('vTitle').value = '';
-            renderVids();
-        }
-
-        function delVid(id) {
-            videos = videos.filter(v => v.id !== id);
-            localStorage.setItem('chemVids', JSON.stringify(videos));
-            renderVids();
-        }
-
-        function renderVids() {
-            const g = document.getElementById('vGrid');
-            if (!videos.length) {
-                g.innerHTML = '<div class="empty"><p>Henüz video yok</p><p style="font-size:0.8rem;margin-top:5px;">Yukarıya URL ekleyin</p></div>';
-                return;
-            }
-            g.innerHTML = videos.map(v => `
-                <div class="video-card">
-                    <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000;">
-                        <source src="${v.url}" type="video/mp4">
-                    </video>
-                    <div class="video-info">
-                        <h4>${v.title}</h4>
-                        <p>${v.date}</p>
-                    </div>
-                    <div class="video-actions">
-                        <button class="btn-del" onclick="delVid(${v.id})">🗑️ Sil</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        renderVids();
+        animate();
     </script>
 </body>
-</html>'''
-
-output_path = '/mnt/agents/output/kimya_orbitaller_videolar.html'
-with open(output_path, 'w', encoding='utf-8') as f:
-    f.write(html_content)
-
-print(f"✅ HTML dosyası güncellendi: {output_path}")
-print(f"📊 Dosya boyutu: {len(html_content):,} karakter")
-print("🎯 Loblar artık orijinde yarım küre kapaklı!")
+</html>
