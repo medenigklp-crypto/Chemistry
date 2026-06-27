@@ -1,1090 +1,713 @@
 
+# Write the complete HTML file to disk in parts to avoid JSON issues
+import json
 
 html = '''<!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Kimya - Gercek 3D Orbitaller & Videolar</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
-            color: #fff;
-            min-height: 100vh;
-        }
-        .header {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0,0,0,0.4);
-            border-bottom: 2px solid #00d4ff;
-        }
-        .header h1 {
-            font-size: 1.4rem;
-            color: #00d4ff;
-            text-shadow: 0 0 15px rgba(0,212,255,0.5);
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-        }
-        .tab-btn {
-            padding: 10px 25px;
-            border: 2px solid #00d4ff;
-            background: rgba(0,212,255,0.1);
-            color: #00d4ff;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
-        .tab-btn.active {
-            background: #00d4ff;
-            color: #000;
-        }
-        .content { max-width: 900px; margin: 0 auto; padding: 0 15px 30px; }
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
-
-        .type-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .type-card {
-            background: rgba(255,255,255,0.06);
-            border: 2px solid rgba(0,212,255,0.3);
-            border-radius: 16px;
-            padding: 18px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .type-card:active { transform: scale(0.95); }
-        .type-card.selected {
-            border-color: #00d4ff;
-            background: rgba(0,212,255,0.15);
-            box-shadow: 0 0 25px rgba(0,212,255,0.3);
-        }
-        .type-card h3 {
-            font-size: 2rem;
-            color: #00d4ff;
-            margin-bottom: 4px;
-        }
-        .type-card p {
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .sub-orbital-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            min-height: 50px;
-        }
-        .sub-btn {
-            padding: 10px 18px;
-            border: 2px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: rgba(255,255,255,0.7);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .sub-btn:active { transform: scale(0.95); }
-        .sub-btn.selected {
-            border-color: #00ff88;
-            background: rgba(0,255,136,0.15);
-            color: #00ff88;
-            box-shadow: 0 0 15px rgba(0,255,136,0.3);
-        }
-
-        .sim-box {
-            background: rgba(0,0,0,0.5);
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .sim-title {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #00d4ff;
-            margin-bottom: 10px;
-        }
-        #orbitalCanvas {
-            display: block;
-            width: 100% !important;
-            height: auto !important;
-            border-radius: 12px;
-            background: #050510;
-            border: 1px solid rgba(0,212,255,0.2);
-            touch-action: none;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        .ctrl-btn {
-            padding: 8px 16px;
-            background: rgba(0,212,255,0.1);
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 20px;
-            color: #00d4ff;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .ctrl-btn:active { background: rgba(0,212,255,0.3); }
-        .hint-drag {
-            text-align: center;
-            color: rgba(255,255,255,0.3);
-            font-size: 0.75rem;
-            margin-top: 8px;
-        }
-
-        .props {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 18px;
-            border-left: 3px solid #7b2cbf;
-        }
-        .props h3 {
-            color: #00d4ff;
-            margin-bottom: 12px;
-            font-size: 1rem;
-        }
-        .prop-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-size: 0.85rem;
-        }
-        .prop-row:last-child { border-bottom: none; }
-        .prop-label { color: rgba(255,255,255,0.5); }
-        .prop-val { color: #00d4ff; font-weight: bold; }
-        .prop-desc {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(0,212,255,0.05);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .video-input {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .video-input h2 {
-            color: #00d4ff;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        .video-input input {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 10px;
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            font-size: 0.9rem;
-        }
-        .video-input input::placeholder { color: rgba(255,255,255,0.3); }
-        .btn-add {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .hint { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px; }
-        .videos-grid { display: grid; gap: 15px; }
-        .video-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .video-card video {
-            width: 100%;
-            display: block;
-            background: #000;
-        }
-        .video-info { padding: 12px; }
-        .video-info h4 { color: #00d4ff; font-size: 0.95rem; margin-bottom: 4px; }
-        .video-info p { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
-        .video-actions { padding: 0 12px 12px; }
-        .btn-del {
-            padding: 6px 14px;
-            background: rgba(255,50,50,0.15);
-            border: 1px solid rgba(255,50,50,0.4);
-            border-radius: 8px;
-            color: #ff6666;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .empty {
-            text-align: center;
-            padding: 50px 20px;
-            color: rgba(255,255,255,0.3);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Kimya Laboratuvar Malzemeleri - 3D</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#0a0a1a 0%,#1a1a3e 50%,#0f0f2e 100%);color:#fff;min-height:100vh}
+.header{text-align:center;padding:15px;background:rgba(0,0,0,0.4);border-bottom:2px solid #00d4ff}
+.header h1{font-size:1.4rem;color:#00d4ff;text-shadow:0 0 15px rgba(0,212,255,0.5)}
+.header p{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:4px}
+.tabs{display:flex;justify-content:center;gap:8px;padding:12px;flex-wrap:wrap}
+.tab-btn{padding:8px 16px;border:2px solid #00d4ff;background:rgba(0,212,255,0.1);color:#00d4ff;border-radius:20px;cursor:pointer;font-size:0.85rem;font-weight:bold;transition:all 0.3s}
+.tab-btn.active{background:#00d4ff;color:#000}
+.content{max-width:900px;margin:0 auto;padding:0 15px 30px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.card{background:rgba(255,255,255,0.06);border:2px solid rgba(0,212,255,0.3);border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.3s}
+.card:active{transform:scale(0.95)}
+.card.selected{border-color:#00d4ff;background:rgba(0,212,255,0.15);box-shadow:0 0 25px rgba(0,212,255,0.3)}
+.card h3{font-size:1rem;color:#00d4ff;margin-bottom:3px}
+.card p{font-size:0.68rem;color:rgba(255,255,255,0.6)}
+.sim-box{background:rgba(0,0,0,0.5);border-radius:16px;padding:15px;margin-bottom:15px;border:1px solid rgba(0,212,255,0.2)}
+.sim-title{text-align:center;font-size:1.2rem;color:#00d4ff;margin-bottom:10px;text-shadow:0 0 10px rgba(0,212,255,0.3)}
+#canvas3D{display:block;width:100%!important;height:auto!important;border-radius:12px;background:#050510;border:1px solid rgba(0,212,255,0.2);touch-action:none}
+.controls{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ctrl-btn{padding:8px 16px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:20px;color:#00d4ff;font-size:0.8rem;cursor:pointer}
+.ctrl-btn:active{background:rgba(0,212,255,0.3)}
+.hint-drag{text-align:center;color:rgba(255,255,255,0.3);font-size:0.75rem;margin-top:8px}
+.props{background:rgba(255,255,255,0.05);border-radius:12px;padding:18px;border-left:3px solid #7b2cbf;margin-bottom:15px}
+.props h3{color:#00d4ff;margin-bottom:12px;font-size:1rem}
+.prop-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:0.85rem}
+.prop-row:last-child{border-bottom:none}
+.prop-label{color:rgba(255,255,255,0.5)}
+.prop-val{color:#00d4ff;font-weight:bold}
+.prop-desc{margin-top:12px;padding:12px;background:rgba(0,212,255,0.05);border-radius:8px;font-size:0.85rem;line-height:1.6;color:rgba(255,255,255,0.7)}
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>🧪 Gercek 3D Atomik Orbitaller</h1>
-    </div>
+<div class="header">
+<h1>🧪 Kimya Laboratuvar Malzemeleri</h1>
+<p>PDF'deki 24 malzeme - 3D Etkileşimli Görselleştirme</p>
+</div>
+<div class="tabs" id="tabBar"></div>
+<div class="content">
+<div id="panels"></div>
+</div>
+<script>
+const canvas=document.createElement('canvas');
+canvas.id='canvas3D';canvas.width=600;canvas.height=420;
+const c=canvas.getContext('2d');
+let W=600,H=420,activeItem=null,t=0,autoSpin=true,spd=1,animFrame=null,rotX=0.4,rotY=0.3,isDragging=false,lastX=0,lastY=0;
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('orbitals')">🔬 Orbitaller</button>
-        <button class="tab-btn" onclick="switchTab('videos')">🎬 Videolar</button>
-    </div>
+const ITEMS=[
+{id:'beherglas',name:'Beherglas',group:'Cam Malzemeler',material:'Cam',volume:'50-5000 mL',precision:'Yaklaşık',usage:'Sıvı maddelerin karıştırılması, saklanması ve ısıtılması amacıyla kullanılan malzemedir.',color:[0,180,255],type:'beherglas'},
+{id:'erlenmayer',name:'Erlenmayer',group:'Cam Malzemeler',material:'Cam',volume:'50-5000 mL',precision:'Yaklaşık',usage:'Titrasyon, çözelti hazırlama, saklama, çözme vb. işlemlerde kullanılır.',color:[0,180,255],type:'erlenmayer'},
+{id:'cambalon',name:'Cam Balon',group:'Cam Malzemeler',material:'Cam',volume:'100-5000 mL',precision:'Yaklaşık',usage:'Çözelti hazırlama, saklama, ısıtma ve kaynatma amacıyla kullanılır.',color:[0,180,255],type:'cambalon'},
+{id:'balonjoje',name:'Balon Joje',group:'Cam Malzemeler',material:'Cam',volume:'25-1000 mL',precision:'Hassas',usage:'Derişimi belli çözeltilerin hazırlanması ve saklanmasında kullanılan cam malzemedir.',color:[0,180,255],type:'balonjoje'},
+{id:'ayrmahunisi',name:'Ayırma Hunisi',group:'Ayırma Malzemeleri',material:'Cam',volume:'50-1000 mL',precision:'Yaklaşık',usage:'Heterojen sıvı-sıvı karışımların ayrılmasında kullanılır.',color:[255,107,107],type:'ayrmahunisi'},
+{id:'derecelisilindir',name:'Dereceli Silindir (Mezür)',group:'Ölçüm Malzemeleri',material:'Cam',volume:'10-2000 mL',precision:'Yaklaşık',usage:'Sıvıların hacmini ölçmek için kullanılan cam malzemedir.',color:[255,200,0],type:'derecelisilindir'},
+{id:'sogutucu',name:'Soğutucu',group:'Isıtma Malzemeleri',material:'Cam',volume:'-',precision:'-',usage:'Isıtmayla buharlaşan çözücünün gaz fazından sıvı faza dönüştürülerek geri kazanılmasını sağlayan cam malzemedir.',color:[0,180,255],type:'sogutucu'},
+{id:'huni',name:'Huni',group:'Ayırma Malzemeleri',material:'Cam',volume:'-',precision:'-',usage:'Süzme işleminde ve sıvıların dar ağızlı kaba boşaltılmasında kullanılır.',color:[255,107,107],type:'huni'},
+{id:'camboru',name:'Cam Boru',group:'Cam Malzemeler',material:'Cam',volume:'-',precision:'-',usage:'Tepkime ortamları arasındaki bağlantıyı kurmada kullanılan U şeklindeki cam malzemedir.',color:[0,180,255],type:'camboru'},
+{id:'buret',name:'Büret',group:'Ölçüm Malzemeleri',material:'Cam',volume:'10-50 mL',precision:'Hassas (±0.05 mL)',usage:'Titrasyon işleminde derişimi bilinmeyen maddelerin hacmini hassas ölçebilen cam malzemedir.',color:[255,200,0],type:'buret'},
+{id:'pipet',name:'Pipet',group:'Ölçüm Malzemeleri',material:'Cam',volume:'1-100 mL',precision:'Hassas (±0.01 mL)',usage:'Sıvıların hassas bir biçimde ölçülmesi ve aktarılmasına yarayan cam borudur.',color:[255,200,0],type:'pipet'},
+{id:'termometre',name:'Termometre',group:'Ölçüm Malzemeleri',material:'Cam',volume:'-',precision:'±0.1°C',usage:'Sıcaklık ölçmek için kullanılan dereceli cam malzemedir.',color:[255,200,0],type:'termometre'},
+{id:'baget',name:'Baget',group:'Karıştırma Malzemeleri',material:'Cam',volume:'-',precision:'-',usage:'Maddeleri karıştırmak için kullanılan çubuk şeklinde cam malzemedir.',color:[0,255,136],type:'baget'},
+{id:'deneytupu',name:'Deney Tüpü',group:'Cam Malzemeler',material:'Cam',volume:'5-50 mL',precision:'Yaklaşık',usage:'Maddelerin karıştırılması, ısıtılması, soğutulması vb. amaçlarla kullanılan cam malzemedir.',color:[0,180,255],type:'deneytupu'},
+{id:'havan',name:'Havan',group:'Öğütme Malzemeleri',material:'Porselen',volume:'-',precision:'-',usage:'Katı maddeleri ezmek, toz hâline getirmek amacıyla kullanılır.',color:[255,220,180],type:'havan'},
+{id:'kroze',name:'Kroze',group:'Isıtma Malzemeleri',material:'Porselen/Metal',volume:'5-100 mL',precision:'-',usage:'Yüksek sıcaklıkta ısıtma ve yakma işlemlerinde kullanılan porselen veya metal laboratuvar malzemesidir.',color:[255,220,180],type:'kroze'},
+{id:'damlalik',name:'Damlalık',group:'Aktarma Malzemeleri',material:'Plastik',volume:'1-5 mL',precision:'Yaklaşık',usage:'Küçük hacimlerde sıvı aktarmak için kullanılan plastik malzemedir.',color:[0,255,136],type:'damlalik'},
+{id:'spatul',name:'Spatül',group:'Aktarma Malzemeleri',material:'Metal/Plastik',volume:'-',precision:'-',usage:'Toz ya da küçük parçalı katıları almak için kullanılır.',color:[0,255,136],type:'spatul'},
+{id:'piset',name:'Piset',group:'Yıkama Malzemeleri',material:'Plastik',volume:'250-1000 mL',precision:'-',usage:'Genellikle saf su ve bazı durumlarda da yıkama çözeltisi kullanımı için tercih edilen plastik şişedir.',color:[0,255,136],type:'piset'},
+{id:'puar',name:'Puar',group:'Aktarma Malzemeleri',material:'Plastik/Kauçuk',volume:'-',precision:'-',usage:'Pipetlerin arkasına takılarak sıvı veya çözeltilerin çekilmesinde kullanılan plastik malzemelerdir.',color:[0,255,136],type:'puar'},
+{id:'mikropipet',name:'Mikro Pipet',group:'Ölçüm Malzemeleri',material:'Plastik',volume:'1-1000 µL',precision:'Çok Hassas (±0.01 µL)',usage:'Küçük hacimlerdeki sıvıları doğru ve hassas bir şekilde ölçmek ve aktarmak için kullanılan laboratuvar aletidir.',color:[255,200,0],type:'mikropipet'},
+{id:'isirtocagi',name:'İspirto Ocağı',group:'Isıtma Malzemeleri',material:'Metal/Cam',volume:'-',precision:'-',usage:'Cam bir kabın içinde ispirto emdirilmiş fitil bulunan ısıtma aracıdır.',color:[255,100,50],type:'isirtocagi'},
+{id:'bunzenbek',name:'Bunzen Bek',group:'Isıtma Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Isıtma ve yakma işlemlerinde kullanılan gazlı ocaktır.',color:[255,100,50],type:'bunzenbek'},
+{id:'spor',name:'Spor (Destek)',group:'Destek Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Deney düzeneklerinin kurulması ve sabitlenmesi amacıyla kullanılan metal ayak ve çubuktan oluşan malzemedir.',color:[180,180,180],type:'spor'},
+{id:'sacayagi',name:'Sacayağı',group:'Destek Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Isıtma işleminde kullanılan metalden yapılmış malzemedir.',color:[180,180,180],type:'sacayagi'},
+{id:'kiskac',name:'Kıskaç',group:'Destek Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Çeşitli laboratuvar malzemelerini spora sabitlemek için kullanılır.',color:[180,180,180],type:'kiskac'},
+{id:'amyanthtel',name:'Amyant Tel',group:'Isıtma Malzemeleri',material:'Asbest/Magnezyum',volume:'-',precision:'-',usage:'Bunzen beki aleviyle ısıtma işlemlerinde cam malzemenin direkt alevle olan ilişkisini kesmek, ısının yavaş ve eşit dağılmasını sağlamak için kullanılan telden yapılmış malzemedir.',color:[255,100,50],type:'amyanthtel'},
+{id:'suzgeckagidi',name:'Süzgeç Kâğıdı',group:'Ayırma Malzemeleri',material:'Selüloz',volume:'-',precision:'-',usage:'Katı ve sıvıları ayırmada kullanılan çeşitli gözenek boyutlu türleri olan filtre kâğıdıdır.',color:[255,107,107],type:'suzgeckagidi'}
+];
 
-    <div class="content">
-        <div id="orbitals" class="tab-panel active">
-            <div class="type-grid">
-                <div class="type-card" onclick="pickType('s', this)">
-                    <h3>s</h3>
-                    <p>1 Orbital · 2e⁻</p>
-                </div>
-                <div class="type-card" onclick="pickType('p', this)">
-                    <h3>p</h3>
-                    <p>3 Orbital · 6e⁻</p>
-                </div>
-                <div class="type-card" onclick="pickType('d', this)">
-                    <h3>d</h3>
-                    <p>5 Orbital · 10e⁻</p>
-                </div>
-                <div class="type-card" onclick="pickType('f', this)">
-                    <h3>f</h3>
-                    <p>7 Orbital · 14e⁻</p>
-                </div>
-            </div>
+const GROUPS=[...new Set(ITEMS.map(i=>i.group))];
 
-            <div class="sub-orbital-grid" id="subGrid"></div>
+function buildTabs(){
+const bar=document.getElementById('tabBar');
+const panels=document.getElementById('panels');
+bar.innerHTML='';panels.innerHTML='';
+GROUPS.forEach((g,idx)=>{
+const btn=document.createElement('button');
+btn.className='tab-btn'+(idx===0?' active':'');
+btn.textContent=g;
+btn.onclick=()=>switchTab(idx);
+bar.appendChild(btn);
+const panel=document.createElement('div');
+panel.className='tab-panel'+(idx===0?' active':'');
+panel.id='panel-'+idx;
+const grid=document.createElement('div');
+grid.className='grid';
+const groupItems=ITEMS.filter(i=>i.group===g);
+groupItems.forEach(item=>{
+const card=document.createElement('div');
+card.className='card';
+card.innerHTML='<h3>'+item.name+'</h3><p>'+item.material+'</p>';
+card.onclick=()=>selectItem(item,card);
+grid.appendChild(card);
+});
+panel.appendChild(grid);
+panels.appendChild(panel);
+});
+}
 
-            <div class="sim-box">
-                <div class="sim-title" id="simTitle">Bir orbital turu secin</div>
-                <canvas id="orbitalCanvas" width="600" height="420"></canvas>
-                <p class="hint-drag">👆 Ekrana dokunarak 3D dondurun</p>
-                <div class="controls">
-                    <button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Dondur</button>
-                    <button class="ctrl-btn" onclick="toggleElec()">⚡ Elektronlar</button>
-                    <button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavas</button>
-                    <button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hizli</button>
-                    <button class="ctrl-btn" onclick="resetView()">🎯 Sifirla</button>
-                </div>
-            </div>
+function switchTab(idx){
+document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+document.getElementById('panel-'+idx).classList.add('active');
+document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+}
 
-            <div class="props">
-                <h3>📋 Orbital Ozellikleri</h3>
-                <div class="prop-row"><span class="prop-label">Tip:</span><span class="prop-val" id="pType">-</span></div>
-                <div class="prop-row"><span class="prop-label">Alt Orbital:</span><span class="prop-val" id="pSub">-</span></div>
-                <div class="prop-row"><span class="prop-label">l (Acisal Momentum):</span><span class="prop-val" id="pL">-</span></div>
-                <div class="prop-row"><span class="prop-label">mₗ (Manyetik):</span><span class="prop-val" id="pMl">-</span></div>
-                <div class="prop-row"><span class="prop-label">Maks. Elektron:</span><span class="prop-val" id="pElec">-</span></div>
-                <div class="prop-row"><span class="prop-label">Sekil:</span><span class="prop-val" id="pShape">-</span></div>
-                <div class="prop-desc" id="pDesc">Bir orbital turu secin, ardindan alt orbital butonlarindan birine tiklayin.</div>
-            </div>
-        </div>
+function selectItem(item,cardEl){
+activeItem=item;
+document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected'));
+cardEl.classList.add('selected');
+let simBox=document.getElementById('simBox');
+if(!simBox){
+simBox=document.createElement('div');
+simBox.id='simBox';
+simBox.className='sim-box';
+document.querySelector('.content').insertBefore(simBox,document.querySelector('.content').firstChild);
+simBox.innerHTML='<div class="sim-title" id="simTitle"></div>';
+simBox.appendChild(canvas);
+const hint=document.createElement('p');
+hint.className='hint-drag';
+hint.textContent='👆 Ekrana dokunarak 3D döndürün';
+simBox.appendChild(hint);
+const controls=document.createElement('div');
+controls.className='controls';
+controls.innerHTML='<button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button><button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button><button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button><button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>';
+simBox.appendChild(controls);
+const props=document.createElement('div');
+props.className='props';
+props.id='propsBox';
+document.querySelector('.content').insertBefore(props,document.querySelector('.content').firstChild.nextSibling);
+}
+document.getElementById('simTitle').textContent=item.name+' - 3D Görselleştirme';
+const props=document.getElementById('propsBox');
+props.innerHTML='<h3>📋 '+item.name+' Özellikleri</h3><div class="prop-row"><span class="prop-label">Malzeme:</span><span class="prop-val">'+item.material+'</span></div><div class="prop-row"><span class="prop-label">Hacim:</span><span class="prop-val">'+item.volume+'</span></div><div class="prop-row"><span class="prop-label">Hassasiyet:</span><span class="prop-val">'+item.precision+'</span></div><div class="prop-row"><span class="prop-label">Grup:</span><span class="prop-val">'+item.group+'</span></div><div class="prop-desc">'+item.usage+'</div>';
+t=0;rotX=0.4;rotY=0.3;
+if(animFrame)cancelAnimationFrame(animFrame);
+loop();
+window.scrollTo({top:0,behavior:'smooth'});
+}
 
-        <div id="videos" class="tab-panel">
-            <div class="video-input">
-                <h2>🎥 Video Ekle</h2>
-                <input type="text" id="vUrl" placeholder="GitHub raw video URL...">
-                <input type="text" id="vTitle" placeholder="Video basligi...">
-                <button class="btn-add" onclick="addVid()">➕ Ekle</button>
-                <p class="hint">💡 GitHub'daki videonun raw linkini yapistirin</p>
-            </div>
-            <div class="videos-grid" id="vGrid">
-                <div class="empty">
-                    <p>Henuz video yok</p>
-                    <p style="font-size:0.8rem;margin-top:5px;">Yukariya URL ekleyin</p>
-                </div>
-            </div>
-        </div>
-    </div>
+function resizeCanvas(){
+const simBox=document.getElementById('simBox');
+if(!simBox)return;
+const rect=canvas.getBoundingClientRect();
+const dpr=window.devicePixelRatio||1;
+canvas.width=rect.width*dpr;
+canvas.height=rect.height*dpr;
+W=rect.width;H=rect.height;
+c.scale(dpr,dpr);
+}
+window.addEventListener('resize',resizeCanvas);
 
-    <script>
-        function switchTab(name) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(name).classList.add('active');
-            event.target.classList.add('active');
-        }
+canvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY});
+canvas.addEventListener('mousemove',e=>{if(!isDragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;rotY+=dx*0.01;rotX+=dy*0.01;lastX=e.clientX;lastY=e.clientY});
+canvas.addEventListener('mouseup',()=>isDragging=false);
+canvas.addEventListener('mouseleave',()=>isDragging=false);
+canvas.addEventListener('touchstart',e=>{isDragging=true;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;e.preventDefault()},{passive:false});
+canvas.addEventListener('touchmove',e=>{if(!isDragging)return;const dx=e.touches[0].clientX-lastX,dy=e.touches[0].clientY-lastY;rotY+=dx*0.015;rotX+=dy*0.015;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;e.preventDefault()},{passive:false});
+canvas.addEventListener('touchend',()=>isDragging=false);
 
-        const canvas = document.getElementById('orbitalCanvas');
-        const c = canvas.getContext('2d');
-        let W = 600, H = 420;
-        let activeType = null, activeSub = null;
-        let t = 0, autoSpin = true, elecOn = true, spd = 1;
-        let animFrame = null;
+function rotate3D(x,y,z){
+let y1=y*Math.cos(rotX)-z*Math.sin(rotX);
+let z1=y*Math.sin(rotX)+z*Math.cos(rotX);
+let x2=x*Math.cos(rotY)+z1*Math.sin(rotY);
+let z2=-x*Math.sin(rotY)+z1*Math.cos(rotY);
+return{x:x2,y:y1,z:z2};
+}
 
-        let rotX = 0.4, rotY = 0.3;
-        let isDragging = false;
-        let lastX = 0, lastY = 0;
+function project(x,y,z){
+const r=rotate3D(x,y,z);
+const scale=280/(350+r.z);
+return{x:W/2+r.x*scale,y:H/2+r.y*scale,z:r.z,scale:scale};
+}
 
-        function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            W = rect.width;
-            H = rect.height;
-            c.scale(dpr, dpr);
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+function rgba(rgb,a){return'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+a+')'}
 
-        canvas.addEventListener('mousedown', e => {
-            isDragging = true;
-            lastX = e.clientX;
-            lastY = e.clientY;
-        });
-        canvas.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastX;
-            const dy = e.clientY - lastY;
-            rotY += dx * 0.01;
-            rotX += dy * 0.01;
-            lastX = e.clientX;
-            lastY = e.clientY;
-        });
-        canvas.addEventListener('mouseup', () => isDragging = false);
-        canvas.addEventListener('mouseleave', () => isDragging = false);
-        
-        canvas.addEventListener('touchstart', e => {
-            isDragging = true;
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-            e.preventDefault();
-        }, {passive: false});
-        canvas.addEventListener('touchmove', e => {
-            if (!isDragging) return;
-            const dx = e.touches[0].clientX - lastX;
-            const dy = e.touches[0].clientY - lastY;
-            rotY += dx * 0.015;
-            rotX += dy * 0.015;
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-            e.preventDefault();
-        }, {passive: false});
-        canvas.addEventListener('touchend', () => isDragging = false);
+function clear(){
+c.clearRect(0,0,W,H);
+c.fillStyle='#050510';
+c.fillRect(0,0,W,H);
+}
 
-        function rotate3D(x, y, z) {
-            let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
-            let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
-            let x2 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
-            let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
-            return {x: x2, y: y1, z: z2};
-        }
+function drawAxes(){
+const len=100;
+const axes=[{x:len,y:0,z:0,label:'x',col:'#ff5555'},{x:0,y:-len,z:0,label:'y',col:'#55ff55'},{x:0,y:0,z:len,label:'z',col:'#5555ff'}];
+c.strokeStyle='rgba(255,255,255,0.12)';c.lineWidth=1.5;
+axes.forEach(ax=>{
+const p=project(ax.x,ax.y,ax.z);
+const o=project(0,0,0);
+c.beginPath();c.moveTo(o.x,o.y);c.lineTo(p.x,p.y);c.stroke();
+c.fillStyle=ax.col;c.font='bold 11px sans-serif';c.textAlign='center';
+c.fillText(ax.label,p.x+10,p.y-5);
+});
+}
 
-        function project(x, y, z) {
-            const r = rotate3D(x, y, z);
-            const scale = 280 / (350 + r.z);
-            return {
-                x: W/2 + r.x * scale,
-                y: H/2 + r.y * scale,
-                z: r.z,
-                scale: scale
-            };
-        }
+// ===== 3D PRIMITIVES =====
+function drawCylinder(x,y,z,r,h,rgb,alpha,rotLocalX,rotLocalY){
+const slices=20,stacks=1;
+const triangles=[];
+for(let i=0;i<slices;i++){
+for(let j=0;j<stacks;j++){
+const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+const v1=j/stacks,v2=(j+1)/stacks;
+const corners=[cylPoint(x,y,z,r,h,u1,v1,rotLocalX,rotLocalY),cylPoint(x,y,z,r,h,u2,v1,rotLocalX,rotLocalY),cylPoint(x,y,z,r,h,u2,v2,rotLocalX,rotLocalY),cylPoint(x,y,z,r,h,u1,v2,rotLocalX,rotLocalY)];
+triangles.push({p:[corners[0],corners[1],corners[2]],avgZ:(corners[0].z+corners[1].z+corners[2].z)/3});
+triangles.push({p:[corners[0],corners[2],corners[3]],avgZ:(corners[0].z+corners[2].z+corners[3].z)/3});
+}}
+triangles.sort((a,b)=>b.avgZ-a.avgZ);
+triangles.forEach(tri=>{
+const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
+c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
+c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
+});
+}
 
-        const ORBITALS = {
-            s: {
-                subs: [{ name: '1s', ml: 0, desc: '1s orbitali en dusuk enerjili orbitaldir. Cekirdek etrafinda kuresel simetriye sahiptir. 2 elektron barindirir.' }],
-                l: 0, max: 2, shape: 'Kuresel',
-                color: [0, 212, 255]
-            },
-            p: {
-                subs: [
-                    { name: 'px', ml: -1, desc: 'px orbitali x-ekseni boyunca uzanan cift loblu (dumbbell) sekildedir.' },
-                    { name: 'py', ml: 0, desc: 'py orbitali y-ekseni boyunca uzanan cift loblu sekildedir.' },
-                    { name: 'pz', ml: +1, desc: 'pz orbitali z-ekseni boyunca uzanan cift loblu sekildedir.' }
-                ],
-                l: 1, max: 6, shape: 'Cift Loblu (Dumbbell)',
-                color: [255, 107, 107]
-            },
-            d: {
-                subs: [
-                    { name: 'dxy', ml: -2, desc: 'dxy orbitali x ve y eksenleri ARASINDA (45°) yer alan dort yaprakli sekildedir.' },
-                    { name: 'dyz', ml: -1, desc: 'dyz orbitali y ve z eksenleri arasinda yer alan dort yaprakli sekildedir.' },
-                    { name: 'dxz', ml: 0, desc: 'dxz orbitali x ve z eksenleri arasinda yer alan dort yaprakli sekildedir.' },
-                    { name: 'dx2-y2', ml: +1, desc: 'dx2-y2 orbitali x ve y eksenleri UZERINDE yer alan dort yaprakli sekildedir.' },
-                    { name: 'dz2', ml: +2, desc: 'dz2 orbitali z-ekseni boyunca iki buyuk lob ve ortada bir halka (torus) sekildedir.' }
-                ],
-                l: 2, max: 10, shape: 'Klover / Torus',
-                color: [34, 180, 80]
-            },
-            f: {
-                subs: [
-                    { name: 'fxyz', ml: -3, desc: 'fxyz orbitali uc eksenin kosegenleri boyunca yonelmis karmasik yapidadir.' },
-                    { name: 'fz(x2-y2)', ml: -2, desc: 'fz(x2-y2) orbitali z-ekseni etrafinda dort yaprakli simetrik yapıya sahiptir.' },
-                    { name: 'fy(3x2-y2)', ml: -1, desc: 'fy(3x2-y2) orbitali y-ekseni boyunca uzanan karmasik yapidadir.' },
-                    { name: 'fz3', ml: 0, desc: 'fz3 orbitali z-ekseni boyunca uzanan, merkezi halkali karmasik yapidadir.' },
-                    { name: 'fx(3y2-x2)', ml: +1, desc: 'fx(3y2-x2) orbitali x-ekseni boyunca uzanan karmasik yapidadir.' },
-                    { name: 'fz(x2-y2)', ml: +2, desc: 'fz(x2-y2) orbitali z-ekseni etrafinda dort yaprakli yapidadir.' },
-                    { name: 'fx3', ml: +3, desc: 'fx3 orbitali x-ekseni boyunca uzanan, en karmasik f orbitalidir.' }
-                ],
-                l: 3, max: 14, shape: 'Cok Karmasik (8 Lob)',
-                color: [168, 85, 247]
-            }
-        };
+function cylPoint(cx,cy,cz,r,h,u,v,rotLX,rotLY){
+let x=r*Math.cos(u),y=-h/2+h*v,z=r*Math.sin(u);
+if(rotLX||rotLY){
+let y1=y*Math.cos(rotLX||0)-z*Math.sin(rotLX||0);
+let z1=y*Math.sin(rotLX||0)+z*Math.cos(rotLX||0);
+let x2=x*Math.cos(rotLY||0)+z1*Math.sin(rotLY||0);
+let z2=-x*Math.sin(rotLY||0)+z1*Math.cos(rotLY||0);
+x=x2;y=y1;z=z2;
+}
+return project(cx+x,cy+y,cz+z);
+}
 
-        function rgba(rgb, a) { return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'; }
+function drawSphere(x,y,z,r,rgb,alpha){
+const slices=16,stacks=12;
+const triangles=[];
+for(let i=0;i<slices;i++){
+for(let j=0;j<stacks;j++){
+const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+const v1=(Math.PI/stacks)*j-Math.PI/2,v2=(Math.PI/stacks)*(j+1)-Math.PI/2;
+const corners=[spherePoint(x,y,z,r,u1,v1),spherePoint(x,y,z,r,u2,v1),spherePoint(x,y,z,r,u2,v2),spherePoint(x,y,z,r,u1,v2)];
+triangles.push({p:[corners[0],corners[1],corners[2]],avgZ:(corners[0].z+corners[1].z+corners[2].z)/3});
+triangles.push({p:[corners[0],corners[2],corners[3]],avgZ:(corners[0].z+corners[2].z+corners[3].z)/3});
+}}
+triangles.sort((a,b)=>b.avgZ-a.avgZ);
+triangles.forEach(tri=>{
+const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
+c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
+c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
+});
+}
 
-        function pickType(type, el) {
-            activeType = type;
-            activeSub = null;
-            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            
-            const d = ORBITALS[type];
-            document.getElementById('simTitle').textContent = type.toUpperCase() + ' Orbitalleri';
-            
-            const grid = document.getElementById('subGrid');
-            grid.innerHTML = '';
-            d.subs.forEach((sub, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'sub-btn';
-                btn.textContent = sub.name;
-                btn.onclick = function() { pickSub(type, i, this); };
-                grid.appendChild(btn);
-            });
-            
-            document.getElementById('pType').textContent = type.toUpperCase();
-            document.getElementById('pSub').textContent = 'Seciniz';
-            document.getElementById('pL').textContent = d.l;
-            document.getElementById('pMl').textContent = d.subs.map(s => s.ml).join(', ');
-            document.getElementById('pElec').textContent = d.max;
-            document.getElementById('pShape').textContent = d.shape;
-            document.getElementById('pDesc').textContent = 'Yukaridaki butonlardan bir alt orbital secin.';
-            
-            t = 0;
-            rotX = 0.4; rotY = 0.3;
-        }
+function spherePoint(cx,cy,cz,r,u,v){
+return project(cx+r*Math.cos(v)*Math.cos(u),cy+r*Math.cos(v)*Math.sin(u),cz+r*Math.sin(v));
+}
 
-        function pickSub(type, idx, el) {
-            activeSub = idx;
-            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-            
-            const d = ORBITALS[type];
-            const sub = d.subs[idx];
-            
-            document.getElementById('simTitle').textContent = sub.name + ' Orbitali (Gercek 3D)';
-            document.getElementById('pSub').textContent = sub.name;
-            document.getElementById('pMl').textContent = sub.ml;
-            document.getElementById('pDesc').textContent = sub.desc;
-            
-            t = 0;
-            rotX = 0.4; rotY = 0.3;
-            if (animFrame) cancelAnimationFrame(animFrame);
-            loop();
-        }
+function drawDisk(x,y,z,r,rgb,alpha){
+const slices=20;
+const triangles=[];
+const o=project(x,y,z);
+for(let i=0;i<slices;i++){
+const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+const p1=project(x+r*Math.cos(u1),y,z+r*Math.sin(u1));
+const p2=project(x+r*Math.cos(u2),y,z+r*Math.sin(u2));
+triangles.push({p:[o,p1,p2],avgZ:(o.z+p1.z+p2.z)/3});
+}
+triangles.sort((a,b)=>b.avgZ-a.avgZ);
+triangles.forEach(tri=>{
+const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
+c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
+c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
+});
+}
 
-        function clear() {
-            c.clearRect(0, 0, W, H);
-            c.fillStyle = '#050510';
-            c.fillRect(0, 0, W, H);
-        }
+function drawCone(x,y,z,r,h,rgb,alpha,dir){
+const slices=20;
+const triangles=[];
+const tip=project(x+dir.x*h,y+dir.y*h,z+dir.z*h);
+for(let i=0;i<slices;i++){
+const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+let perp1={x:0,y:0,z:0},perp2={x:0,y:0,z:0};
+if(Math.abs(dir.y)<0.9){perp1={x:-dir.z,y:0,z:dir.x}}
+else{perp1={x:1,y:0,z:0}}
+const len1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
+perp1.x/=len1;perp1.y/=len1;perp1.z/=len1;
+perp2.x=dir.y*perp1.z-dir.z*perp1.y;
+perp2.y=dir.z*perp1.x-dir.x*perp1.z;
+perp2.z=dir.x*perp1.y-dir.y*perp1.x;
+const p1=project(x+r*(perp1.x*Math.cos(u1)+perp2.x*Math.sin(u1)),y+r*(perp1.y*Math.cos(u1)+perp2.y*Math.sin(u1)),z+r*(perp1.z*Math.cos(u1)+perp2.z*Math.sin(u1)));
+const p2=project(x+r*(perp1.x*Math.cos(u2)+perp2.x*Math.sin(u2)),y+r*(perp1.y*Math.cos(u2)+perp2.y*Math.sin(u2)),z+r*(perp1.z*Math.cos(u2)+perp2.z*Math.sin(u2)));
+triangles.push({p:[tip,p1,p2],avgZ:(tip.z+p1.z+p2.z)/3});
+}
+triangles.sort((a,b)=>b.avgZ-a.avgZ);
+triangles.forEach(tri=>{
+const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
+c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
+c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
+});
+}
 
-        function drawAxes() {
-            const len = 140;
-            const axes = [
-                {x: len, y: 0, z: 0, label: 'x', col: '#ff5555'},
-                {x: 0, y: -len, z: 0, label: 'y', col: '#55ff55'},
-                {x: 0, y: 0, z: len, label: 'z', col: '#5555ff'}
-            ];
-            c.strokeStyle = 'rgba(255,255,255,0.12)';
-            c.lineWidth = 1.5;
-            axes.forEach(ax => {
-                const p = project(ax.x, ax.y, ax.z);
-                const o = project(0, 0, 0);
-                c.beginPath();
-                c.moveTo(o.x, o.y);
-                c.lineTo(p.x, p.y);
-                c.stroke();
-                c.fillStyle = ax.col;
-                c.font = 'bold 11px sans-serif';
-                c.textAlign = 'center';
-                c.fillText(ax.label, p.x + 10, p.y - 5);
-            });
-        }
+function drawTube(x1,y1,z1,x2,y2,z2,r,rgb,alpha){
+const slices=16;
+const triangles=[];
+const dx=x2-x1,dy=y2-y1,dz=z2-z1;
+const len=Math.sqrt(dx*dx+dy*dy+dz*dz);
+const dir={x:dx/len,y:dy/len,z:dz/len};
+let perp1={x:0,y:0,z:0},perp2={x:0,y:0,z:0};
+if(Math.abs(dir.y)<0.9){perp1={x:-dir.z,y:0,z:dir.x}}
+else{perp1={x:1,y:0,z:0}}
+const len1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
+perp1.x/=len1;perp1.y/=len1;perp1.z/=len1;
+perp2.x=dir.y*perp1.z-dir.z*perp1.y;
+perp2.y=dir.z*perp1.x-dir.x*perp1.z;
+perp2.z=dir.x*perp1.y-dir.y*perp1.x;
+for(let i=0;i<slices;i++){
+const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+const c1=Math.cos(u1),s1=Math.sin(u1),c2=Math.cos(u2),s2=Math.sin(u2);
+const ax1=x1+r*(perp1.x*c1+perp2.x*s1);
+const ay1=y1+r*(perp1.y*c1+perp2.y*s1);
+const az1=z1+r*(perp1.z*c1+perp2.z*s1);
+const ax2=x1+r*(perp1.x*c2+perp2.x*s2);
+const ay2=y1+r*(perp1.y*c2+perp2.y*s2);
+const az2=z1+r*(perp1.z*c2+perp2.z*s2);
+const bx1=x2+r*(perp1.x*c1+perp2.x*s1);
+const by1=y2+r*(perp1.y*c1+perp2.y*s1);
+const bz1=z2+r*(perp1.z*c1+perp2.z*s1);
+const bx2=x2+r*(perp1.x*c2+perp2.x*s2);
+const by2=y2+r*(perp1.y*c2+perp2.y*s2);
+const bz2=z2+r*(perp1.z*c2+perp2.z*s2);
+const pa1=project(ax1,ay1,az1),pa2=project(ax2,ay2,az2);
+const pb1=project(bx1,by1,bz1),pb2=project(bx2,by2,bz2);
+triangles.push({p:[pa1,pa2,pb2],avgZ:(pa1.z+pa2.z+pb2.z)/3});
+triangles.push({p:[pa1,pb2,pb1],avgZ:(pa1.z+pb2.z+pb1.z)/3});
+}
+triangles.sort((a,b)=>b.avgZ-a.avgZ);
+triangles.forEach(tri=>{
+const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
+c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
+c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
+});
+}
 
-        function drawNucleus() {
-            const p = project(0, 0, 0);
-            const r = 8 * p.scale;
-            c.beginPath();
-            c.arc(p.x, p.y, r + 10, 0, Math.PI*2);
-            c.fillStyle = 'rgba(255,255,255,0.08)';
-            c.fill();
-            c.beginPath(); c.arc(p.x - 2, p.y - 2, r * 0.7, 0, Math.PI*2);
-            c.fillStyle = '#ff3333'; c.fill();
-            c.beginPath(); c.arc(p.x + 2, p.y + 2, r * 0.7, 0, Math.PI*2);
-            c.fillStyle = '#3366ff'; c.fill();
-            c.beginPath(); c.arc(p.x, p.y, r * 0.5, 0, Math.PI*2);
-            c.fillStyle = '#ff5555'; c.fill();
-        }
+function drawBox(x,y,z,w,h,d,rgb,alpha){
+const hw=w/2,hh=h/2,hd=d/2;
+const corners=[project(x-hw,y-hh,z-hd),project(x+hw,y-hh,z-hd),project(x+hw,y+hh,z-hd),project(x-hw,y+hh,z-hd),project(x-hw,y-hh,z+hd),project(x+hw,y-hh,z+hd),project(x+hw,y+hh,z+hd),project(x-hw,y+hh,z+hd)];
+const faces=[{p:[0,1,2,3],n:[0,0,-1]},{p:[4,5,6,7],n:[0,0,1]},{p:[0,1,5,4],n:[0,-1,0]},{p:[2,3,7,6],n:[0,1,0]},{p:[0,3,7,4],n:[-1,0,0]},{p:[1,2,6,5],n:[1,0,0]}];
+const tris=[];
+faces.forEach(f=>{
+const p0=corners[f.p[0]],p1=corners[f.p[1]],p2=corners[f.p[2]],p3=corners[f.p[3]];
+tris.push({p:[p0,p1,p2],avgZ:(p0.z+p1.z+p2.z)/3});
+tris.push({p:[p0,p2,p3],avgZ:(p0.z+p2.z+p3.z)/3});
+});
+tris.sort((a,b)=>b.avgZ-a.avgZ);
+tris.forEach(tri=>{
+const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
+c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
+c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
+});
+}
 
-        function draw3DEllipsoid(cx, cy, cz, rx, ry, rz, rgb, alpha, rotLocalX, rotLocalY) {
-            const slices = 20;
-            const stacks = 14;
-            const triangles = [];
-            
-            for (let i = 0; i < slices; i++) {
-                for (let j = 0; j < stacks; j++) {
-                    const u1 = (Math.PI * 2 / slices) * i;
-                    const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI / stacks) * j - Math.PI/2;
-                    const v2 = (Math.PI / stacks) * (j + 1) - Math.PI/2;
-                    
-                    const corners = [
-                        spherePoint(cx, cy, cz, rx, ry, rz, u1, v1, rotLocalX, rotLocalY),
-                        spherePoint(cx, cy, cz, rx, ry, rz, u2, v1, rotLocalX, rotLocalY),
-                        spherePoint(cx, cy, cz, rx, ry, rz, u2, v2, rotLocalX, rotLocalY),
-                        spherePoint(cx, cy, cz, rx, ry, rz, u1, v2, rotLocalX, rotLocalY)
-                    ];
-                    
-                    triangles.push({
-                        p: [corners[0], corners[1], corners[2]],
-                        avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
-                    });
-                    triangles.push({
-                        p: [corners[0], corners[2], corners[3]],
-                        avgZ: (corners[0].z + corners[2].z + corners[3].z) / 3
-                    });
-                }
-            }
-            
-            triangles.sort((a, b) => b.avgZ - a.avgZ);
-            
-            triangles.forEach(tri => {
-                const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 120) / 350));
-                
-                c.beginPath();
-                c.moveTo(tri.p[0].x, tri.p[0].y);
-                c.lineTo(tri.p[1].x, tri.p[1].y);
-                c.lineTo(tri.p[2].x, tri.p[2].y);
-                c.closePath();
-                
-                c.fillStyle = rgba(rgb, alpha * depth * 0.55);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.25 * depth);
-                c.lineWidth = 0.4;
-                c.stroke();
-            });
-        }
+function drawGraduations(x,y,z,h,r,rgb,count){
+for(let i=0;i<=count;i++){
+const yy=y-h/2+(h/count)*i;
+const p1=project(x-r-3,yy,z);
+const p2=project(x-r+3,yy,z);
+c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);
+c.strokeStyle=rgba(rgb,0.6);c.lineWidth=1;c.stroke();
+}
+}
 
-        function spherePoint(cx, cy, cz, rx, ry, rz, u, v, rotLX, rotLY) {
-            let x = rx * Math.cos(v) * Math.cos(u);
-            let y = ry * Math.cos(v) * Math.sin(u);
-            let z = rz * Math.sin(v);
-            
-            if (rotLX || rotLY) {
-                let y1 = y * Math.cos(rotLX || 0) - z * Math.sin(rotLX || 0);
-                let z1 = y * Math.sin(rotLX || 0) + z * Math.cos(rotLX || 0);
-                let x2 = x * Math.cos(rotLY || 0) + z1 * Math.sin(rotLY || 0);
-                let z2 = -x * Math.sin(rotLY || 0) + z1 * Math.cos(rotLY || 0);
-                x = x2; y = y1; z = z2;
-            }
-            
-            return project(cx + x, cy + y, cz + z);
-        }
+// ===== SPECIFIC ITEM DRAWERS =====
+function drawBeherglas(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCylinder(0,0,0,50*p,70*p,rgb,0.5);
+drawTube(0,-35*p,0,0,-38*p,0,52*p,rgb,0.7);
+drawCone(0,-35*p,0,8*p,12*p,rgb,0.6,{x:0.7,y:0,z:0.7});
+drawDisk(0,35*p,0,48*p,rgb,0.6);
+drawCylinder(0,10*p,0,45*p,40*p,[0,150,255],0.3);
+drawGraduations(0,0,0,60*p,50*p,[255,255,255],5);
+}
 
-        // ===== TEARDROP LOBE - SIMPLIFIED AND FIXED =====
-        // Profile: flat base at origin -> bulge outward -> taper to point at tip
-        // Uses a simple power curve for reliable rendering
-        function draw3DLobe(cx, cy, cz, length, radius, rgb, alpha, direction) {
-            const slices = 24;
-            const stacks = 20;
-            const triangles = [];
-            
-            for (let i = 0; i < slices; i++) {
-                for (let j = 0; j < stacks; j++) {
-                    const u1 = (Math.PI * 2 / slices) * i;
-                    const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = j / stacks; // 0 to 1
-                    const v2 = (j + 1) / stacks;
-                    
-                    const corners = [
-                        lobePoint(cx, cy, cz, length, radius, u1, v1, direction),
-                        lobePoint(cx, cy, cz, length, radius, u2, v1, direction),
-                        lobePoint(cx, cy, cz, length, radius, u2, v2, direction),
-                        lobePoint(cx, cy, cz, length, radius, u1, v2, direction)
-                    ];
-                    
-                    triangles.push({
-                        p: [corners[0], corners[1], corners[2]],
-                        avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
-                    });
-                    triangles.push({
-                        p: [corners[0], corners[2], corners[3]],
-                        avgZ: (corners[0].z + corners[2].z + corners[3].z) / 3
-                    });
-                }
-            }
-            
-            triangles.sort((a, b) => b.avgZ - a.avgZ);
-            
-            triangles.forEach(tri => {
-                const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 120) / 350));
-                c.beginPath();
-                c.moveTo(tri.p[0].x, tri.p[0].y);
-                c.lineTo(tri.p[1].x, tri.p[1].y);
-                c.lineTo(tri.p[2].x, tri.p[2].y);
-                c.closePath();
-                c.fillStyle = rgba(rgb, alpha * depth * 0.6);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.3 * depth);
-                c.lineWidth = 0.5;
-                c.stroke();
-            });
-        }
+function drawErlenmayer(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,15*p,0,35*p,rgb,0.5);
+drawCylinder(0,-25*p,0,18*p,30*p,rgb,0.5);
+drawTube(0,-40*p,0,0,-43*p,0,20*p,rgb,0.7);
+drawSphere(0,15*p,0,30*p,[0,150,255],0.3);
+drawGraduations(0,-25*p,0,25*p,18*p,[255,255,255],3);
+}
 
-        function lobePoint(cx, cy, cz, length, radius, u, v, dir) {
-            // v: 0 to 1
-            // v=0: at origin, flat face with neckRadius
-            // v~0.5: maximum bulge at maxRadius
-            // v=1: at tip, radius = 0 (closed point)
-            
-            // Build perpendicular vectors
-            let perp1 = {x: 0, y: 0, z: 0};
-            let perp2 = {x: 0, y: 0, z: 0};
-            
-            if (Math.abs(dir.y) < 0.9) {
-                perp1 = {x: -dir.z, y: 0, z: dir.x};
-            } else {
-                perp1 = {x: 1, y: 0, z: 0};
-            }
-            
-            const len1 = Math.sqrt(perp1.x*perp1.x + perp1.y*perp1.y + perp1.z*perp1.z);
-            perp1.x /= len1; perp1.y /= len1; perp1.z /= len1;
-            
-            perp2.x = dir.y * perp1.z - dir.z * perp1.y;
-            perp2.y = dir.z * perp1.x - dir.x * perp1.z;
-            perp2.z = dir.x * perp1.y - dir.y * perp1.x;
-            
-            // Distance from origin along direction
-            // Use smoothstep-like curve: slow start, faster middle, slow end
-            const dist = length * v * v * (3 - 2 * v); // smoothstep(v)
-            
-            // Radius profile: teardrop shape
-            // v=0: neckRadius (flat base)
-            // v=0.5: maxRadius (widest point)
-            // v=1: 0 (pointed tip)
-            const neckRadius = radius * 0.3;
-            let r;
-            if (v < 0.5) {
-                // Base to bulge: neckRadius -> maxRadius
-                const t = v / 0.5; // 0 to 1
-                r = neckRadius + (radius - neckRadius) * Math.sin(t * Math.PI / 2);
-            } else {
-                // Bulge to tip: maxRadius -> 0
-                const t = (v - 0.5) / 0.5; // 0 to 1
-                r = radius * Math.cos(t * Math.PI / 2);
-            }
-            
-            const x = cx + dir.x * dist + perp1.x * r * Math.cos(u) + perp2.x * r * Math.sin(u);
-            const y = cy + dir.y * dist + perp1.y * r * Math.cos(u) + perp2.y * r * Math.sin(u);
-            const z = cz + dir.z * dist + perp1.z * r * Math.cos(u) + perp2.z * r * Math.sin(u);
-            
-            return project(x, y, z);
-        }
+function drawCamBalon(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,0,0,50*p,rgb,0.5);
+drawCylinder(0,-55*p,0,15*p,25*p,rgb,0.5);
+drawTube(0,-67*p,0,0,-70*p,0,17*p,rgb,0.7);
+drawSphere(0,5*p,0,42*p,[0,150,255],0.3);
+}
 
-        function draw3DTorus(cx, cy, cz, majorR, minorR, rgb, alpha) {
-            const slices = 24;
-            const stacks = 12;
-            const triangles = [];
-            
-            for (let i = 0; i < slices; i++) {
-                for (let j = 0; j < stacks; j++) {
-                    const u1 = (Math.PI * 2 / slices) * i;
-                    const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI * 2 / stacks) * j;
-                    const v2 = (Math.PI * 2 / stacks) * (j + 1);
-                    
-                    const corners = [
-                        torusPoint(cx, cy, cz, majorR, minorR, u1, v1),
-                        torusPoint(cx, cy, cz, majorR, minorR, u2, v1),
-                        torusPoint(cx, cy, cz, majorR, minorR, u2, v2),
-                        torusPoint(cx, cy, cz, majorR, minorR, u1, v2)
-                    ];
-                    
-                    triangles.push({
-                        p: [corners[0], corners[1], corners[2]],
-                        avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
-                    });
-                    triangles.push({
-                        p: [corners[0], corners[2], corners[3]],
-                        avgZ: (corners[0].z + corners[2].z + corners[3].z) / 3
-                    });
-                }
-            }
-            
-            triangles.sort((a, b) => b.avgZ - a.avgZ);
-            
-            triangles.forEach(tri => {
-                const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 100) / 350));
-                c.beginPath();
-                c.moveTo(tri.p[0].x, tri.p[0].y);
-                c.lineTo(tri.p[1].x, tri.p[1].y);
-                c.lineTo(tri.p[2].x, tri.p[2].y);
-                c.closePath();
-                c.fillStyle = rgba(rgb, alpha * depth * 0.5);
-                c.fill();
-                c.strokeStyle = rgba(rgb, 0.2 * depth);
-                c.lineWidth = 0.5;
-                c.stroke();
-            });
-        }
+function drawBalonJoje(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,10*p,0,40*p,rgb,0.5);
+drawCylinder(0,-45*p,0,12*p,50*p,rgb,0.5);
+drawTube(0,-70*p,0,0,-73*p,0,14*p,rgb,0.7);
+drawCylinder(0,-75*p,0,14*p,8*p,[200,200,200],0.8);
+drawSphere(0,10*p,0,35*p,[0,150,255],0.3);
+const p1=project(-42*p,-20*p,0),p2=project(42*p,-20*p,0);
+c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);
+c.strokeStyle=rgba([255,255,255],0.8);c.lineWidth=2;c.stroke();
+}
 
-        function torusPoint(cx, cy, cz, majorR, minorR, u, v) {
-            const x = cx + (majorR + minorR * Math.cos(v)) * Math.cos(u);
-            const y = cy + (majorR + minorR * Math.cos(v)) * Math.sin(u);
-            const z = cz + minorR * Math.sin(v);
-            return project(x, y, z);
-        }
+function drawAyirmaHunisi(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCone(0,-30*p,0,45*p,-35*p,rgb,0.5,{x:0,y:-1,z:0});
+drawTube(0,0,0,0,40*p,0,8*p,rgb,0.5);
+drawBox(0,35*p,0,15*p,10*p,15*p,[100,100,100],0.8);
+drawTube(8*p,35*p,0,18*p,35*p,0,3*p,[100,100,100],0.8);
+}
 
-        function drawElectron3D(x, y, z) {
-            if (!elecOn) return;
-            const p = project(x, y, z);
-            const r = 4 * p.scale;
-            c.beginPath();
-            c.arc(p.x, p.y, r + 5, 0, Math.PI*2);
-            c.fillStyle = 'rgba(255,255,0,0.15)';
-            c.fill();
-            c.beginPath();
-            c.arc(p.x, p.y, r, 0, Math.PI*2);
-            c.fillStyle = '#ffff00';
-            c.fill();
-        }
+function drawDereceliSilindir(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCylinder(0,0,0,25*p,100*p,rgb,0.5);
+drawDisk(0,50*p,0,30*p,rgb,0.6);
+drawTube(0,-50*p,0,0,-53*p,0,27*p,rgb,0.7);
+drawCylinder(0,10*p,0,22*p,60*p,[0,150,255],0.3);
+drawGraduations(0,0,0,90*p,25*p,[255,255,255],10);
+}
 
-        function drawSOrbital(rgb) {
-            const pulse = 1 + Math.sin(t * 2) * 0.04;
-            draw3DEllipsoid(0, 0, 0, 85 * pulse, 85 * pulse, 85 * pulse, rgb, 0.75);
-            drawNucleus();
-            
-            if (elecOn) {
-                const a1 = t * 2;
-                const a2 = t * 2 + Math.PI;
-                drawElectron3D(65 * Math.cos(a1), 65 * Math.sin(a1) * 0.6, 25 * Math.sin(a1));
-                drawElectron3D(65 * Math.cos(a2), 65 * Math.sin(a2) * 0.6, 25 * Math.sin(a2));
-            }
-        }
+function drawSogutucu(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-50*p,0,0,50*p,0,12*p,rgb,0.4);
+for(let i=0;i<8;i++){
+const y=-40*p+(80*p/8)*i;
+const r=25*p;
+const a=(i%2===0)?0:Math.PI;
+drawTube(r*Math.cos(a),y,r*Math.sin(a),r*Math.cos(a+Math.PI),y+10*p,r*Math.sin(a+Math.PI),6*p,rgb,0.5);
+}
+drawTube(-25*p,-50*p,0,-40*p,-60*p,0,5*p,rgb,0.6);
+drawTube(25*p,50*p,0,40*p,60*p,0,5*p,rgb,0.6);
+}
 
-        function drawPOrbital(subIdx, rgb) {
-            drawAxes();
-            drawNucleus();
-            
-            const lobeLen = 75;
-            const lobeRad = 32;
-            
-            const dirs = [
-                {x: 1, y: 0, z: 0},
-                {x: 0, y: 1, z: 0},
-                {x: 0, y: 0, z: 1}
-            ];
-            const dir = dirs[subIdx];
-            
-            draw3DLobe(0, 0, 0, lobeLen, lobeRad, rgb, 0.78, dir);
-            draw3DLobe(0, 0, 0, lobeLen, lobeRad, rgb, 0.78, {x: -dir.x, y: -dir.y, z: -dir.z});
-            
-            drawNodalPlane(subIdx);
-            
-            if (elecOn) {
-                const a = t * 1.8;
-                const r = 85;
-                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
+function drawHuni(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCone(0,-20*p,0,40*p,-35*p,rgb,0.5,{x:0,y:-1,z:0});
+drawTube(0,0,0,0,35*p,0,8*p,rgb,0.5);
+drawTube(0,-20*p,0,0,-23*p,0,42*p,rgb,0.7);
+}
 
-        function drawDOrbital(subIdx, rgb) {
-            drawAxes();
-            drawNucleus();
-            
-            if (subIdx === 4) {
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x: 0, y: 0, z: 1});
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x: 0, y: 0, z: -1});
-                draw3DTorus(0, 0, 0, 55, 16, rgb, 0.45);
-                
-            } else if (subIdx === 3) {
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 1, y: 0, z: 0});
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: -1, y: 0, z: 0});
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 0, y: 1, z: 0});
-                draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 0, y: -1, z: 0});
-                
-                drawNodalLine3D(55, 55, 0, -55, -55, 0);
-                drawNodalLine3D(-55, 55, 0, 55, -55, 0);
-                
-            } else {
-                const planeDirs = [
-                    [
-                        {x: 0.707, y: 0.707, z: 0},
-                        {x: -0.707, y: 0.707, z: 0},
-                        {x: -0.707, y: -0.707, z: 0},
-                        {x: 0.707, y: -0.707, z: 0}
-                    ],
-                    [
-                        {x: 0, y: 0.707, z: 0.707},
-                        {x: 0, y: -0.707, z: 0.707},
-                        {x: 0, y: -0.707, z: -0.707},
-                        {x: 0, y: 0.707, z: -0.707}
-                    ],
-                    [
-                        {x: 0.707, y: 0, z: 0.707},
-                        {x: -0.707, y: 0, z: 0.707},
-                        {x: -0.707, y: 0, z: -0.707},
-                        {x: 0.707, y: 0, z: -0.707}
-                    ]
-                ];
-                
-                const dirs = planeDirs[subIdx];
-                dirs.forEach((dir, i) => {
-                    draw3DLobe(0, 0, 0, 68, 25, rgb, 0.72, dir);
-                });
-                
-                if (subIdx === 0) {
-                    drawNodalLine3D(-70, 0, 0, 70, 0, 0);
-                    drawNodalLine3D(0, -70, 0, 0, 70, 0);
-                }
-            }
-            
-            if (elecOn) {
-                const a = t * 1.5;
-                const r = 95;
-                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
+function drawCamBoru(rgb){
+const p=1+Math.sin(t*2)*0.02;
+const r=30*p,tr=8*p;
+drawTube(-r,-30*p,0,-r,30*p,0,tr,rgb,0.5);
+drawTube(r,-30*p,0,r,30*p,0,tr,rgb,0.5);
+for(let i=0;i<10;i++){
+const a1=Math.PI+(Math.PI/10)*i;
+const a2=Math.PI+(Math.PI/10)*(i+1);
+const x1=r*Math.cos(a1),z1=r*Math.sin(a1);
+const x2=r*Math.cos(a2),z2=r*Math.sin(a2);
+drawTube(x1,30*p,z1,x2,30*p,z2,tr,rgb,0.5);
+}
+}
 
-        function drawFOrbital(subIdx, rgb) {
-            drawAxes();
-            drawNucleus();
-            
-            const configs = [
-                { dirs: [
-                    {x:0.577,y:0.577,z:0.577}, {x:-0.577,y:0.577,z:0.577},
-                    {x:-0.577,y:-0.577,z:0.577}, {x:0.577,y:-0.577,z:0.577},
-                    {x:0.577,y:0.577,z:-0.577}, {x:-0.577,y:0.577,z:-0.577},
-                    {x:-0.577,y:-0.577,z:-0.577}, {x:0.577,y:-0.577,z:-0.577}
-                ], len: 62, rad: 22 },
-                { dirs: [
-                    {x:0.707,y:0,z:0.707}, {x:-0.707,y:0,z:0.707},
-                    {x:0,y:0.707,z:0.707}, {x:0,y:-0.707,z:0.707},
-                    {x:0.707,y:0,z:-0.707}, {x:-0.707,y:0,z:-0.707},
-                    {x:0,y:0.707,z:-0.707}, {x:0,y:-0.707,z:-0.707}
-                ], len: 58, rad: 20 },
-                { dirs: [
-                    {x:0.866,y:0.5,z:0}, {x:-0.866,y:0.5,z:0},
-                    {x:0,y:1,z:0}, {x:0.866,y:-0.5,z:0},
-                    {x:-0.866,y:-0.5,z:0}, {x:0,y:-1,z:0}
-                ], len: 60, rad: 21 },
-                { dirs: [
-                    {x:0,y:0,z:1}, {x:0,y:0,z:-1}
-                ], len: 75, rad: 26, special: 'z3' },
-                { dirs: [
-                    {x:1,y:0,z:0}, {x:0.5,y:0.866,z:0},
-                    {x:0.5,y:-0.866,z:0}, {x:-0.5,y:0.866,z:0},
-                    {x:-0.5,y:-0.866,z:0}, {x:-1,y:0,z:0}
-                ], len: 60, rad: 21 },
-                { dirs: [
-                    {x:0.707,y:0,z:0.707}, {x:-0.707,y:0,z:0.707},
-                    {x:0.707,y:0,z:-0.707}, {x:-0.707,y:0,z:-0.707}
-                ], len: 65, rad: 23 },
-                { dirs: [
-                    {x:1,y:0,z:0}, {x:0.707,y:0.707,z:0},
-                    {x:0.707,y:0,z:0.707}, {x:0.707,y:0,z:-0.707},
-                    {x:0.707,y:-0.707,z:0}, {x:0,y:1,z:0},
-                    {x:0,y:0,z:1}, {x:0,y:0,z:-1}
-                ], len: 58, rad: 20 }
-            ];
-            
-            const cfg = configs[subIdx] || configs[0];
-            
-            if (cfg.special === 'z3') {
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x:0,y:0,z:1});
-                draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x:0,y:0,z:-1});
-                for (let i = 0; i < 6; i++) {
-                    const a = (Math.PI * 2 / 6) * i;
-                    const dir = {x: Math.cos(a), y: Math.sin(a), z: 0};
-                    draw3DLobe(0, 0, 0, 35, 14, rgb, 0.5, dir);
-                }
-            } else {
-                cfg.dirs.forEach(dir => {
-                    draw3DLobe(0, 0, 0, cfg.len, cfg.rad, rgb, 0.68, dir);
-                });
-            }
-            
-            if (subIdx === 2 || subIdx === 3 || subIdx === 6) {
-                draw3DEllipsoid(0, 0, 0, 18, 18, 18, rgb, 0.2);
-            }
-            
-            if (elecOn) {
-                const a = t * 1.2;
-                const r = 105;
-                drawElectron3D(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
-                drawElectron3D(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
-            }
-        }
+function drawBuret(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-60*p,0,0,50*p,0,8*p,rgb,0.5);
+drawGraduations(0,0,0,100*p,8*p,[255,255,255],10);
+drawBox(0,55*p,0,12*p,10*p,12*p,[100,100,100],0.8);
+drawCone(0,60*p,0,4*p,10*p,rgb,0.6,{x:0,y:1,z:0});
+drawCone(0,-60*p,0,15*p,-12*p,rgb,0.5,{x:0,y:-1,z:0});
+}
 
-        function drawNodalPlane(subIdx) {
-            const size = 75;
-            const step = 12;
-            for (let i = -size; i <= size; i += step) {
-                for (let j = -size; j <= size; j += step) {
-                    let x = 0, y = 0, z = 0;
-                    if (subIdx === 0) { y = i; z = j; }
-                    else if (subIdx === 1) { x = i; z = j; }
-                    else { x = i; y = j; }
-                    const p = project(x, y, z);
-                    c.beginPath();
-                    c.arc(p.x, p.y, 1.5, 0, Math.PI*2);
-                    c.fillStyle = 'rgba(255,255,255,0.07)';
-                    c.fill();
-                }
-            }
-        }
+function drawPipet(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,-50*p,0,12*p,rgb,0.5);
+drawTube(0,-40*p,0,0,40*p,0,5*p,rgb,0.5);
+drawGraduations(0,0,0,70*p,5*p,[255,255,255],7);
+drawCone(0,40*p,0,3*p,8*p,rgb,0.6,{x:0,y:1,z:0});
+}
 
-        function drawNodalLine3D(x1, y1, z1, x2, y2, z2) {
-            const p1 = project(x1, y1, z1);
-            const p2 = project(x2, y2, z2);
-            c.strokeStyle = 'rgba(255,255,255,0.12)';
-            c.lineWidth = 1;
-            c.setLineDash([4, 4]);
-            c.beginPath();
-            c.moveTo(p1.x, p1.y);
-            c.lineTo(p2.x, p2.y);
-            c.stroke();
-            c.setLineDash([]);
-        }
+function drawTermometre(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-50*p,0,0,50*p,0,6*p,rgb,0.5);
+drawSphere(0,55*p,0,10*p,[255,50,50],0.6);
+drawTube(0,-30*p,0,0,50*p,0,2*p,[255,50,50],0.8);
+drawGraduations(0,0,0,90*p,6*p,[255,255,255],9);
+}
 
-        function loop() {
-            clear();
-            
-            if (!activeType || activeSub === null) {
-                c.fillStyle = 'rgba(255,255,255,0.3)';
-                c.font = 'bold 15px sans-serif';
-                c.textAlign = 'center';
-                c.fillText('Bir orbital turu ve alt orbital secin', W/2, H/2);
-                animFrame = requestAnimationFrame(loop);
-                return;
-            }
-            
-            if (autoSpin && !isDragging) {
-                rotY += 0.008 * spd;
-                t += 0.015 * spd;
-            } else {
-                t += 0.015 * spd;
-            }
-            
-            const d = ORBITALS[activeType];
-            const rgb = d.color;
-            
-            switch (activeType) {
-                case 's': drawSOrbital(rgb); break;
-                case 'p': drawPOrbital(activeSub, rgb); break;
-                case 'd': drawDOrbital(activeSub, rgb); break;
-                case 'f': drawFOrbital(activeSub, rgb); break;
-            }
-            
-            c.textAlign = 'left';
-            c.font = '10px sans-serif';
-            c.fillStyle = 'rgba(255,255,255,0.35)';
-            c.fillText('🔴 Proton  🔵 Notron', 10, 18);
-            c.fillStyle = '#ffff00';
-            c.fillText('● Elektron', 10, 34);
-            c.fillStyle = 'rgba(255,255,255,0.25)';
-            c.fillText('👆 Surukleyerek 3D dondurun', 10, H - 10);
-            
-            animFrame = requestAnimationFrame(loop);
-        }
+function drawBaget(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-40*p,0,0,40*p,0,4*p,rgb,0.6);
+drawTube(0,-40*p,0,0,-50*p,0,6*p,rgb,0.7);
+}
 
-        function toggleSpin() { autoSpin = !autoSpin; }
-        function toggleElec() { elecOn = !elecOn; }
-        function setSpeed(v) { spd = v; }
-        function resetView() { rotX = 0.4; rotY = 0.3; }
+function drawDeneyTupu(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-30*p,0,0,30*p,0,12*p,rgb,0.5);
+drawSphere(0,30*p,0,12*p,rgb,0.5);
+drawTube(0,-30*p,0,0,-33*p,0,14*p,rgb,0.7);
+drawTube(0,10*p,0,0,30*p,0,10*p,[0,150,255],0.3);
+}
 
-        loop();
+function drawHavan(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,10*p,0,35*p,rgb,0.6);
+drawTube(0,-30*p,0,0,10*p,0,8*p,[200,180,160],0.7);
+drawTube(0,-30*p,0,0,-55*p,0,6*p,[200,180,160],0.7);
+drawSphere(0,10*p,0,10*p,[200,180,160],0.7);
+}
 
-        let videos = JSON.parse(localStorage.getItem('chemVids') || '[]');
+function drawKroze(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCylinder(0,0,0,30*p,25*p,rgb,0.6);
+drawDisk(0,12*p,0,28*p,rgb,0.6);
+drawTube(0,-12*p,0,0,-15*p,0,32*p,rgb,0.7);
+drawTube(35*p,0,0,50*p,0,0,4*p,[150,150,150],0.8);
+}
 
-        function addVid() {
-            const url = document.getElementById('vUrl').value.trim();
-            const title = document.getElementById('vTitle').value.trim() || 'Video';
-            if (!url) { alert('URL girin!'); return; }
-            let u = url;
-            if (u.includes('github.com') && u.includes('/blob/')) {
-                u = u.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-            }
-            videos.unshift({ id: Date.now(), url: u, title, date: new Date().toLocaleDateString('tr-TR') });
-            localStorage.setItem('chemVids', JSON.stringify(videos));
-            document.getElementById('vUrl').value = '';
-            document.getElementById('vTitle').value = '';
-            renderVids();
-        }
+function drawDamlalik(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,-20*p,0,15*p,rgb,0.6);
+drawTube(0,-5*p,0,0,25*p,0,5*p,rgb,0.6);
+drawCone(0,25*p,0,3*p,5*p,rgb,0.6,{x:0,y:1,z:0});
+drawCylinder(0,-28*p,0,18*p,8*p,[50,50,50],0.8);
+}
 
-        function delVid(id) {
-            videos = videos.filter(v => v.id !== id);
-            localStorage.setItem('chemVids', JSON.stringify(videos));
-            renderVids();
-        }
+function drawSpatul(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-30*p,0,0,10*p,0,5*p,[200,50,50],0.7);
+drawBox(0,20*p,0,15*p,8*p,20*p,[200,50,50],0.7);
+}
 
-        function renderVids() {
-            const g = document.getElementById('vGrid');
-            if (!videos.length) {
-                g.innerHTML = '<div class="empty"><p>Henuz video yok</p><p style="font-size:0.8rem;margin-top:5px;">Yukariya URL ekleyin</p></div>';
-                return;
-            }
-            g.innerHTML = videos.map(v => 
-                '<div class="video-card">' +
-                    '<video controls playsinline preload="metadata" style="width:100%;display:block;background:#000;">' +
-                        '<source src="' + v.url + '" type="video/mp4">' +
-                    '</video>' +
-                    '<div class="video-info">' +
-                        '<h4>' + v.title + '</h4>' +
-                        '<p>' + v.date + '</p>' +
-                    '</div>' +
-                    '<div class="video-actions">' +
-                        '<button class="btn-del" onclick="delVid(' + v.id + ')">🗑️ Sil</button>' +
-                    '</div>' +
-                '</div>'
-            ).join('');
-        }
+function drawPiset(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCylinder(0,0,0,30*p,50*p,rgb,0.5);
+drawCylinder(0,-35*p,0,12*p,20*p,rgb,0.5);
+drawCylinder(0,-45*p,0,14*p,8*p,[50,50,50],0.8);
+drawTube(0,-45*p,0,0,20*p,0,4*p,rgb,0.5);
+}
 
-        renderVids();
-    </script>
+function drawPuar(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawSphere(0,0,0,25*p,[255,80,80],0.6);
+drawTube(0,-25*p,0,0,-50*p,0,8*p,[255,80,80],0.6);
+drawTube(0,-50*p,0,0,-60*p,0,10*p,[255,80,80],0.6);
+}
+
+function drawMikroPipet(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawBox(0,-40*p,0,15*p,60*p,15*p,[200,200,200],0.7);
+drawTube(0,20*p,0,0,40*p,0,4*p,rgb,0.5);
+drawCone(0,40*p,0,2*p,5*p,rgb,0.6,{x:0,y:1,z:0});
+drawBox(0,-45*p,0,20*p,10*p,20*p,[100,100,100],0.8);
+}
+
+function drawIsirtocagi(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCylinder(0,0,0,25*p,40*p,[100,80,60],0.6);
+drawCylinder(0,-25*p,0,20*p,15*p,[100,80,60],0.6);
+drawTube(0,-32*p,0,0,-45*p,0,3*p,[255,200,100],0.8);
+drawSphere(0,-45*p,0,4*p,[255,150,50],0.9);
+drawBox(0,20*p,0,30*p,8*p,30*p,[150,150,150],0.8);
+}
+
+function drawBunzenbek(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawCylinder(0,0,0,20*p,40*p,[150,150,150],0.7);
+drawTube(0,-20*p,0,0,-30*p,0,25*p,[150,150,150],0.7);
+drawTube(0,20*p,0,0,35*p,0,8*p,[150,150,150],0.7);
+drawSphere(0,35*p,0,5*p,[255,150,50],0.9);
+drawTube(25*p,-10*p,0,40*p,-10*p,0,4*p,[100,100,100],0.8);
+}
+
+function drawSpor(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,40*p,0,0,-40*p,0,6*p,rgb,0.7);
+drawBox(0,-40*p,0,50*p,10*p,50*p,rgb,0.8);
+drawTube(-30*p,40*p,0,-30*p,-40*p,0,4*p,rgb,0.7);
+drawTube(30*p,40*p,0,30*p,-40*p,0,4*p,rgb,0.7);
+}
+
+function drawSacayagi(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,40*p,0,0,-40*p,0,6*p,rgb,0.7);
+drawBox(0,-40*p,0,50*p,10*p,50*p,rgb,0.8);
+}
+
+function drawKiskac(rgb){
+const p=1+Math.sin(t*2)*0.02;
+drawTube(0,-20*p,0,0,20*p,0,5*p,rgb,0.7);
+drawTube(0,20*p,0,0,35*p,0,8*p,rgb,0.7);
+// Jaws
+for(let i=0;i<5;i++){
+const y=25*p+i*3*p;
+drawTube(-10*p,y,0,10*p,y,0,2*p,rgb,0.7);
+}
+}
+
+function drawAmyanthtel(rgb){
+const p=1+Math.sin(t*2)*0.02;
+// Wire mesh grid
+for(let i=0;i<5;i++){
+const y=-20*p+i*10*p;
+drawTube(-30*p,y,0,30*p,y,0,2*p,rgb,0.7);
+}
+for(let i=0;i<5;i++){
+const x=-20*p+i*10*p;
+drawTube(x,-20*p,0,x,20*p,0,2*p,rgb,0.7);
+}
+}
+
+function drawSuzgeckagidi(rgb){
+const p=1+Math.sin(t*2)*0.02;
+// Flat sheet with texture
+for(let i=0;i<8;i++){
+for(let j=0;j<8;j++){
+const x=-30*p+i*8*p;
+const z=-30*p+j*8*p;
+const y=Math.sin(i+j)*2*p;
+const pp=project(x,y,z);
+c.beginPath();
+c.arc(pp.x,pp.y,3*p*pp.scale,0,Math.PI*2);
+c.fillStyle=rgba(rgb,0.4);
+c.fill();
+}
+}
+}
+
+function loop(){
+clear();
+if(!activeItem){
+c.fillStyle='rgba(255,255,255,0.3)';
+c.font='bold 15px sans-serif';
+c.textAlign='center';
+c.fillText('Bir malzeme seçin',W/2,H/2);
+animFrame=requestAnimationFrame(loop);
+return;
+}
+if(autoSpin&&!isDragging){rotY+=0.008*spd;t+=0.015*spd}
+else{t+=0.015*spd}
+const rgb=activeItem.color;
+const type=activeItem.type;
+switch(type){
+case'beherglas':drawBeherglas(rgb);break;
+case'erlenmayer':drawErlenmayer(rgb);break;
+case'cambalon':drawCamBalon(rgb);break;
+case'balonjoje':drawBalonJoje(rgb);break;
+case'ayrmahunisi':drawAyirmaHunisi(rgb);break;
+case'derecelisilindir':drawDereceliSilindir(rgb);break;
+case'sogutucu':drawSogutucu(rgb);break;
+case'huni':drawHuni(rgb);break;
+case'camboru':drawCamBoru(rgb);break;
+case'buret':drawBuret(rgb);break;
+case'pipet':drawPipet(rgb);break;
+case'termometre':drawTermometre(rgb);break;
+case'baget':drawBaget(rgb);break;
+case'deneytupu':drawDeneyTupu(rgb);break;
+case'havan':drawHavan(rgb);break;
+case'kroze':drawKroze(rgb);break;
+case'damlalik':drawDamlalik(rgb);break;
+case'spatul':drawSpatul(rgb);break;
+case'piset':drawPiset(rgb);break;
+case'puar':drawPuar(rgb);break;
+case'mikropipet':drawMikroPipet(rgb);break;
+case'isirtocagi':drawIsirtocagi(rgb);break;
+case'bunzenbek':drawBunzenbek(rgb);break;
+case'spor':drawSpor(rgb);break;
+case'sacayagi':drawSacayagi(rgb);break;
+case'kiskac':drawKiskac(rgb);break;
+case'amyanthtel':drawAmyanthtel(rgb);break;
+case'suzgeckagidi':drawSuzgeckagidi(rgb);break;
+}
+drawAxes();
+c.textAlign='left';
+c.font='10px sans-serif';
+c.fillStyle='rgba(255,255,255,0.35)';
+c.fillText('👆 Sürükleyerek 3D döndürün',10,H-10);
+animFrame=requestAnimationFrame(loop);
+}
+
+function toggleSpin(){autoSpin=!autoSpin}
+function setSpeed(v){spd=v}
+function resetView(){rotX=0.4;rotY=0.3}
+
+buildTabs();
+loop();
+</script>
 </body>
 </html>'''
 
-with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
+with open('/mnt/agents/output/kimya_laboratuvar_malzemeleri_3d.html', 'w', encoding='utf-8') as f:
     f.write(html)
 
-print(f"✅ Dosya yazildi: {len(html)} bytes")
-print("🔧 Ana degisiklik: lobePoint fonksiyonu basitlestirildi")
-print("   - v parametresi 0-1 araliginda")
-print("   - smoothstep mesafe egrisi")
-print("   - Daha basit yaricap profili (sin/cos)")
+print(f"✅ Dosya yazıldı: {len(html)} bytes")
