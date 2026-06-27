@@ -613,23 +613,27 @@ html_content = '''<!DOCTYPE html>
             return project(cx + x, cy + y, cz + z);
         }
 
+        // ===== HEMISPHERICAL CAP LOBE =====
+        // Creates a lobe with a hemispherical cap at origin, then elongated body
         function draw3DLobe(cx, cy, cz, length, radius, rgb, alpha, direction) {
-            const slices = 18;
-            const stacks = 12;
+            const slices = 22;
+            const stacks = 16;
             const triangles = [];
+            
+            const capRadius = radius * 0.55; // Radius of hemispherical cap at origin
             
             for (let i = 0; i < slices; i++) {
                 for (let j = 0; j < stacks; j++) {
                     const u1 = (Math.PI * 2 / slices) * i;
                     const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI / 2 / stacks) * j;
-                    const v2 = (Math.PI / 2 / stacks) * (j + 1);
+                    const v1 = (Math.PI / stacks) * j; // 0 to PI (full lobe)
+                    const v2 = (Math.PI / stacks) * (j + 1);
                     
                     const corners = [
-                        lobePoint(cx, cy, cz, length, radius, u1, v1, direction),
-                        lobePoint(cx, cy, cz, length, radius, u2, v1, direction),
-                        lobePoint(cx, cy, cz, length, radius, u2, v2, direction),
-                        lobePoint(cx, cy, cz, length, radius, u1, v2, direction)
+                        lobePoint(cx, cy, cz, length, radius, capRadius, u1, v1, direction),
+                        lobePoint(cx, cy, cz, length, radius, capRadius, u2, v1, direction),
+                        lobePoint(cx, cy, cz, length, radius, capRadius, u2, v2, direction),
+                        lobePoint(cx, cy, cz, length, radius, capRadius, u1, v2, direction)
                     ];
                     
                     triangles.push({
@@ -660,10 +664,10 @@ html_content = '''<!DOCTYPE html>
             });
         }
 
-        function lobePoint(cx, cy, cz, length, radius, u, v, dir) {
-            const r = radius * Math.sin(v);
-            const dist = length * (1 - Math.cos(v));
+        function lobePoint(cx, cy, cz, length, radius, capRadius, u, v, dir) {
+            let r, dist, x, y, z;
             
+            // Build perpendicular vectors (used in both sections)
             let perp1 = {x: 0, y: 0, z: 0};
             let perp2 = {x: 0, y: 0, z: 0};
             
@@ -680,9 +684,32 @@ html_content = '''<!DOCTYPE html>
             perp2.y = dir.z * perp1.x - dir.x * perp1.z;
             perp2.z = dir.x * perp1.y - dir.y * perp1.x;
             
-            const x = cx + dir.x * dist + perp1.x * r * Math.cos(u) + perp2.x * r * Math.sin(u);
-            const y = cy + dir.y * dist + perp1.y * r * Math.cos(u) + perp2.y * r * Math.sin(u);
-            const z = cz + dir.z * dist + perp1.z * r * Math.cos(u) + perp2.z * r * Math.sin(u);
+            if (v <= Math.PI / 2) {
+                // ===== HEMISPHERICAL CAP SECTION =====
+                // v: 0 to PI/2 → cap from origin to cap boundary
+                const capAngle = v; // 0 to PI/2
+                const capDist = capRadius * Math.sin(capAngle); // cross-section radius at this angle
+                const capDepth = capRadius * (1 - Math.cos(capAngle)); // distance along direction from origin
+                
+                x = cx + dir.x * capDepth + perp1.x * capDist * Math.cos(u) + perp2.x * capDist * Math.sin(u);
+                y = cy + dir.y * capDepth + perp1.y * capDist * Math.cos(u) + perp2.y * capDist * Math.sin(u);
+                z = cz + dir.z * capDepth + perp1.z * capDist * Math.cos(u) + perp2.z * capDist * Math.sin(u);
+                
+            } else {
+                // ===== ELONGATED BODY SECTION =====
+                // v: PI/2 to PI → body from cap boundary to tip
+                const bodyParam = (v - Math.PI/2) / (Math.PI/2); // 0 to 1
+                
+                // Smooth transition: radius starts at capRadius and grows to full radius
+                r = capRadius + (radius - capRadius) * Math.sin(bodyParam * Math.PI / 2);
+                
+                // Distance from origin: starts at capRadius and extends to full length
+                dist = capRadius + (length - capRadius) * bodyParam;
+                
+                x = cx + dir.x * dist + perp1.x * r * Math.cos(u) + perp2.x * r * Math.sin(u);
+                y = cy + dir.y * dist + perp1.y * r * Math.cos(u) + perp2.y * r * Math.sin(u);
+                z = cz + dir.z * dist + perp1.z * r * Math.cos(u) + perp2.z * r * Math.sin(u);
+            }
             
             return project(x, y, z);
         }
@@ -1057,5 +1084,6 @@ output_path = '/mnt/agents/output/kimya_orbitaller_videolar.html'
 with open(output_path, 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print(f"✅ HTML dosyası oluşturuldu: {output_path}")
+print(f"✅ HTML dosyası güncellendi: {output_path}")
 print(f"📊 Dosya boyutu: {len(html_content):,} karakter")
+print("🎯 Loblar artık orijinde yarım küre kapaklı!")
