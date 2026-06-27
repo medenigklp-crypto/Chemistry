@@ -368,3 +368,839 @@ function drawGradMarks(cx,cy,cz,r,h,steps,color,side){
 const ITEMS=[
 '''
 print(f"Part 1: {len(html)} chars")
+
+# Continue with ITEMS array - all 24 lab items with corrected shapes based on reference images
+html += '''
+{
+    id:'beherglas',name:'Beherglas',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Karıştırma, Saklama, Isıtma',
+    desc:'Sıvı maddelerin karıştırılması, saklanması ve ısıtılması amacıyla kullanılan silindirik cam malzemedir. Üzerinde yaklaşık hacim göstergeleri bulunur.',
+    draw:function(){
+        // Tall cylindrical body - much taller than before
+        hollowCylinder(0,0,0,55,130,24,GLASS,0.5);
+        // Rounded bottom
+        sphere(0,65,0,55,15,55,16,8,GLASS,0.5);
+        // Top rim (flared slightly outward like real beaker)
+        hollowCylinder(0,-65,0,60,8,24,GLASS,0.55);
+        // Spout on rim
+        tube(0,0,0,5,[{x:55,y:-62,z:0},{x:72,y:-68,z:0}],GLASS,0.6);
+        // Measurement lines - more and clearer
+        for(let i=1;i<=5;i++){
+            const y=45-i*22;
+            const pts=[];
+            for(let a=0;a<10;a++){
+                const ang=(Math.PI*2/10)*a;
+                pts.push(project(56*Math.cos(ang),y,56*Math.sin(ang)));
+            }
+            c.strokeStyle=rgba(100,150,200,0.45);
+            c.lineWidth=1;
+            c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+            for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
+            c.closePath();c.stroke();
+        }
+    }
+},
+{
+    id:'erlenmayer',name:'Erlenmayer',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Titrasyon, Çözelti Hazırlama, Saklama',
+    desc:'Titrasiyon, çözelti hazırlama, saklama, çözme vb. işlemlerde kullanılır. Konik gövdesi karıştırmayı kolaylaştırır.',
+    draw:function(){
+        // Wide conical base - much wider and lower
+        cone(0,25,0,70,80,24,GLASS,0.5,true);
+        // Cylindrical neck - longer and narrower
+        hollowCylinder(0,-45,0,20,55,16,GLASS,0.5);
+        // Neck top rim - flared outward
+        hollowCylinder(0,-72,0,24,6,16,GLASS,0.55);
+        // Flat bottom
+        flatDisc(0,25,0,70,GLASS,0.4);
+        // Measurement markings on cone
+        for(let i=1;i<=4;i++){
+            const y=15-i*18;
+            const rAtY=70*(1-(y-25+80)/80);
+            const pts=[];
+            for(let a=0;a<8;a++){
+                const ang=(Math.PI*2/8)*a;
+                pts.push(project((rAtY+2)*Math.cos(ang),y,(rAtY+2)*Math.sin(ang)));
+            }
+            c.strokeStyle=rgba(100,150,200,0.4);
+            c.lineWidth=1;
+            c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+            for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
+            c.closePath();c.stroke();
+        }
+    }
+},
+{
+    id:'cambalon',name:'Cam Balon',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Çözelti Hazırlama, Isıtma, Kaynatma',
+    desc:'Çözelti hazırlama, saklama, ısıtma ve kaynatma amacıyla kullanılır. Yuvarlak gövdesi homojen ısı dağılımı sağlar.',
+    draw:function(){
+        // Round body (sphere-ish) - wider
+        sphere(0,10,0,70,60,70,20,14,GLASS,0.5);
+        // Longer neck
+        hollowCylinder(0,-60,0,18,50,14,GLASS,0.5);
+        // Neck rim - flared
+        hollowCylinder(0,-85,0,22,5,14,GLASS,0.55);
+        // Flat bottom
+        flatDisc(0,70,0,70,GLASS,0.4);
+    }
+},
+{
+    id:'balonjoje',name:'Balon Joje',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Derişimli Çözelti Hazırlama, Saklama',
+    desc:'Derişimi belli çözeltilerin hazırlanması ve saklanmasında kullanılan cam malzemedir. Tek bir çizgi (mark) ile hassas hacim belirlenir.',
+    draw:function(){
+        // Pear-shaped body - much longer neck, smaller bulb
+        // Lower bulb - smaller and more pear-like
+        sphere(0,30,0,45,35,45,18,12,GLASS,0.5);
+        // Upper tapering - smooth transition to neck
+        cone(0,-5,0,45,35,18,GLASS,0.5,true);
+        // Very long thin neck
+        hollowCylinder(0,-55,0,12,65,12,GLASS,0.5);
+        // Neck rim
+        hollowCylinder(0,-87,0,15,5,12,GLASS,0.55);
+        // Ground glass stopper
+        cylinder(0,-92,0,13,12,12,[220,220,230],0.7);
+        // Mark line on neck - single precise line
+        const markY=-50;
+        const pts=[];
+        for(let a=0;a<10;a++){
+            const ang=(Math.PI*2/10)*a;
+            pts.push(project(14*Math.cos(ang),markY,14*Math.sin(ang)));
+        }
+        c.strokeStyle=rgba(80,120,180,0.8);
+        c.lineWidth=2.5;
+        c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+        for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
+        c.closePath();c.stroke();
+    }
+},
+{
+    id:'ayrma',name:'Ayırma Hunisi',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Heterojen Sıvı-Sıvı Karışım Ayırma',
+    desc:'Heterojen sıvı-sıvı karışımların ayrılmasında kullanılır. Musluklu yapısı alt tabakayı kontrollü boşaltmayı sağlar.',
+    draw:function(){
+        // Pear body - distinct from regular funnel
+        sphere(0,15,0,50,40,50,16,12,GLASS,0.5);
+        // Upper funnel - wider opening
+        cone(0,-25,0,50,40,16,GLASS,0.5,true);
+        // Long narrow neck below
+        hollowCylinder(0,-65,0,8,25,10,GLASS,0.5);
+        // Stopcock housing - prominent T-handle
+        cylinder(0,-90,0,16,15,10,GLASS_DARK,0.6);
+        // Stopcock T-handle (horizontal bar with vertical stem)
+        cylinder(0,-90,0,4,30,8,[60,60,70],0.8);
+        cylinder(0,-90,0,22,5,8,[60,60,70],0.8);
+        // Tip below stopcock
+        cone(0,-97,0,8,18,10,GLASS,0.5,false);
+        // Stopper on top
+        cylinder(0,-67,0,12,10,10,[220,220,230],0.7);
+    }
+},
+{
+    id:'mezur',name:'Dereceli Silindir (Mezür)',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Sıvı Hacmi Ölçme',
+    desc:'Sıvıların hacmini ölçmek için kullanılan cam malzemedir. Hassas derecelendirmesi sayesinde yaklaşık hacim ölçümü yapılır.',
+    draw:function(){
+        // Very tall cylinder - much taller than before
+        hollowCylinder(0,0,0,28,160,20,GLASS,0.5);
+        // Thick bottom base
+        cylinder(0,80,0,38,10,16,GLASS_DARK,0.6);
+        // Top rim
+        hollowCylinder(0,-80,0,32,6,16,GLASS,0.55);
+        // Spout
+        tube(0,0,0,4,[{x:28,y:-75,z:0},{x:42,y:-82,z:0}],GLASS,0.6);
+        // Many graduation marks - fine and precise
+        for(let i=0;i<16;i++){
+            const y=70-i*10;
+            const isMajor=i%5===0;
+            const markLen=isMajor?10:5;
+            c.strokeStyle=rgba(80,120,180,isMajor?0.6:0.3);
+            c.lineWidth=isMajor?1.5:0.8;
+            const p1=project(29,y,0),p2=project(29+markLen,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+},
+{
+    id:'sogutucu',name:'Soğutucu',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Buharın Sıvıya Dönüştürülmesi',
+    desc:'Isıtmayla buharlaşan çözücünün gaz fazından sıvı faza döndürülerek geri kazanılmasını sağlayan cam malzemedir.',
+    draw:function(){
+        // Inner straight tube
+        hollowCylinder(0,0,0,10,130,14,GLASS,0.4);
+        // Outer jacket - wider
+        hollowCylinder(0,0,0,38,90,18,GLASS,0.3);
+        // Spiral coil inside jacket - more turns
+        const coilPts=[];
+        for(let i=0;i<=60;i++){
+            const ang=i*0.4;
+            const y=-35+i*1.2;
+            coilPts.push({x:26*Math.cos(ang),y:y,z:26*Math.sin(ang)});
+        }
+        tube(0,0,0,5,coilPts,GLASS,0.5);
+        // Top connector - wider
+        cylinder(0,-65,0,18,18,10,GLASS,0.5);
+        // Bottom connector
+        cylinder(0,65,0,18,18,10,GLASS,0.5);
+        // Water inlet/outlet - side nozzles
+        tube(0,0,0,6,[{x:40,y:-25,z:0},{x:55,y:-25,z:0}],GLASS,0.5);
+        tube(0,0,0,6,[{x:40,y:25,z:0},{x:55,y:25,z:0}],GLASS,0.5);
+    }
+},
+{
+    id:'huni',name:'Huni',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Süzme, Dar Ağızlı Kaba Boşaltma',
+    desc:'Süzme işleminde ve sıvıların dar ağızlı kaba boşaltılmasında kullanılır. Koni şekli süzgeç kağıdını destekler.',
+    draw:function(){
+        // Wide cone top - much wider than separation funnel
+        cone(0,-35,0,65,55,20,GLASS,0.5,true);
+        // Long straight stem - distinct from separation funnel
+        hollowCylinder(0,55,0,10,80,12,GLASS,0.5);
+        // Stem tip - cut at angle
+        cone(0,95,0,10,10,10,GLASS,0.5,false);
+        // Rim
+        hollowCylinder(0,-35,0,68,4,20,GLASS,0.55);
+    }
+},
+{
+    id:'camboru',name:'Cam Boru',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Tepkime Ortamları Bağlantısı',
+    desc:'Tepkime ortamları arasındaki bağlantıyı kurmada kullanılan U şeklindeki cam malzemedir.',
+    draw:function(){
+        // U-shaped tube - proper U shape with rounded bottom
+        const path=[];
+        for(let i=0;i<=40;i++){
+            const t=i/40;
+            if(t<0.25){
+                path.push({x:-35,y:-50+t/0.25*100,z:0});
+            }else if(t<0.75){
+                const ang=((t-0.25)/0.5)*Math.PI;
+                path.push({x:-35+35*(1-Math.cos(ang)),y:50-35*Math.sin(ang),z:0});
+            }else{
+                path.push({x:35,y:50-(t-0.75)/0.25*100,z:0});
+            }
+        }
+        tube(0,0,0,12,path,GLASS,0.5);
+        // Open ends with rims
+        hollowCylinder(0,-50,-35,14,8,12,GLASS,0.55);
+        hollowCylinder(0,-50,35,14,8,12,GLASS,0.55);
+    }
+},
+{
+    id:'buret',name:'Büret',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Titrasyonda Hassas Hacim Ölçümü',
+    desc:'Titrasiyon işleminde derişimi bilinmeyen maddelerin hacmini hassas ölçebilen cam malzemedir.',
+    draw:function(){
+        // Long graduated tube - very tall
+        hollowCylinder(0,0,0,14,170,14,GLASS,0.5);
+        // Top funnel
+        cone(0,-85,0,20,22,12,GLASS,0.5,true);
+        // Top rim
+        hollowCylinder(0,-85,0,22,4,12,GLASS,0.55);
+        // Stopcock at bottom
+        cylinder(0,85,0,12,18,10,GLASS_DARK,0.6);
+        // Stopcock handle - T-shape
+        cylinder(0,85,0,4,25,8,[60,60,70],0.8);
+        cylinder(0,85,0,18,4,8,[60,60,70],0.8);
+        // Tip
+        cone(0,93,0,12,14,10,GLASS,0.5,false);
+        // Graduation marks - many fine lines
+        for(let i=0;i<18;i++){
+            const y=75-i*9;
+            const isMajor=i%5===0;
+            const markLen=isMajor?7:3;
+            c.strokeStyle=rgba(80,120,180,isMajor?0.6:0.3);
+            c.lineWidth=isMajor?1.5:0.8;
+            const p1=project(15,y,0),p2=project(15+markLen,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+},
+{
+    id:'pipet',name:'Pipet',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Sıvıların Hassas Ölçümü ve Aktarımı',
+    desc:'Sıvıların hassas bir biçimde ölçülmesi ve aktarılmasına yarayan cam borudur.',
+    draw:function(){
+        // Long thin tube
+        hollowCylinder(0,0,0,7,150,14,GLASS,0.5);
+        // Bulb in middle - more pronounced
+        sphere(0,0,0,20,16,20,14,10,GLASS,0.5);
+        // Top opening - slightly wider
+        hollowCylinder(0,-75,0,10,8,12,GLASS,0.55);
+        // Bottom tip - long tapered
+        cone(0,75,0,7,15,10,GLASS,0.5,false);
+        // Graduation marks on upper part - colored
+        for(let i=0;i<10;i++){
+            const y=-55+i*12;
+            c.strokeStyle=rgba(200,100,50,0.7);
+            c.lineWidth=1.5;
+            const p1=project(8,y,0),p2=project(13,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+},
+{
+    id:'termometre',name:'Termometre',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Sıcaklık Ölçme',
+    desc:'Sıcaklık ölçmek için kullanılan dereceli cam malzemedir. İçinde cıva veya alkol bulunur.',
+    draw:function(){
+        // Main tube
+        hollowCylinder(0,0,0,10,150,14,GLASS,0.5);
+        // Bulb at bottom - larger
+        sphere(0,80,0,20,22,20,12,10,GLASS,0.5);
+        // Red liquid in bulb
+        sphere(0,80,0,16,18,16,10,8,[255,50,50],0.6);
+        // Red liquid column
+        hollowCylinder(0,35,0,3,75,8,[255,50,50],0.6);
+        // Scale marks - many fine lines
+        for(let i=0;i<25;i++){
+            const y=65-i*5;
+            const isMajor=i%5===0;
+            const markLen=isMajor?9:4;
+            c.strokeStyle=rgba(80,80,80,isMajor?0.7:0.4);
+            c.lineWidth=isMajor?1.2:0.7;
+            const p1=project(11,y,0),p2=project(11+markLen,y,0);
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+        // Top cap
+        cylinder(0,-75,0,12,8,10,GLASS_DARK,0.6);
+    }
+},
+{
+    id:'baget',name:'Baget',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Maddeleri Karıştırma',
+    desc:'Maddeleri karıştırmak için kullanılan çubuk şeklinde cam malzemedir.',
+    draw:function(){
+        // Long rod with rounded ends
+        cylinder(0,0,0,5,150,12,GLASS,0.6);
+        // Rounded top
+        sphere(0,-75,0,5,7,5,8,6,GLASS,0.6);
+        // Rounded bottom
+        sphere(0,75,0,5,7,5,8,6,GLASS,0.6);
+    }
+},
+{
+    id:'deneytipu',name:'Deney Tüpü',type:'Cam Malzeme',material:'Borosilikat Cam',
+    usage:'Karıştırma, Isıtma, Soğutma',
+    desc:'Maddelerin karıştırılması, ısıtılması, soğutulması vb. amaçlarla kullanılan cam malzemedir.',
+    draw:function(){
+        // Multiple test tubes in rack
+        const positions=[
+            {x:-30,z:-20},{x:30,z:-20},
+            {x:-30,z:20},{x:30,z:20},
+            {x:0,z:0}
+        ];
+        positions.forEach((pos,idx)=>{
+            const h=55+Math.random()*10;
+            // Tube
+            hollowCylinder(pos.x,-20+h/2,pos.z,9,h,12,GLASS,0.5);
+            // Rounded bottom
+            sphere(pos.x,-20+h,pos.z,9,7,9,8,6,GLASS,0.5);
+            // Rim
+            hollowCylinder(pos.x,-20,pos.z,11,3,12,GLASS,0.55);
+            // Colored liquid in some
+            if(idx%2===0){
+                const colors=[[255,100,100],[100,255,100],[100,100,255],[255,200,50],[200,100,255]];
+                const col=colors[idx];
+                hollowCylinder(pos.x,-20+h*0.35,pos.z,8,h*0.35,10,col,0.4);
+            }
+        });
+        // Rack (wooden)
+        cylinder(0,38,0,60,7,14,WOOD,0.8);
+        // Rack holes
+        for(let i=0;i<5;i++){
+            const a=(Math.PI*2/5)*i;
+            const rx=32*Math.cos(a),rz=32*Math.sin(a);
+            flatDisc(rx,41,rz,10,[100,70,35],0.9);
+        }
+    }
+},
+{
+    id:'havan',name:'Havan',type:'Porselen Malzeme',material:'Porselen',
+    usage:'Katı Maddeleri Ezme, Toz Haline Getirme',
+    desc:'Katı maddeleri ezmek, toz hâline getirmek amacıyla kullanılır.',
+    draw:function(){
+        // Bowl - thick porcelain
+        sphere(0,15,0,55,35,55,20,12,PORCELAIN,0.85);
+        // Inner hollow
+        sphere(0,10,0,42,25,42,18,10,PORCELAIN_DARK,0.9);
+        // Flat bottom
+        flatDisc(0,50,0,55,PORCELAIN,0.9);
+        // Pestle - resting inside at angle
+        cylinder(20,-5,0,10,55,10,PORCELAIN,0.85);
+        sphere(20,-35,0,14,16,14,10,8,PORCELAIN,0.85);
+        // Pestle grinding end
+        sphere(20,25,0,12,10,12,8,6,PORCELAIN,0.85);
+    }
+},
+{
+    id:'kroze',name:'Kroze',type:'Porselen/Metal Malzeme',material:'Porselen veya Metal',
+    usage:'Yüksek Sıcaklıkta Isıtma ve Yakma',
+    desc:'Yüksek sıcaklıkta ısıtma ve yakma işlemlerinde kullanılan porselen veya metal laboratuvar malzemesidir.',
+    draw:function(){
+        // Cup shape - thick wall
+        hollowCylinder(0,0,0,48,60,20,PORCELAIN,0.9);
+        // Bottom thick
+        cylinder(0,30,0,48,12,16,PORCELAIN_DARK,0.9);
+        // Inner hollow
+        hollowCylinder(0,-5,0,40,50,16,[200,200,210],0.95);
+        // Rim thickened
+        hollowCylinder(0,-30,0,52,6,20,PORCELAIN,0.9);
+        // Slight taper outward at top
+        cone(0,-24,0,52,10,16,PORCELAIN,0.9,true);
+    }
+},
+{
+    id:'damlalik',name:'Damlalık',type:'Plastik Malzeme',material:'Plastik',
+    usage:'Küçük Hacimde Sıvı Aktarma',
+    desc:'Küçük hacimlerde sıvı aktarmak için kullanılan plastik malzemedir.',
+    draw:function(){
+        // Bulb
+        sphere(0,-30,0,22,18,22,14,10,PLASTIC,0.8);
+        // Narrow tube
+        hollowCylinder(0,10,0,5,40,10,GLASS,0.6);
+        // Tip tapered
+        cone(0,30,0,5,10,8,GLASS,0.6,false);
+        // Cap ring
+        cylinder(0,-30,0,24,6,12,[40,40,40],0.9);
+    }
+},
+{
+    id:'spatul',name:'Spatül',type:'Plastik/Metal Malzeme',material:'Plastik veya Metal',
+    usage:'Toz veya Küçük Parçalı Katıları Alma',
+    desc:'Toz ya da küçük parçalı katıları almak için kullanılır.',
+    draw:function(){
+        // Handle - red plastic
+        cylinder(0,0,0,7,75,10,PLASTIC_RED,0.8);
+        // Spoon/flat end - flattened
+        sphere(0,42,0,16,5,10,10,6,PLASTIC_RED,0.8);
+        hollowCylinder(0,42,0,16,3,12,PLASTIC_RED,0.85);
+        // Handle grip texture
+        for(let i=0;i<5;i++){
+            const y=-20+i*10;
+            hollowCylinder(0,y,0,8,2,10,[200,50,50],0.9);
+        }
+    }
+},
+{
+    id:'pisett',name:'Piset',type:'Plastik Malzeme',material:'Plastik',
+    usage:'Saf Su ve Yıkama Çözeltisi',
+    desc:'Genellikle saf su ve bazı durumlarda da yıkama çözeltisi kullanımı için tercih edilen plastik şişedir.',
+    draw:function(){
+        // Bottle body
+        cylinder(0,10,0,32,55,16,PLASTIC_GREEN,0.7);
+        // Shoulder
+        cone(0,-18,0,32,18,14,PLASTIC_GREEN,0.7,true);
+        // Neck
+        hollowCylinder(0,-35,0,10,22,10,PLASTIC_GREEN,0.7);
+        // Cap
+        cylinder(0,-46,0,14,10,10,[30,30,30],0.9);
+        // Tube going up and bending
+        tube(0,0,0,4,[{x:0,y:-46,z:0},{x:0,y:-75,z:0},{x:18,y:-80,z:0}],[200,200,200],0.6);
+        // Bent tip
+        tube(0,0,0,3,[{x:18,y:-80,z:0},{x:28,y:-83,z:0}],[200,200,200],0.6);
+    }
+},
+{
+    id:'puar',name:'Puar',type:'Plastik Malzeme',material:'Plastik (Kauçuk)',
+    usage:'Pipetle Sıvı Çekme',
+    desc:'Pipetlerin arkasına takılarak sıvı veya çözeltilerin çekilmesinde kullanılan plastik malzemelerdir.',
+    draw:function(){
+        // Bulb - orange rubber
+        sphere(0,0,0,38,30,35,16,12,PLASTIC_ORANGE,0.7);
+        // Valve at top
+        cylinder(0,-30,0,10,14,10,[200,100,30],0.8);
+        // Tube connector
+        tube(0,0,0,6,[{x:0,y:-37,z:0},{x:0,y:-55,z:0}],PLASTIC_ORANGE,0.7);
+        // Side tube (U-shape)
+        const uPath=[];
+        for(let i=0;i<=20;i++){
+            const t=i/20;
+            const ang=t*Math.PI;
+            uPath.push({x:32*Math.sin(ang),y:-10-20*Math.cos(ang),z:0});
+        }
+        tube(0,0,0,6,uPath,PLASTIC_ORANGE,0.7);
+    }
+},
+{
+    id:'mikropipet',name:'Mikro Pipet',type:'Plastik Malzeme',material:'Plastik',
+    usage:'Küçük Hacimde Hassas Ölçüm',
+    desc:'Küçük hacimlerdeki sıvıları doğru ve hassas bir şekilde ölçmek ve aktarmak için kullanılan laboratuvar aletidir.',
+    draw:function(){
+        // Main body - white plastic
+        cylinder(0,0,0,14,85,12,PLASTIC,0.8);
+        // Plunger button
+        cylinder(0,-48,0,10,14,10,[100,150,200],0.8);
+        // Tip ejector
+        cylinder(0,43,0,16,10,10,[150,150,150],0.8);
+        // Blue tip
+        cone(0,51,0,6,18,8,[50,100,200],0.8,false);
+        // Display window
+        flatDisc(0,-12,16,8,[50,50,50],0.9);
+        // Volume indicator
+        c.fillStyle='rgba(0,200,0,0.8)';
+        const p=project(0,-12,20);
+        c.font='bold 8px sans-serif';c.textAlign='center';
+        c.fillText('100',p.x,p.y);
+    }
+},
+{
+    id:'ispirtocagi',name:'İspirto Ocağı',type:'Cam/Metal Malzeme',material:'Cam ve Metal',
+    usage:'Isıtma Aracı',
+    desc:'Cam bir kabın içinde ispirto emdirilmiş fitil bulunan ısıtma aracıdır.',
+    draw:function(){
+        // Glass container - round bottom, amber tint
+        sphere(0,15,0,48,38,48,18,12,[160,140,100],0.4);
+        // Liquid inside - slight yellow
+        sphere(0,25,0,42,28,42,16,10,[200,180,100],0.3);
+        // Wick tube - metal
+        hollowCylinder(0,-25,0,8,32,10,METAL,0.8);
+        // Wick - white cotton
+        cylinder(0,-42,0,4,22,8,[240,240,220],0.9);
+        // Flame with flicker
+        const flicker=Math.sin(t*8)*2;
+        cone(0,-58+flicker,0,10,28,10,FLAME,0.6,false);
+        cone(0,-58+flicker,0,5,16,8,FLAME_CORE,0.7,false);
+        // Cap (shown slightly aside)
+        cylinder(28,-22,0,12,16,8,METAL_DARK,0.8);
+        // Cap chain
+        tube(0,0,0,1,[{x:20,y:-22,z:0},{x:14,y:-12,z:0}],METAL,0.8);
+    }
+},
+{
+    id:'bunzen',name:'Bunzen Bek',type:'Metal Malzeme',material:'Metal',
+    usage:'Isıtma ve Yakma',
+    desc:'Isıtma ve yakma işlemlerinde kullanılan gazlı ocaktır.',
+    draw:function(){
+        // Base - wide flat
+        cylinder(0,55,0,60,14,16,METAL,0.8);
+        // Base ring
+        hollowCylinder(0,55,0,64,5,16,METAL_DARK,0.9);
+        // Vertical tube
+        hollowCylinder(0,0,0,14,95,14,METAL,0.8);
+        // Air inlet tube - side
+        tube(0,0,0,6,[{x:14,y:20,z:0},{x:35,y:26,z:0}],METAL,0.8);
+        // Air inlet control collar
+        hollowCylinder(0,18,0,18,10,14,METAL_DARK,0.9);
+        // Gas inlet - bottom
+        tube(0,0,0,6,[{x:0,y:48,z:0},{x:0,y:58,z:0},{x:22,y:64,z:0}],METAL,0.8);
+        // Flame
+        const flicker=Math.sin(t*10)*1.5;
+        cone(0,-52+flicker,0,9,25,10,[100,150,255],0.5,false);
+        cone(0,-52+flicker,0,4,13,8,FLAME_CORE,0.7,false);
+        // Inner blue cone
+        cone(0,-48+flicker,0,3,8,6,[50,100,255],0.6,false);
+    }
+},
+{
+    id:'spor',name:'Spor (Destek)',type:'Metal Malzeme',material:'Metal',
+    usage:'Deney Düzeneklerinin Kurulması ve Sabitlenmesi',
+    desc:'Deney düzeneklerinin kurulması ve sabitlenmesi amacıyla kullanılan metal ayak ve çubuktan oluşan malzemedir.',
+    draw:function(){
+        // Base plate - rectangular feel
+        flatDisc(0,75,0,45,METAL_DARK,0.9);
+        cylinder(0,75,0,45,4,16,METAL_DARK,0.9);
+        // Vertical rod
+        cylinder(0,15,0,6,120,10,METAL,0.8);
+        // Top tip
+        cylinder(0,-48,0,5,6,8,METAL_DARK,0.9);
+        // Base feet
+        for(let i=0;i<3;i++){
+            const a=(Math.PI*2/3)*i;
+            const fx=35*Math.cos(a),fz=35*Math.sin(a);
+            cylinder(fx,72,fz,4,12,8,METAL_DARK,0.9);
+        }
+    }
+},
+{
+    id:'kiskac',name:'Kıskaç',type:'Metal Malzeme',material:'Metal',
+    usage:'Laboratuvar Malzemelerini Sabitleme',
+    desc:'Çeşitli laboratuvar malzemelerini spora sabitlemek için kullanılır.',
+    draw:function(){
+        // Main body - clamp shape
+        cylinder(0,0,0,8,50,10,METAL,0.8);
+        // Upper jaw
+        cylinder(0,-30,0,6,25,8,METAL_DARK,0.9);
+        // Lower jaw
+        cylinder(0,10,0,6,20,8,METAL_DARK,0.9);
+        // Screw handle
+        cylinder(25,0,0,4,20,8,[80,60,40],0.9);
+        sphere(35,0,0,6,6,6,8,6,[80,60,40],0.9);
+        // Thumb screw
+        cylinder(-25,0,0,4,15,8,[80,60,40],0.9);
+        sphere(-32,0,0,5,5,5,8,6,[80,60,40],0.9);
+    }
+},
+{
+    id:'sacayagi',name:'Sacayağı',type:'Metal Malzeme',material:'Metal',
+    usage:'Isıtma İşleminde Kullanılan Destek',
+    desc:'Isıtma işleminde kullanılan metalden yapılmış malzemedir. Kroze veya beherglası tutar.',
+    draw:function(){
+        // Three legs in tripod
+        for(let i=0;i<3;i++){
+            const a=(Math.PI*2/3)*i;
+            const lx=30*Math.cos(a),lz=30*Math.sin(a);
+            // Leg angled outward
+            const path=[
+                {x:lx*0.3,y:40,z:lz*0.3},
+                {x:lx,y:0,z:lz},
+                {x:lx*1.3,y:-30,z:lz*1.3}
+            ];
+            tube(0,0,0,4,path,METAL,0.8);
+        }
+        // Top ring
+        torus(0,40,0,18,4,16,8,METAL,0.8);
+        // Center support
+        cylinder(0,40,0,5,15,8,METAL_DARK,0.9);
+    }
+},
+{
+    id:'amyanttel',name:'Amyant Tel',type:'Tel Malzeme',material:'Demir Tel',
+    usage:'Isıtma Desteği',
+    desc:'Bunzen beki aleviyle ısıtma işlemlerinde cam malzemenin direkt alevle olan ilişkisini kesmek, ısının yavaş ve eşit dağılmasını sağlamak için kullanılan telden yapılmış malzemedir.',
+    draw:function(){
+        // Wire mesh - grid pattern
+        const size=50;
+        for(let i=-3;i<=3;i++){
+            const y=i*12;
+            const path1=[{x:-size,y:y,z:-size},{x:size,y:y,z:size}];
+            const path2=[{x:-size,y:y,z:size},{x:size,y:y,z:-size}];
+            tube(0,0,0,1.5,path1,AMYANT,0.7);
+            tube(0,0,0,1.5,path2,AMYANT,0.7);
+        }
+        // Border wire
+        const border=[
+            {x:-size,y:-36,z:-size},{x:size,y:-36,z:-size},
+            {x:size,y:-36,z:size},{x:-size,y:-36,z:size},{x:-size,y:-36,z:-size}
+        ];
+        for(let i=0;i<border.length-1;i++){
+            tube(0,0,0,2,[border[i],border[i+1]],AMYANT,0.8);
+        }
+    }
+},
+{
+    id:'suzgeckagidi',name:'Süzgeç Kağıdı',type:'Kağıt Malzeme',material:'Selüloz',
+    usage:'Katı ve Sıvıları Ayırma',
+    desc:'Katı ve sıvıları ayırmada kullanılan çeşitli gözenek boyutlu türleri olan filtre kağıdıdır.',
+    draw:function(){
+        // Flat circular filter paper - slightly crumpled look
+        const tris=[];
+        const slices=20;
+        for(let i=0;i<slices;i++){
+            const a1=(Math.PI*2/slices)*i;
+            const a2=(Math.PI*2/slices)*(i+1);
+            const r1=45+Math.sin(a1*3)*3;
+            const r2=45+Math.sin(a2*3)*3;
+            const p0=project(0,0,0);
+            const p1=project(Math.cos(a1)*r1,Math.sin(a1)*r1*0.3,Math.sin(a1)*r1);
+            const p2=project(Math.cos(a2)*r2,Math.sin(a2)*r2*0.3,Math.sin(a2)*r2);
+            tris.push({p:[p0,p1,p2],avgZ:(p0.z+p1.z+p2.z)/3});
+        }
+        drawMesh(tris,240,235,220,0.9);
+        // Fold lines
+        for(let i=0;i<4;i++){
+            const a=(Math.PI/4)*i;
+            const p1=project(-45*Math.cos(a),0,-45*Math.sin(a));
+            const p2=project(45*Math.cos(a),0,45*Math.sin(a));
+            c.strokeStyle='rgba(200,195,180,0.5)';
+            c.lineWidth=1;
+            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+        }
+    }
+}
+];
+'''
+print(f"Part 2 (ITEMS): {len(html)} chars, total: {len(html)}")
+
+# Part 3: The rest of the HTML - grid rendering, detail panel, animation loop, events
+html += '''
+
+// ===== GRID RENDERING =====
+const grid = document.getElementById('grid');
+const detailPanel = document.getElementById('detailPanel');
+const detailTitle = document.getElementById('detailTitle');
+const detailCanvas = document.getElementById('detailCanvas');
+const dc = detailCanvas.getContext('2d');
+
+function createItemCard(item, idx) {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `<h3>${item.name}</h3><canvas id="cv${idx}" width="200" height="160"></canvas><p>${item.desc.substring(0, 60)}...</p>`;
+    div.onclick = () => openDetail(idx);
+    return div;
+}
+
+ITEMS.forEach((item, i) => {
+    grid.appendChild(createItemCard(item, i));
+});
+
+function renderThumb(idx) {
+    const cv = document.getElementById('cv' + idx);
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const oldC = c, oldW = W, oldH = H;
+    c = ctx; W = 200; H = 160;
+    rotX = 0.4; rotY = 0.3 + idx * 0.15;
+    zoom = 0.55;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#050510';
+    ctx.fillRect(0, 0, W, H);
+    ITEMS[idx].draw();
+    c = oldC; W = oldW; H = oldH;
+}
+
+// Render all thumbnails
+setTimeout(() => {
+    ITEMS.forEach((_, i) => renderThumb(i));
+}, 100);
+
+// ===== DETAIL PANEL =====
+function openDetail(idx) {
+    activeItem = idx;
+    const item = ITEMS[idx];
+    detailPanel.classList.add('active');
+    detailTitle.textContent = item.name;
+    document.getElementById('dName').textContent = item.name;
+    document.getElementById('dType').textContent = item.type;
+    document.getElementById('dMaterial').textContent = item.material;
+    document.getElementById('dUsage').textContent = item.usage;
+    document.getElementById('dDesc').textContent = item.desc;
+    rotX = 0.4; rotY = 0.3; zoom = 1; t = 0;
+    if (animFrame) cancelAnimationFrame(animFrame);
+    loopDetail();
+}
+
+function closeDetail() {
+    detailPanel.classList.remove('active');
+    activeItem = null;
+    if (animFrame) cancelAnimationFrame(animFrame);
+}
+
+function loopDetail() {
+    if (activeItem === null) return;
+    c = dc; W = 600; H = 500;
+    dc.clearRect(0, 0, W, H);
+    dc.fillStyle = '#050510';
+    dc.fillRect(0, 0, W, H);
+    
+    if (autoSpin && !isDragging) {
+        rotY += 0.008 * spd;
+        t += 0.015 * spd;
+    } else {
+        t += 0.015 * spd;
+    }
+    
+    ITEMS[activeItem].draw();
+    
+    // Label
+    dc.fillStyle = 'rgba(255,255,255,0.25)';
+    dc.font = '11px sans-serif';
+    dc.textAlign = 'left';
+    dc.fillText('👆 Sürükleyerek 3D döndürün', 10, H - 10);
+    
+    animFrame = requestAnimationFrame(loopDetail);
+}
+
+// ===== CONTROLS =====
+function toggleSpin() { autoSpin = !autoSpin; }
+function setSpeed(v) { spd = v; }
+function resetView() { rotX = 0.4; rotY = 0.3; zoom = 1; }
+
+// ===== MOUSE / TOUCH EVENTS =====
+let startDist = 0;
+
+detailCanvas.addEventListener('mousedown', e => {
+    isDragging = true;
+    lastX = e.clientX; lastY = e.clientY;
+});
+detailCanvas.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    rotY += (e.clientX - lastX) * 0.01;
+    rotX += (e.clientY - lastY) * 0.01;
+    lastX = e.clientX; lastY = e.clientY;
+});
+detailCanvas.addEventListener('mouseup', () => isDragging = false);
+detailCanvas.addEventListener('mouseleave', () => isDragging = false);
+
+detailCanvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+        isDragging = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        startDist = Math.sqrt(dx * dx + dy * dy);
+    }
+    e.preventDefault();
+}, {passive: false});
+
+detailCanvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && isDragging) {
+        rotY += (e.touches[0].clientX - lastX) * 0.015;
+        rotX += (e.touches[0].clientY - lastY) * 0.015;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (startDist > 0) {
+            zoom *= dist / startDist;
+            zoom = Math.max(0.5, Math.min(3, zoom));
+        }
+        startDist = dist;
+    }
+    e.preventDefault();
+}, {passive: false});
+
+detailCanvas.addEventListener('touchend', e => {
+    isDragging = false;
+    startDist = 0;
+});
+
+detailCanvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoom += e.deltaY * -0.001;
+    zoom = Math.max(0.5, Math.min(3, zoom));
+});
+
+// Close on backdrop click
+detailPanel.addEventListener('click', e => {
+    if (e.target === detailPanel) closeDetail();
+});
+
+// ===== GLOBAL CANVAS REF =====
+let c = dc;
+
+// Initial render
+setTimeout(() => {
+    ITEMS.forEach((_, i) => renderThumb(i));
+}, 200);
+
+</script>
+</body>
+</html>'''
+
+# Write the complete file
+output_path = '/mnt/agents/output/kimya12_3d_laboratuvar.html'
+with open(output_path, 'w', encoding='utf-8') as f:
+    f.write(html)
+
+print(f"✅ Dosya yazıldı: {output_path}")
+print(f"📊 Toplam boyut: {len(html):,} karakter")
+print(f"🧪 Toplam malzeme: {24} adet")
+print("\n📋 Malzeme listesi:")
+for i, item in enumerate([
+    "Beherglas","Erlenmayer","Cam Balon","Balon Joje",
+    "Ayırma Hunisi","Dereceli Silindir (Mezür)","Soğutucu","Huni",
+    "Cam Boru","Büret","Pipet","Termometre",
+    "Baget","Deney Tüpü","Havan","Kroze",
+    "Damlalık","Spatül","Piset","Puar",
+    "Mikro Pipet","İspirto Ocağı","Bunzen Bek","Spor (Destek)",
+    "Kıskaç","Sacayağı","Amyant Tel","Süzgeç Kağıdı"
+], 1):
+    print(f"  {i:2d}. {item}")
+
+    
