@@ -1,9 +1,8 @@
 
-# Write the complete HTML file in one go using a different approach
-# to avoid JSON parsing issues with backticks and special characters
+# The issue is likely in the lobePoint function. Let me rewrite it with a simpler,
+# more reliable teardrop formula and write the complete file again.
 
-with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
-    f.write('''<!DOCTYPE html>
+html = '''<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -617,11 +616,9 @@ with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='ut
             return project(cx + x, cy + y, cz + z);
         }
 
-        // ===== TEARDROP / DROPLET LOBE =====
-        // Creates a lobe that:
-        // - Starts with a flat circular face at origin (like a cut sphere)
-        // - Bulges outward to maximum radius
-        // - Tapers to a point at the tip (like a water droplet)
+        // ===== TEARDROP LOBE - SIMPLIFIED AND FIXED =====
+        // Profile: flat base at origin -> bulge outward -> taper to point at tip
+        // Uses a simple power curve for reliable rendering
         function draw3DLobe(cx, cy, cz, length, radius, rgb, alpha, direction) {
             const slices = 24;
             const stacks = 20;
@@ -631,8 +628,8 @@ with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='ut
                 for (let j = 0; j < stacks; j++) {
                     const u1 = (Math.PI * 2 / slices) * i;
                     const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI / stacks) * j;
-                    const v2 = (Math.PI / stacks) * (j + 1);
+                    const v1 = j / stacks; // 0 to 1
+                    const v2 = (j + 1) / stacks;
                     
                     const corners = [
                         lobePoint(cx, cy, cz, length, radius, u1, v1, direction),
@@ -670,10 +667,10 @@ with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='ut
         }
 
         function lobePoint(cx, cy, cz, length, radius, u, v, dir) {
-            // v: 0 to PI
-            // v=0: at origin, flat circular face (radius = neckRadius)
-            // v=PI/2: maximum bulge (maximum radius)
-            // v=PI: at tip, radius = 0 (closed)
+            // v: 0 to 1
+            // v=0: at origin, flat face with neckRadius
+            // v~0.5: maximum bulge at maxRadius
+            // v=1: at tip, radius = 0 (closed point)
             
             // Build perpendicular vectors
             let perp1 = {x: 0, y: 0, z: 0};
@@ -692,31 +689,23 @@ with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='ut
             perp2.y = dir.z * perp1.x - dir.x * perp1.z;
             perp2.z = dir.x * perp1.y - dir.y * perp1.x;
             
-            let dist, r;
+            // Distance from origin along direction
+            // Use smoothstep-like curve: slow start, faster middle, slow end
+            const dist = length * v * v * (3 - 2 * v); // smoothstep(v)
             
-            if (v <= Math.PI / 2) {
-                // ===== BASE TO BULGE (v: 0 to PI/2) =====
-                // At v=0: dist=0, r=neckRadius (flat face at origin)
-                // At v=PI/2: dist=length*0.55, r=maxRadius (maximum bulge)
-                const t = v / (Math.PI / 2); // 0 to 1
-                
-                // Distance: starts at 0, accelerates to mid-point
-                dist = length * 0.55 * (1 - Math.cos(t * Math.PI / 2));
-                
-                // Radius: starts at neckRadius, grows to maxRadius with smooth curve
-                const neckRadius = radius * 0.35;
+            // Radius profile: teardrop shape
+            // v=0: neckRadius (flat base)
+            // v=0.5: maxRadius (widest point)
+            // v=1: 0 (pointed tip)
+            const neckRadius = radius * 0.3;
+            let r;
+            if (v < 0.5) {
+                // Base to bulge: neckRadius -> maxRadius
+                const t = v / 0.5; // 0 to 1
                 r = neckRadius + (radius - neckRadius) * Math.sin(t * Math.PI / 2);
-                
             } else {
-                // ===== BULGE TO TIP (v: PI/2 to PI) =====
-                // At v=PI/2: dist=length*0.55, r=maxRadius
-                // At v=PI: dist=length, r=0 (pointed tip)
-                const t = (v - Math.PI / 2) / (Math.PI / 2); // 0 to 1
-                
-                // Distance: continues from mid-point to tip
-                dist = length * 0.55 + length * 0.45 * Math.sin(t * Math.PI / 2);
-                
-                // Radius: decreases from maxRadius to 0 (pointed tip)
+                // Bulge to tip: maxRadius -> 0
+                const t = (v - 0.5) / 0.5; // 0 to 1
                 r = radius * Math.cos(t * Math.PI / 2);
             }
             
@@ -1091,9 +1080,13 @@ with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='ut
         renderVids();
     </script>
 </body>
-</html>''')
+</html>'''
 
-import os
-size = os.path.getsize('/mnt/agents/output/kimya_orbitaller_videolar.html')
-print(f"✅ Tam kod basariyla yazildi!")
-print(f"📊 Dosya boyutu: {size:,} bytes")
+with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+
+print(f"✅ Dosya yazildi: {len(html)} bytes")
+print("🔧 Ana degisiklik: lobePoint fonksiyonu basitlestirildi")
+print("   - v parametresi 0-1 araliginda")
+print("   - smoothstep mesafe egrisi")
+print("   - Daha basit yaricap profili (sin/cos)")
