@@ -1,9 +1,8 @@
 
-# BEAKER - Gelişmiş Kimya Laboratuvar Simülasyonu (Tek Parça Python Kodu)
-# Tüm fonksiyonlar aktif, üretken ve özelleştirilebilir
-# HTML5 Canvas + JavaScript ile tarayıcıda çalışan versiyon
+# BEAKER - Gelişmiş Kimya Laboratuvar Simülasyonu
+# Tek parça HTML dosyası olarak kaydediyorum
 
-html_kodu = '''<!DOCTYPE html>
+html_kodu = r'''<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -128,11 +127,11 @@ html_kodu = '''<!DOCTYPE html>
 </head>
 <body>
     <div id="ust-panel">
-        <div id="baslik">🔬 BEAKER</div>
+        <div id="baslik">BEAKER</div>
         <div class="bilgi-grup">
             <div class="bilgi-item">
-                <span class="bilgi-etiket">Sıcaklık:</span>
-                <span class="bilgi-deger" id="sicaklik-deger">25.0°C</span>
+                <span class="bilgi-etiket">Sicaklik:</span>
+                <span class="bilgi-deger" id="sicaklik-deger">25.0C</span>
             </div>
             <div class="bilgi-item">
                 <span class="bilgi-etiket">pH:</span>
@@ -143,7 +142,7 @@ html_kodu = '''<!DOCTYPE html>
                 <span class="bilgi-deger" id="hacim-deger">0.0 ml</span>
             </div>
         </div>
-        <button id="ozellestirme-buton" onclick="ozellestirmeToggle()">⚙️ Renk</button>
+        <button id="ozellestirme-buton" onclick="ozellestirmeToggle()">Renk</button>
     </div>
     
     <div id="ana-icerik">
@@ -151,7 +150,7 @@ html_kodu = '''<!DOCTYPE html>
             <canvas id="beher-canvas" width="500" height="600"></canvas>
         </div>
         <div id="sag-panel">
-            <div id="tarihce-baslik">📋 Tarihçe</div>
+            <div id="tarihce-baslik">Tarihce</div>
             <div id="tarihce-liste"></div>
         </div>
     </div>
@@ -164,13 +163,13 @@ html_kodu = '''<!DOCTYPE html>
         </div>
         
         <div class="ozellestirme-panel" id="ozellestirme-panel">
-            <h4 style="color:#00ffc8;margin-bottom:8px;">🎨 Renk Özelleştirme</h4>
+            <h4 style="color:#00ffc8;margin-bottom:8px;">Renk Ozellestirme</h4>
             <div class="renk-secici" id="renk-secici"></div>
         </div>
         
         <div class="kategori-sekmeler">
             <div class="sekme aktif" onclick="kategoriDegistir('elementler', this)">Elementler</div>
-            <div class="sekme" onclick="kategoriDegistir('bilesikler', this)">Bileşikler</div>
+            <div class="sekme" onclick="kategoriDegistir('bilesikler', this)">Bilesikler</div>
             <div class="sekme" onclick="kategoriDegistir('aksiyonlar', this)">Aksiyonlar</div>
         </div>
         
@@ -181,85 +180,84 @@ html_kodu = '''<!DOCTYPE html>
         </div>
         
         <div id="aktif-bilgi">
-            <h4>ℹ️ Aktif Bilgi</h4>
-            <div id="aktif-bilgi-icerik">Bir element veya bileşik seçin...</div>
+            <h4>Aktif Bilgi</h4>
+            <div id="aktif-bilgi-icerik">Bir element veya bilesik secin...</div>
         </div>
     </div>
 
 <script>
-// ==================== VERİTABANI ====================
 const ELEMENTLER = {
     "H": {ad: "Hidrojen", renk: "#ffffff", tip: "gaz", atomNo: 1, yogunluk: 0.09, aciklama: "Evrendeki en hafif element"},
-    "O": {ad: "Oksijen", renk: "#ff5050", tip: "gaz", atomNo: 8, yogunluk: 1.43, aciklama: "Solunum için gerekli"},
+    "O": {ad: "Oksijen", renk: "#ff5050", tip: "gaz", atomNo: 8, yogunluk: 1.43, aciklama: "Solunum icin gerekli"},
     "N": {ad: "Azot", renk: "#5050ff", tip: "gaz", atomNo: 7, yogunluk: 1.25, aciklama: "Atmosferin %78'i"},
-    "C": {ad: "Karbon", renk: "#323232", tip: "katı", atomNo: 6, yogunluk: 2.27, aciklama: "Yaşamın temeli"},
-    "Na": {ad: "Sodyum", renk: "#ffc864", tip: "katı", atomNo: 11, yogunluk: 0.97, aciklama: "Tuzun ana bileşeni"},
+    "C": {ad: "Karbon", renk: "#323232", tip: "katı", atomNo: 6, yogunluk: 2.27, aciklama: "Yasamin temeli"},
+    "Na": {ad: "Sodyum", renk: "#ffc864", tip: "katı", atomNo: 11, yogunluk: 0.97, aciklama: "Tuzun ana bileseni"},
     "Cl": {ad: "Klor", renk: "#32ff32", tip: "gaz", atomNo: 17, yogunluk: 3.21, aciklama: "Dezenfektan"},
-    "Fe": {ad: "Demir", renk: "#b48c64", tip: "katı", atomNo: 26, yogunluk: 7.87, aciklama: "Yapı malzemesi"},
-    "Cu": {ad: "Bakır", renk: "#c87832", tip: "katı", atomNo: 29, yogunluk: 8.96, aciklama: "İletken"},
-    "Au": {ad: "Altın", renk: "#ffd700", tip: "katı", atomNo: 79, yogunluk: 19.32, aciklama: "Değerli metal"},
-    "Ag": {ad: "Gümüş", renk: "#dcdcf0", tip: "katı", atomNo: 47, yogunluk: 10.49, aciklama: "Takı ve iletken"},
-    "S": {ad: "Kükürt", renk: "#ffff64", tip: "katı", atomNo: 16, yogunluk: 2.07, aciklama: "Asit yağmuru"},
+    "Fe": {ad: "Demir", renk: "#b48c64", tip: "katı", atomNo: 26, yogunluk: 7.87, aciklama: "Yapi malzemesi"},
+    "Cu": {ad: "Bakir", renk: "#c87832", tip: "katı", atomNo: 29, yogunluk: 8.96, aciklama: "Iletken"},
+    "Au": {ad: "Altin", renk: "#ffd700", tip: "katı", atomNo: 79, yogunluk: 19.32, aciklama: "Degerli metal"},
+    "Ag": {ad: "Gumus", renk: "#dcdcf0", tip: "katı", atomNo: 47, yogunluk: 10.49, aciklama: "Taki ve iletken"},
+    "S": {ad: "Kukurt", renk: "#ffff64", tip: "katı", atomNo: 16, yogunluk: 2.07, aciklama: "Asit yagmuru"},
     "Ca": {ad: "Kalsiyum", renk: "#f0f0f0", tip: "katı", atomNo: 20, yogunluk: 1.55, aciklama: "Kemiklerde bulunur"},
     "Mg": {ad: "Magnezyum", renk: "#c8c8d2", tip: "katı", atomNo: 12, yogunluk: 1.74, aciklama: "Hafif metal"},
-    "Al": {ad: "Alüminyum", renk: "#c8c8d2", tip: "katı", atomNo: 13, yogunluk: 2.70, aciklama: "Hafif ve dayanıklı"},
+    "Al": {ad: "Aluminyum", renk: "#c8c8d2", tip: "katı", atomNo: 13, yogunluk: 2.70, aciklama: "Hafif ve dayanikli"},
     "K": {ad: "Potasyum", renk: "#c8c8dc", tip: "katı", atomNo: 19, yogunluk: 0.86, aciklama: "Muzda bulunur"},
-    "Zn": {ad: "Çinko", renk: "#b4b4be", tip: "katı", atomNo: 30, yogunluk: 7.14, aciklama: "Kaplama metal"},
-    "Pb": {ad: "Kurşun", renk: "#64646e", tip: "katı", atomNo: 82, yogunluk: 11.34, aciklama: "Ağır metal"},
-    "Hg": {ad: "Cıva", renk: "#c8c8c8", tip: "sıvı", atomNo: 80, yogunluk: 13.53, aciklama: "Tek sıvı metal"},
-    "He": {ad: "Helyum", renk: "#ffffc8", tip: "gaz", atomNo: 2, yogunluk: 0.18, aciklama: "Balon gazı"},
+    "Zn": {ad: "Cinko", renk: "#b4b4be", tip: "katı", atomNo: 30, yogunluk: 7.14, aciklama: "Kaplama metal"},
+    "Pb": {ad: "Kursun", renk: "#64646e", tip: "katı", atomNo: 82, yogunluk: 11.34, aciklama: "Agir metal"},
+    "Hg": {ad: "Civa", renk: "#c8c8c8", tip: "sıvı", atomNo: 80, yogunluk: 13.53, aciklama: "Tek sivi metal"},
+    "He": {ad: "Helyum", renk: "#ffffc8", tip: "gaz", atomNo: 2, yogunluk: 0.18, aciklama: "Balon gazi"},
     "Ne": {ad: "Neon", renk: "#ff9696", tip: "gaz", atomNo: 10, yogunluk: 0.90, aciklama: "Neon tabela"},
 };
 
 const BILESIKLER = {
-    "H2O": {ad: "Su", formul: "H₂O", renk: "#0096ff", tip: "sıvı", ph: 7.0, aciklama: "Yaşamın kaynağı"},
-    "CO2": {ad: "Karbondioksit", formul: "CO₂", renk: "#c8c8c8", tip: "gaz", ph: 5.6, aciklama: "Seragazı"},
-    "NaCl": {ad: "Sodyum Klorür", formul: "NaCl", renk: "#ffffff", tip: "katı", ph: 7.0, aciklama: "Yemek tuzu"},
+    "H2O": {ad: "Su", formul: "H2O", renk: "#0096ff", tip: "sıvı", ph: 7.0, aciklama: "Yasamin kaynagi"},
+    "CO2": {ad: "Karbondioksit", formul: "CO2", renk: "#c8c8c8", tip: "gaz", ph: 5.6, aciklama: "Seragazi"},
+    "NaCl": {ad: "Sodyum Klorur", formul: "NaCl", renk: "#ffffff", tip: "katı", ph: 7.0, aciklama: "Yemek tuzu"},
     "HCl": {ad: "Hidroklorik Asit", formul: "HCl", renk: "#ffc8c8", tip: "sıvı", ph: 1.0, aciklama: "Mide asidi"},
-    "NaOH": {ad: "Sodyum Hidroksit", formul: "NaOH", renk: "#c8c8ff", tip: "sıvı", ph: 13.0, aciklama: "Güçlü baz"},
-    "H2SO4": {ad: "Kükürt Asidi", formul: "H₂SO₄", renk: "#ffdcb4", tip: "sıvı", ph: 0.5, aciklama: "Pil asidi"},
-    "CaCO3": {ad: "Kalsiyum Karbonat", formul: "CaCO₃", renk: "#f0f0f0", tip: "katı", ph: 9.0, aciklama: "Kireç taşı"},
-    "Fe2O3": {ad: "Demir Oksit", formul: "Fe₂O₃", renk: "#b43c1e", tip: "katı", ph: 7.0, aciklama: "Pas"},
-    "CuSO4": {ad: "Bakır Sülfat", formul: "CuSO₄", renk: "#0064c8", tip: "sıvı", ph: 5.0, aciklama: "Mavi taş"},
-    "NH3": {ad: "Amonyak", formul: "NH₃", renk: "#c8ffc8", tip: "gaz", ph: 11.0, aciklama: "Temizlik ürünü"},
-    "CH4": {ad: "Metan", formul: "CH₄", renk: "#c8c8c8", tip: "gaz", ph: 7.0, aciklama: "Doğal gaz"},
-    "C2H5OH": {ad: "Etanol", formul: "C₂H₅OH", renk: "#c8ffff", tip: "sıvı", ph: 7.0, aciklama: "Alkol"},
-    "H2O2": {ad: "Hidrojen Peroksit", formul: "H₂O₂", renk: "#dcdcff", tip: "sıvı", ph: 4.5, aciklama: "Dezenfektan"},
-    "KMnO4": {ad: "Potasyum Permanganat", formul: "KMnO₄", renk: "#960096", tip: "sıvı", ph: 7.0, aciklama: "Mor kristal"},
-    "AgNO3": {ad: "Gümüş Nitrat", formul: "AgNO₃", renk: "#dcdcf0", tip: "sıvı", ph: 5.5, aciklama: "Fotoğrafçılık"},
-    "BaCl2": {ad: "Baryum Klorür", formul: "BaCl₂", renk: "#f0f0ff", tip: "sıvı", ph: 7.0, aciklama: "Test reaktifi"},
-    "MgSO4": {ad: "Magnezyum Sülfat", formul: "MgSO₄", renk: "#ffffff", tip: "sıvı", ph: 6.5, aciklama: "Epsom tuzu"},
-    "Al2O3": {ad: "Alüminyum Oksit", formul: "Al₂O₃", renk: "#f0f0f0", tip: "katı", ph: 8.0, aciklama: "Korundum"},
-    "ZnCl2": {ad: "Çinko Klorür", formul: "ZnCl₂", renk: "#ffffff", tip: "sıvı", ph: 4.0, aciklama: "Lehim"},
+    "NaOH": {ad: "Sodyum Hidroksit", formul: "NaOH", renk: "#c8c8ff", tip: "sıvı", ph: 13.0, aciklama: "Guclu baz"},
+    "H2SO4": {ad: "Kukurt Asidi", formul: "H2SO4", renk: "#ffdcb4", tip: "sıvı", ph: 0.5, aciklama: "Pil asidi"},
+    "CaCO3": {ad: "Kalsiyum Karbonat", formul: "CaCO3", renk: "#f0f0f0", tip: "katı", ph: 9.0, aciklama: "Kirec tasi"},
+    "Fe2O3": {ad: "Demir Oksit", formul: "Fe2O3", renk: "#b43c1e", tip: "katı", ph: 7.0, aciklama: "Pas"},
+    "CuSO4": {ad: "Bakir Sulfat", formul: "CuSO4", renk: "#0064c8", tip: "sıvı", ph: 5.0, aciklama: "Mavi tas"},
+    "NH3": {ad: "Amonyak", formul: "NH3", renk: "#c8ffc8", tip: "gaz", ph: 11.0, aciklama: "Temizlik urunu"},
+    "CH4": {ad: "Metan", formul: "CH4", renk: "#c8c8c8", tip: "gaz", ph: 7.0, aciklama: "Dogal gaz"},
+    "C2H5OH": {ad: "Etanol", formul: "C2H5OH", renk: "#c8ffff", tip: "sıvı", ph: 7.0, aciklama: "Alkol"},
+    "H2O2": {ad: "Hidrojen Peroksit", formul: "H2O2", renk: "#dcdcff", tip: "sıvı", ph: 4.5, aciklama: "Dezenfektan"},
+    "KMnO4": {ad: "Potasyum Permanganat", formul: "KMnO4", renk: "#960096", tip: "sıvı", ph: 7.0, aciklama: "Mor kristal"},
+    "AgNO3": {ad: "Gumus Nitrat", formul: "AgNO3", renk: "#dcdcf0", tip: "sıvı", ph: 5.5, aciklama: "Fotografcilik"},
+    "BaCl2": {ad: "Baryum Klorur", formul: "BaCl2", renk: "#f0f0ff", tip: "sıvı", ph: 7.0, aciklama: "Test reaktifi"},
+    "MgSO4": {ad: "Magnezyum Sulfat", formul: "MgSO4", renk: "#ffffff", tip: "sıvı", ph: 6.5, aciklama: "Epsom tuzu"},
+    "Al2O3": {ad: "Aluminyum Oksit", formul: "Al2O3", renk: "#f0f0f0", tip: "katı", ph: 8.0, aciklama: "Korundum"},
+    "ZnCl2": {ad: "Cinko Klorur", formul: "ZnCl2", renk: "#ffffff", tip: "sıvı", ph: 4.0, aciklama: "Lehim"},
 };
 
 const REAKSIYONLAR = {
-    "H+O": {urun: "H2O", tip: "patlama", sicaklik: 100, renk: "#0096ff", aciklama: "Su oluşumu!"},
+    "H+O": {urun: "H2O", tip: "patlama", sicaklik: 100, renk: "#0096ff", aciklama: "Su olusumu!"},
     "C+O": {urun: "CO2", tip: "yanma", sicaklik: 200, renk: "#c8c8c8", aciklama: "Yanma reaksiyonu!"},
-    "Na+Cl": {urun: "NaCl", tip: "birlesme", sicaklik: 50, renk: "#ffffff", aciklama: "Tuz oluşumu!"},
+    "Na+Cl": {urun: "NaCl", tip: "birlesme", sicaklik: 50, renk: "#ffffff", aciklama: "Tuz olusumu!"},
     "Fe+O": {urun: "Fe2O3", tip: "yanma", sicaklik: 150, renk: "#b43c1e", aciklama: "Paslanma!"},
-    "Cu+S": {urun: "CuSO4", tip: "yanma", sicaklik: 80, renk: "#0064c8", aciklama: "Bakır sülfat!"},
-    "Ca+CO2": {urun: "CaCO3", tip: "cokelme", sicaklik: 30, renk: "#f0f0f0", aciklama: "Çökelti oluştu!"},
-    "H+Cl": {urun: "HCl", tip: "birlesme", sicaklik: 40, renk: "#ffc8c8", aciklama: "Asit oluşumu!"},
-    "Na+OH": {urun: "NaOH", tip: "birlesme", sicaklik: 60, renk: "#c8c8ff", aciklama: "Baz oluşumu!"},
+    "Cu+S": {urun: "CuSO4", tip: "yanma", sicaklik: 80, renk: "#0064c8", aciklama: "Bakir sulfat!"},
+    "Ca+CO2": {urun: "CaCO3", tip: "cokelme", sicaklik: 30, renk: "#f0f0f0", aciklama: "Cokelti olustu!"},
+    "H+Cl": {urun: "HCl", tip: "birlesme", sicaklik: 40, renk: "#ffc8c8", aciklama: "Asit olusumu!"},
+    "Na+OH": {urun: "NaOH", tip: "birlesme", sicaklik: 60, renk: "#c8c8ff", aciklama: "Baz olusumu!"},
     "Mg+O": {urun: "MgO", tip: "patlama", sicaklik: 300, renk: "#ffffff", aciklama: "Parlak patlama!"},
-    "Al+O": {urun: "Al2O3", tip: "yanma", sicaklik: 250, renk: "#f0f0f0", aciklama: "Alüminyum oksit!"},
-    "Zn+Cl": {urun: "ZnCl2", tip: "birlesme", sicaklik: 70, renk: "#ffffff", aciklama: "Çinko klorür!"},
-    "Ag+NO3": {urun: "AgNO3", tip: "birlesme", sicaklik: 50, renk: "#dcdcf0", aciklama: "Gümüş nitrat!"},
-    "K+MnO4": {urun: "KMnO4", tip: "birlesme", sicaklik: 60, renk: "#960096", aciklama: "Mor çözelti!"},
-    "Ba+Cl": {urun: "BaCl2", tip: "birlesme", sicaklik: 45, renk: "#f0f0ff", aciklama: "Baryum klorür!"},
-    "H2O+NaCl": {urun: "cozelti", tip: "cozunme", sicaklik: 25, renk: "#c8dcff", aciklama: "Tuz çözeltisi!"},
-    "HCl+NaOH": {urun: "H2O", tip: "notralizasyon", sicaklik: 80, renk: "#0096ff", aciklama: "Nötralizasyon!"},
-    "CuSO4+Fe": {urun: "FeSO4", tip: "tek_degisim", sicaklik: 40, renk: "#649664", aciklama: "Demir bakırı değiştirdi!"},
-    "AgNO3+NaCl": {urun: "AgCl", tip: "cokelme", sicaklik: 30, renk: "#ffffff", aciklama: "Beyaz çökelti!"},
-    "BaCl2+H2SO4": {urun: "BaSO4", tip: "cokelme", sicaklik: 35, renk: "#ffffff", aciklama: "Baryum sülfat!"},
-    "Mg+HCl": {urun: "H2", tip: "gaz_cikisi", sicaklik: 60, renk: "#ffffff", aciklama: "Hidrojen gazı!"},
+    "Al+O": {urun: "Al2O3", tip: "yanma", sicaklik: 250, renk: "#f0f0f0", aciklama: "Aluminyum oksit!"},
+    "Zn+Cl": {urun: "ZnCl2", tip: "birlesme", sicaklik: 70, renk: "#ffffff", aciklama: "Cinko klorur!"},
+    "Ag+NO3": {urun: "AgNO3", tip: "birlesme", sicaklik: 50, renk: "#dcdcf0", aciklama: "Gumus nitrat!"},
+    "K+MnO4": {urun: "KMnO4", tip: "birlesme", sicaklik: 60, renk: "#960096", aciklama: "Mor cozelti!"},
+    "Ba+Cl": {urun: "BaCl2", tip: "birlesme", sicaklik: 45, renk: "#f0f0ff", aciklama: "Baryum klorur!"},
+    "H2O+NaCl": {urun: "cozelti", tip: "cozunme", sicaklik: 25, renk: "#c8dcff", aciklama: "Tuz cozeltisi!"},
+    "HCl+NaOH": {urun: "H2O", tip: "notralizasyon", sicaklik: 80, renk: "#0096ff", aciklama: "Notralizasyon!"},
+    "CuSO4+Fe": {urun: "FeSO4", tip: "tek_degisim", sicaklik: 40, renk: "#649664", aciklama: "Demir bakiri degistirdi!"},
+    "AgNO3+NaCl": {urun: "AgCl", tip: "cokelme", sicaklik: 30, renk: "#ffffff", aciklama: "Beyaz cokelti!"},
+    "BaCl2+H2SO4": {urun: "BaSO4", tip: "cokelme", sicaklik: 35, renk: "#ffffff", aciklama: "Baryum sulfat!"},
+    "Mg+HCl": {urun: "H2", tip: "gaz_cikisi", sicaklik: 60, renk: "#ffffff", aciklama: "Hidrojen gazi!"},
     "CaCO3+HCl": {urun: "CO2", tip: "gaz_cikisi", sicaklik: 50, renk: "#c8c8c8", aciklama: "Karbondioksit!"},
-    "Na+H2O": {urun: "NaOH", tip: "patlama", sicaklik: 200, renk: "#c8c8ff", aciklama: "ŞİDDETLİ REAKSİYON!"},
+    "Na+H2O": {urun: "NaOH", tip: "patlama", sicaklik: 200, renk: "#c8c8ff", aciklama: "SIDDETLI REAKSIYON!"},
     "K+H2O": {urun: "KOH", tip: "patlama", sicaklik: 250, renk: "#c8c8ff", aciklama: "PATLAMA!"},
-    "C2H5OH+O": {urun: "CO2", tip: "yanma", sicaklik: 300, renk: "#ff9600", aciklama: "Alkol yanması!"},
-    "CH4+O": {urun: "CO2", tip: "yanma", sicaklik: 350, renk: "#ff6400", aciklama: "Metan yanması!"},
-    "H2O2+MnO2": {urun: "O2", tip: "gaz_cikisi", sicaklik: 40, renk: "#ffffff", aciklama: "Oksijen gazı!"},
+    "C2H5OH+O": {urun: "CO2", tip: "yanma", sicaklik: 300, renk: "#ff9600", aciklama: "Alkol yanmasi!"},
+    "CH4+O": {urun: "CO2", tip: "yanma", sicaklik: 350, renk: "#ff6400", aciklama: "Metan yanmasi!"},
+    "H2O2+MnO2": {urun: "O2", tip: "gaz_cikisi", sicaklik: 40, renk: "#ffffff", aciklama: "Oksijen gazi!"},
     "NH3+HCl": {urun: "NH4Cl", tip: "duman", sicaklik: 30, renk: "#ffffff", aciklama: "Beyaz duman!"},
 };
 
@@ -269,7 +267,8 @@ const RENK_SECENEKLERI = [
     "#e17055", "#74b9ff", "#55efc4", "#ff7675", "#fab1a0"
 ];
 
-// ==================== SİMÜLASYON SINIFI ====================
+let simulasyon;
+
 class KimyaSimulasyon {
     constructor() {
         this.canvas = document.getElementById('beher-canvas');
@@ -301,54 +300,50 @@ class KimyaSimulasyon {
         this.beherH = 400;
         this.animasyonId = null;
         this.sonZaman = 0;
-        
         this.init();
     }
     
     init() {
         this.butonlariOlustur();
         this.renkSeciciOlustur();
-        this.tarihceEkle("BEAKER başlatıldı! Element eklemeye başlayın.");
+        this.tarihceEkle("BEAKER baslatildi! Element eklemeye baslayin.");
         this.animasyonDongusu(0);
     }
     
     butonlariOlustur() {
-        // Element butonları
         const elementGrid = document.getElementById('elementler-grid');
         for (const [sembol, bilgi] of Object.entries(ELEMENTLER)) {
             const btn = document.createElement('div');
             btn.className = 'buton element';
-            btn.innerHTML = `<div>${sembol}</div><div style="font-size:0.7em;color:#888">${bilgi.ad}</div><div class="renk-gosterge" style="background:${bilgi.renk}"></div>`;
+            btn.innerHTML = '<div>' + sembol + '</div><div style="font-size:0.7em;color:#888">' + bilgi.ad + '</div><div class="renk-gosterge" style="background:' + bilgi.renk + '"></div>';
             btn.onclick = () => this.elementEkle(sembol);
             elementGrid.appendChild(btn);
         }
         
-        // Bileşik butonları
         const bilesikGrid = document.getElementById('bilesikler-grid');
         for (const [formul, bilgi] of Object.entries(BILESIKLER)) {
             const btn = document.createElement('div');
             btn.className = 'buton bilesik';
-            btn.innerHTML = `<div>${formul}</div><div style="font-size:0.7em;color:#888">${bilgi.ad}</div><div class="renk-gosterge" style="background:${bilgi.renk}"></div>`;
+            btn.innerHTML = '<div>' + formul + '</div><div style="font-size:0.7em;color:#888">' + bilgi.ad + '</div><div class="renk-gosterge" style="background:' + bilgi.renk + '"></div>';
             btn.onclick = () => this.bilesikEkle(formul);
             bilesikGrid.appendChild(btn);
         }
         
-        // Aksiyon butonları
         const aksiyonGrid = document.getElementById('aksiyonlar-grid');
         const aksiyonlar = [
-            {metin: "🔥 Ateş", veri: "ates", aciklama: "Isıtma başlat/durdur"},
-            {metin: "🔄 Salla", veri: "salla", aciklama: "Beheri salla"},
-            {metin: "🗑️ Boşalt", veri: "bosalt", aciklama: "Beheri temizle"},
-            {metin: "❄️ Soğut", veri: "sogut", aciklama: "Soğutma uygula"},
-            {metin: "🧪 pH Test", veri: "ph_test", aciklama: "pH ölçümü"},
-            {metin: "🔍 Filtre", veri: "filtre", aciklama: "Katıları ayır"},
-            {metin: "🌀 Karıştır", veri: "karistir", aciklama: "Karıştır"},
-            {metin: "🔎 Büyüt", veri: "buyut", aciklama: "Parçacıkları büyüt"},
+            {metin: "Ates", veri: "ates", aciklama: "Isitma baslat/durdur"},
+            {metin: "Salla", veri: "salla", aciklama: "Beheri salla"},
+            {metin: "Bosalt", veri: "bosalt", aciklama: "Beheri temizle"},
+            {metin: "Sogut", veri: "sogut", aciklama: "Sogutma uygula"},
+            {metin: "pH Test", veri: "ph_test", aciklama: "pH olcumu"},
+            {metin: "Filtre", veri: "filtre", aciklama: "Katilari ayir"},
+            {metin: "Karistir", veri: "karistir", aciklama: "Karistir"},
+            {metin: "Buyut", veri: "buyut", aciklama: "Parcaciklari buyut"},
         ];
         for (const a of aksiyonlar) {
             const btn = document.createElement('div');
             btn.className = 'buton aksiyon';
-            btn.innerHTML = `<div>${a.metin}</div><div style="font-size:0.7em;color:#888">${a.aciklama}</div>`;
+            btn.innerHTML = '<div>' + a.metin + '</div><div style="font-size:0.7em;color:#888">' + a.aciklama + '</div>';
             btn.onclick = () => this.aksiyonUygula(a.veri);
             aksiyonGrid.appendChild(btn);
         }
@@ -367,6 +362,13 @@ class KimyaSimulasyon {
             };
             secici.appendChild(kutu);
         });
+    }
+    
+    renkParse(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return {r, g, b};
     }
     
     elementEkle(sembol) {
@@ -395,7 +397,7 @@ class KimyaSimulasyon {
         }
         
         this.hacim += this.miktar * 0.5;
-        this.tarihceEkle(`${bilgi.ad} (${sembol}) eklendi: ${this.miktar} birim`);
+        this.tarihceEkle(bilgi.ad + " (" + sembol + ") eklendi: " + this.miktar + " birim");
         this.titresim = 5;
         this.bilgiGuncelle(sembol, bilgi, "element");
     }
@@ -427,7 +429,7 @@ class KimyaSimulasyon {
         
         this.hacim += this.miktar * 0.5;
         this.ph = (this.ph + bilgi.ph) / 2;
-        this.tarihceEkle(`${bilgi.ad} (${formul}) eklendi: ${this.miktar} birim`);
+        this.tarihceEkle(bilgi.ad + " (" + formul + ") eklendi: " + this.miktar + " birim");
         this.titresim = 5;
         this.bilgiGuncelle(formul, bilgi, "bilesik");
     }
@@ -461,9 +463,9 @@ class KimyaSimulasyon {
                     aci: -Math.PI / 2 + (Math.random() - 0.5) * 0.5
                 });
             }
-            this.tarihceEkle("🔥 Ateş yakıldı!");
+            this.tarihceEkle("Ates yakildi!");
         } else {
-            this.tarihceEkle("❄️ Ateş söndürüldü");
+            this.tarihceEkle("Ates sonduruldu");
         }
     }
     
@@ -482,7 +484,7 @@ class KimyaSimulasyon {
                 yasam: 100
             });
         }
-        this.tarihceEkle("🔄 Beher sallandı!");
+        this.tarihceEkle("Beher sallandi!");
     }
     
     bosalt() {
@@ -494,7 +496,7 @@ class KimyaSimulasyon {
         this.ph = 7;
         this.siviRenk = {r: 0, g: 180, b: 150};
         this.siviRenkHedef = {r: 0, g: 180, b: 150};
-        this.tarihceEkle("🗑️ Beher boşaltıldı");
+        this.tarihceEkle("Beher bosaltildi");
         this.titresim = 10;
     }
     
@@ -517,14 +519,14 @@ class KimyaSimulasyon {
                 aci: -Math.PI / 2
             });
         }
-        this.tarihceEkle("❄️ Soğutma uygulandı");
+        this.tarihceEkle("Sogutma uygulandi");
     }
     
     phTest() {
         let renk, durum;
         if (this.ph < 6) { renk = '#ff3232'; durum = 'Asidik'; }
         else if (this.ph > 8) { renk = '#3232ff'; durum = 'Bazik'; }
-        else { renk = '#00ff64'; durum = 'Nötr'; }
+        else { renk = '#00ff64'; durum = 'Notr'; }
         
         for (let i = 0; i < 20; i++) {
             this.efektler.push({
@@ -538,7 +540,7 @@ class KimyaSimulasyon {
                 aci: Math.random() * Math.PI * 2
             });
         }
-        this.tarihceEkle(`🧪 pH Test: ${this.ph.toFixed(1)} - ${durum}`);
+        this.tarihceEkle("pH Test: " + this.ph.toFixed(1) + " - " + durum);
     }
     
     filtre() {
@@ -557,7 +559,7 @@ class KimyaSimulasyon {
                 aci: -Math.PI / 2
             });
         }
-        this.tarihceEkle(`🔍 Filtreleme: ${filtrelenen} katı parçacık ayrıldı`);
+        this.tarihceEkle("Filtreleme: " + filtrelenen + " kati parcacik ayrildi");
     }
     
     karistir() {
@@ -574,14 +576,14 @@ class KimyaSimulasyon {
                 yasam: 100
             });
         }
-        this.tarihceEkle("🌀 Karıştırma uygulandı");
+        this.tarihceEkle("Karistirma uygulandi");
     }
     
     buyut() {
         this.parcaciklar.forEach(p => {
             p.yaricap = Math.min(20, p.yaricap * 1.5);
         });
-        this.tarihceEkle("🔎 Parçacıklar büyütüldü");
+        this.tarihceEkle("Parcaciklar buyutuldu");
     }
     
     reaksiyonKontrol() {
@@ -680,24 +682,18 @@ class KimyaSimulasyon {
             this.ph = (this.ph + BILESIKLER[reaksiyon.urun].ph) / 2;
         }
         
-        this.tarihceEkle(`⚡ ${reaksiyon.aciklama}`);
+        this.tarihceEkle(reaksiyon.aciklama);
     }
     
     guncelle(dt) {
-        // Titresim
         if (this.titresim > 0) this.titresim -= dt * 2;
-        
-        // Sıcaklık soğuma
         if (!this.alevAktif && this.sicaklik > 25) this.sicaklik -= 0.5 * dt;
         
-        // Sıvı renk geçişi
         this.siviRenk.r += (this.siviRenkHedef.r - this.siviRenk.r) * 0.05;
         this.siviRenk.g += (this.siviRenkHedef.g - this.siviRenk.g) * 0.05;
         this.siviRenk.b += (this.siviRenkHedef.b - this.siviRenk.b) * 0.05;
         
-        // Parçacıkları güncelle
         this.parcaciklar.forEach(p => {
-            // Yerçekimi
             if (p.tip === 'katı' || p.tip === 'sıvı') p.vy += 0.5 * dt;
             else {
                 p.vy += 0.1 * dt;
@@ -705,23 +701,17 @@ class KimyaSimulasyon {
                 p.vy += (Math.random() - 0.5) * 0.4;
             }
             
-            // Pozisyon güncelle
             p.x += p.vx * dt * 60;
             p.y += p.vy * dt * 60;
             
-            // Duvar çarpışması
             if (p.x < this.beherX + 15) { p.x = this.beherX + 15; p.vx *= -0.5; }
             if (p.x > this.beherX + this.beherW - 15) { p.x = this.beherX + this.beherW - 15; p.vx *= -0.5; }
             if (p.y > this.beherY + this.beherH - 15) { p.y = this.beherY + this.beherH - 15; p.vy *= -0.3; }
             if (p.y < this.beherY + 50) { p.y = this.beherY + 50; p.vy *= -0.5; }
             
-            // Sıcaklık etkisi
             if (p.sicaklik > 100) p.vy -= 0.1 * (p.sicaklik - 100) / 100;
-            
-            // Parıltı azalma
             if (p.parilti > 0) p.parilti -= 0.5 * dt;
             
-            // Sıvı yüzeyi etkisi
             const siviYuzey = this.beherY + this.beherH - 50 - this.siviSeviye;
             if (p.y > siviYuzey && p.tip === 'sıvı') {
                 p.vy *= 0.3;
@@ -729,7 +719,6 @@ class KimyaSimulasyon {
             }
         });
         
-        // Efektleri güncelle
         this.efektler = this.efektler.filter(e => e.yasam > 0);
         this.efektler.forEach(e => {
             e.yasam -= e.hiz * dt * 10;
@@ -746,7 +735,6 @@ class KimyaSimulasyon {
             }
         });
         
-        // Buble'ları güncelle
         this.bubles = this.bubles.filter(b => b.yasam > 0);
         this.bubles.forEach(b => {
             b.y -= b.hiz * dt * 60;
@@ -754,14 +742,11 @@ class KimyaSimulasyon {
             b.yasam -= 0.5 * dt * 60;
         });
         
-        // Reaksiyon kontrolü
         this.reaksiyonKontrol();
         
-        // Sıvı seviyesi
         const hedefSeviye = Math.min(this.beherH - 50, this.hacim * 2);
         this.siviSeviye += (hedefSeviye - this.siviSeviye) * 0.1 * dt * 60;
         
-        // Ateş efekti
         if (this.alevAktif) {
             if (Math.random() < 0.3) {
                 this.efektler.push({
@@ -776,8 +761,7 @@ class KimyaSimulasyon {
             this.sicaklik = Math.min(500, this.sicaklik + 0.5);
         }
         
-        // UI güncelle
-        document.getElementById('sicaklik-deger').textContent = this.sicaklik.toFixed(1) + '°C';
+        document.getElementById('sicaklik-deger').textContent = this.sicaklik.toFixed(1) + 'C';
         document.getElementById('ph-deger').textContent = this.ph.toFixed(1);
         document.getElementById('hacim-deger').textContent = this.hacim.toFixed(1) + ' ml';
     }
@@ -787,23 +771,13 @@ class KimyaSimulasyon {
         const w = this.canvas.width;
         const h = this.canvas.height;
         
-        // Arka plan
         ctx.fillStyle = this.ozellestirme.arkaPlan;
         ctx.fillRect(0, 0, w, h);
         
-        // Beher çiz
         this.beherCiz(ctx);
-        
-        // Sıvı çiz
         this.siviCiz(ctx);
-        
-        // Parçacıkları çiz
         this.parcaciklar.forEach(p => this.parcacikCiz(ctx, p));
-        
-        // Efektleri çiz
         this.efektler.forEach(e => this.efektCiz(ctx, e));
-        
-        // Buble'ları çiz
         this.bubles.forEach(b => this.bubleCiz(ctx, b));
     }
     
@@ -815,7 +789,6 @@ class KimyaSimulasyon {
         const bw = this.beherW;
         const bh = this.beherH;
         
-        // Beher içi
         ctx.beginPath();
         ctx.moveTo(bx + 30, by);
         ctx.lineTo(bx + bw - 30, by);
@@ -832,7 +805,6 @@ class KimyaSimulasyon {
         ctx.lineWidth = 3;
         ctx.stroke();
         
-        // Ölçek çizgileri
         for (let i = 1; i < 10; i++) {
             const y = by + bh - 50 - i * 35;
             if (y > by + 50) {
@@ -846,12 +818,11 @@ class KimyaSimulasyon {
                 if (i % 2 === 0) {
                     ctx.fillStyle = '#f0f0f0';
                     ctx.font = '12px Arial';
-                    ctx.fillText(`${i * 10}ml`, bx + 30, y + 4);
+                    ctx.fillText(i * 10 + 'ml', bx + 30, y + 4);
                 }
             }
         }
         
-        // Döküm ağzı
         ctx.beginPath();
         ctx.moveTo(bx + bw - 30, by);
         ctx.lineTo(bx + bw + 20, by - 20);
@@ -869,7 +840,6 @@ class KimyaSimulasyon {
         const bw = this.beherW;
         const dalga = Math.sin(Date.now() * 0.003) * 3;
         
-        // Sıvı rengi - sıcaklığa göre
         let r = this.siviRenk.r, g = this.siviRenk.g, b = this.siviRenk.b;
         if (this.sicaklik > 100) {
             const f = Math.min(1, (this.sicaklik - 100) / 400);
@@ -885,45 +855,39 @@ class KimyaSimulasyon {
         ctx.quadraticCurveTo(bx + bw - 30, by - 5 + dalga, bx + bw - 5, by + 10);
         ctx.lineTo(bx + bw - 5, by + this.siviSeviye);
         ctx.closePath();
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.7)`;
+        ctx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',0.7)';
         ctx.fill();
         
-        // Sıvı parlaklığı
-        ctx.fillStyle = `rgba(0, 255, 220, 0.15)`;
+        ctx.fillStyle = 'rgba(0,255,220,0.15)';
         ctx.fillRect(bx + 5, by, bw - 10, 20);
         
-        // Sıvı yüzeyi
         ctx.beginPath();
         ctx.moveTo(bx + 30, by - 5 + dalga);
         ctx.quadraticCurveTo(bx + bw / 2, by - 8 + dalga, bx + bw - 30, by - 5 + dalga);
-        ctx.strokeStyle = `rgba(0, 255, 220, 0.5)`;
+        ctx.strokeStyle = 'rgba(0,255,220,0.5)';
         ctx.lineWidth = 2;
         ctx.stroke();
     }
     
     parcacikCiz(ctx, p) {
-        // Parıltı
         if (p.parilti > 0) {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.yaricap + p.parilti * 0.3, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(255, 255, 200, ${p.parilti / 100})`;
+            ctx.strokeStyle = 'rgba(255,255,200,' + (p.parilti / 100) + ')';
             ctx.lineWidth = 2;
             ctx.stroke();
         }
         
-        // Ana parçacık
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.yaricap, 0, Math.PI * 2);
-        ctx.fillStyle = `rgb(${p.renk.r}, ${p.renk.g}, ${p.renk.b})`;
+        ctx.fillStyle = 'rgb(' + p.renk.r + ',' + p.renk.g + ',' + p.renk.b + ')';
         ctx.fill();
         
-        // Parlaklık noktası
         ctx.beginPath();
         ctx.arc(p.x - p.yaricap * 0.3, p.y - p.yaricap * 0.3, p.yaricap * 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
         ctx.fill();
         
-        // Ad
         if (p.yaricap > 8) {
             const ad = p.element || p.bilesik;
             if (ad) {
@@ -951,7 +915,7 @@ class KimyaSimulasyon {
         } else if (e.tip === 'buhar') {
             ctx.beginPath();
             ctx.arc(e.x, e.y, e.boyut, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(200, 200, 220, 0.3)';
+            ctx.fillStyle = 'rgba(200,200,220,0.3)';
             ctx.globalAlpha = alpha * 0.5;
             ctx.fill();
             ctx.globalAlpha = 1;
@@ -965,7 +929,7 @@ class KimyaSimulasyon {
         } else if (e.tip === 'duman') {
             ctx.beginPath();
             ctx.arc(e.x, e.y, e.boyut, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+            ctx.fillStyle = 'rgba(200,200,200,0.3)';
             ctx.globalAlpha = alpha * 0.3;
             ctx.fill();
             ctx.globalAlpha = 1;
@@ -976,12 +940,12 @@ class KimyaSimulasyon {
         const alpha = Math.max(0, b.yasam / 100);
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.yaricap, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.8})`;
+        ctx.strokeStyle = 'rgba(255,255,255,' + (alpha * 0.8) + ')';
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.beginPath();
         ctx.arc(b.x - b.yaricap * 0.3, b.y - b.yaricap * 0.3, b.yaricap * 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.4})`;
+        ctx.fillStyle = 'rgba(255,255,255,' + (alpha * 0.4) + ')';
         ctx.fill();
     }
     
@@ -1006,4 +970,27 @@ class KimyaSimulasyon {
         liste.appendChild(item);
         liste.scrollTop = liste.scrollHeight;
         
-        // Eski öğeleri temizle (DOM'da fazla birikmesin)"
+        setTimeout(() => item.classList.remove('yeni'), 1000);
+        
+        while (liste.children.length > 50) {
+            liste.removeChild(liste.firstChild);
+        }
+    }
+    
+    bilgiGuncelle(id, bilgi, tip) {
+        const icerik = document.getElementById('aktif-bilgi-icerik');
+        if (tip === 'element') {
+            icerik.innerHTML = 
+                '<div class="bilgi-satir"><span>Ad:</span><span>' + bilgi.ad + '</span></div>' +
+                '<div class="bilgi-satir"><span>Sembol:</span><span>' + id + '</span></div>' +
+                '<div class="bilgi-satir"><span>Tip:</span><span>' + bilgi.tip + '</span></div>' +
+                '<div class="bilgi-satir"><span>Atom No:</span><span>' + bilgi.atomNo + '</span></div>' +
+                '<div class="bilgi-satir"><span>Yoğunluk:</span><span>' + bilgi.yogunluk + ' g/cm³</span></div>' +
+                '<div style="margin-top:5px;color:#888;font-size:0.9em">' + bilgi.aciklama + '</div>';
+        } else {
+            icerik.innerHTML = 
+                '<div class="bilgi-satir"><span>Ad:</span><span>' + bilgi.ad + '</span></div>' +
+                '<div class="bilgi-satir"><span>Formul:</span><span>' + bilgi.formul + '</span></div>' +
+                '<div class="bilgi-satir"><span>Tip:</span><span>' + bilgi.tip + '</span></div>' +
+                '<div class="bilgi-satir"><span>pH:</span><span>' + bilgi.ph + '</span></div>' +
+                '<div style="margin-top:5px;color:#
