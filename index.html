@@ -2,183 +2,192 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Roni Kimya Laboratuvarı - Akışkan ve Reaksiyon Motoru</title>
+    <title>Roni 3D Kimya Laboratuvarı - Gelişmiş Render Çekirdeği</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f111a; color: #f0f3f6; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { color: #00e6ff; font-weight: 400; margin-bottom: 5px; }
-        .subtitle { color: #8a99ad; margin-bottom: 25px; font-size: 14px; }
-        
-        /* Laboratuvar Beheri */
-        #beaker { width: 320px; height: 420px; border: 5px solid #e2e8f0; border-top: none; border-radius: 0 0 40px 40px; position: relative; background: rgba(255,255,255,0.03); box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); overflow: hidden; }
-        #beaker::before { content: ''; position: absolute; top: 0; left: 20px; width: 5px; height: 90%; background: rgba(255,255,255,0.2); } /* Derece çizgisi çizgisi */
-
-        /* Akışkan Katmanı */
-        #liquid { position: absolute; bottom: 0; width: 100%; height: 0%; background: transparent; transition: height 0.4s ease, background-color 0.6s ease; }
-        
-        /* Kabarcık Efektleri */
-        .bubble { position: absolute; bottom: 0; background: rgba(255,255,255,0.4); border-radius: 50%; animation: floatUp 2s infinite ease-in; }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.3); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: translateY(-350px) scale(1.2); opacity: 0; }
-        }
-
-        /* Gösterge Paneli (HUD) */
-        #hud { width: 320px; background: #161925; border: 1px solid #2d3142; border-radius: 12px; padding: 15px; margin: 20px 0; box-sizing: border-box; }
-        .hud-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-        .hud-row:last-child { margin-bottom: 0; }
-        .formula { color: #00ffaa; font-family: monospace; font-weight: bold; font-size: 15px; }
-
-        /* Kontrol Butonları */
-        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 500px; }
-        button { padding: 12px 20px; background: #1f2335; color: #fff; border: 1px solid #3b4261; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-        button:hover { background: #3b4261; border-color: #00e6ff; transform: translateY(-2px); }
-        button.danger { border-color: #ff4a5a; color: #ff4a5a; }
-        button.danger:hover { background: #ff4a5a; color: #fff; }
+        body { margin: 0; background: #05070f; color: #fff; font-family: 'SF Pro Display', -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+        .lab-wrapper { display: flex; gap: 40px; align-items: center; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 24px; box-shadow: 0 30px 100px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(20px); }
+        canvas { background: transparent; cursor: grab; filter: drop-shadow(0px 10px 30px rgba(0,0,0,0.7)); }
+        canvas:active { cursor: grabbing; }
+        .panel { width: 300px; display: flex; flex-direction: column; gap: 20px; }
+        .hud-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 14px; }
+        .hud-value { font-family: 'Courier New', monospace; font-size: 24px; color: #00ffcc; font-weight: bold; margin-top: 5px; }
+        .btn { background: linear-gradient(135deg, #2c3e50, #3498db); border: none; color: white; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(52, 152, 219, 0.4); }
+        .btn.reactive { background: linear-gradient(135deg, #e74c3c, #9b59b6); }
     </style>
 </head>
 <body>
 
-    <h1>Roni Laboratuvar Motoru</h1>
-    <div class="subtitle">Sıvı Enjeksiyonu ve Gerçek Zamanlı Efekt Test Modülü</div>
+<div class="lab-wrapper">
+    <!-- Gelişmiş Fizik ve Akışkan Canvası -->
+    <canvas id="glCanvas" width="360" height="500"></canvas>
 
-    <div id="beaker">
-        <div id="liquid"></div>
+    <!-- Kontrol ve HUD Paneli -->
+    <div class="panel">
+        <div class="hud-card">
+            <label style="color: #aaa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Moleküler Termal İvme</label>
+            <div id="tempHUD" class="hud-value">25.00 °C</div>
+        </div>
+        <div class="hud-card">
+            <label style="color: #aaa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Aktif Reaksiyon Matrisi</label>
+            <div id="formulaHUD" style="color: #ff9f43; font-size: 16px;" class="hud-value">-</div>
+        </div>
+        
+        <button class="btn" onclick="addReagent('Cu')">Bakır İyonu Ekle (Cu²⁺)</button>
+        <button class="btn reactive" onclick="addReagent('NH3')">Amonyak Çözeltisi (NH₃)</button>
+        <button class="btn" style="background: #27ae60;" onclick="shakeBeaker()">Kinetik Karıştırma Trigger</button>
     </div>
-
-    <div id="hud">
-        <div class="hud-row"><span>Sıcaklık:</span> <span><strong id="txt-temp">25</strong> °C</span></div>
-        <div class="hud-row"><span>pH Seviyesi:</span> <span><strong id="txt-ph">7.0</strong></span></div>
-        <div class="hud-row"><span>Kimyasal Denklem:</span> <span id="txt-eq" class="formula">-</span></div>
-    </div>
-
-    <div class="btn-group">
-        <button onclick="injectChemical('Asit')">Asit Ekle (HCl)</button>
-        <button onclick="injectChemical('Baz')">Baz Ekle (NaOH)</button>
-        <button onclick="injectChemical('Metal')">Aktif Metal Ekle (K)</button>
-        <button onclick="heatUp()">Isıyı Artır (+10°C)</button>
-        <button class="danger" onclick="drainBeaker()">Beheri Boşalt</button>
-    </div>
+</div>
 
 <script>
-    // Laboratuvar Durum Değişkenleri
-    let state = {
-        volume: 0,          // Kaptaki toplam sıvı hacmi (%)
-        temperature: 25,    // Santigrat derece
-        ph: 7.0,            // Çözelti pH değeri
-        elements: [],       // İçerideki aktif maddeler
-        isReacting: false
-    };
+const canvas = document.getElementById('glCanvas');
+const ctx = canvas.getContext('2d');
 
-    const liquidDom = document.getElementById('liquid');
+// --- HASSAS FİZİK VE DALGA MOTORU ---
+let liquid = {
+    level: 250,        // Yükseklik hedefi
+    currentLevel: 500, // Başlangıç animasyon seviyesi (aşağıdan dolar)
+    waveHeight: 0,     // Anlık dalga genliği
+    waveSpeed: 0,      // Dalga hızı
+    targetColor: { r: 40, g: 120, b: 240, a: 0.6 }, // İlk renk (Açık Mavi Bakır Çözeltisi)
+    currentColor: { r: 40, g: 120, b: 240, a: 0.6 },
+    particles: [],
+    temperature: 25.00
+};
 
-    // Renk Skalası Yönetimi
-    function calculateMixColor() {
-        if (state.volume === 0) return 'transparent';
-        // pH değerine göre indikatör rengi (Turnusol efekti)
-        if (state.ph < 5) return `rgba(255, 64, 128, ${0.3 + (state.volume/200)})`; // Asidik: Kırmızımsı
-        if (state.ph > 9) return `rgba(64, 128, 255, ${0.3 + (state.volume/200)})`; // Bazik: Mavi
-        return `rgba(0, 255, 170, ${0.2 + (state.volume/200)})`;                   // Nötr: Yeşil/Turkuaz
-    }
+// Çözelti İndikatör Kompleksleri
+let stateHistory = ['Cu'];
 
-    // Sıvı/Madde Enjeksiyonu
-    function injectChemical(type) {
-        if (state.volume >= 90) return; // Taşma koruması
+// Kinetik Enerji İvmesi (Sallama simülasyonu)
+let angle = 0;
+let tilt = 0;
+let targetTilt = 0;
 
-        state.volume += 20;
-        if (!state.elements.includes(type)) state.elements.push(type);
-
-        // Kimyasal etkiler
-        if (type === 'Asit') state.ph = Math.max(1.0, state.ph - 2.5);
-        if (type === 'Baz') state.ph = Math.min(14.0, state.ph + 2.5);
-        if (type === 'Metal') state.temperature += 15; // Çözünme/temas ısısı
-
-        updatePhysics();
-        checkChemicalEquations();
-    }
-
-    // Denklem ve Reaksiyon Kontrolü
-    function checkChemicalEquations() {
-        const eqText = document.getElementById('txt-eq');
+function addReagent(type) {
+    if(type === 'NH3' && stateHistory.includes('Cu')) {
+        // Kompleks bileşik oluşumu: Kompleks iyonlar derin lacivert/gece mavisi tonu alır
+        liquid.targetColor = { r: 10, g: 30, b: 150, a: 0.85 }; 
+        liquid.waveSpeed = 0.4;
+        liquid.waveHeight = 25; // Reaksiyon şoku dalgalanması
+        document.getElementById('formulaHUD').innerText = "[Cu(NH₃)₄]²⁺ (Derin Mavi)";
         
-        // Senaryo 1: Asit + Baz Nötrleşmesi
-        if (state.elements.includes('Asit') && state.elements.includes('Baz')) {
-            state.isReacting = true;
-            eqText.innerText = "HCl + NaOH → NaCl + H₂O + Isı";
-            state.ph = 7.0; // Nötrleşme
-            state.temperature += 20; // Ekzotermik patlama efekti
-            
-            createBubbles(25); // Yoğun gaz/buhar çıkışı
-            
-            // Reaktifleri tüket
-            state.elements = state.elements.filter(e => e !== 'Asit' && e !== 'Baz');
-        } 
-        // Senaryo 2: Asit + Metal Reaksiyonu
-        else if (state.elements.includes('Asit') && state.elements.includes('Metal')) {
-            state.isReacting = true;
-            eqText.innerText = "2K + 2HCl → 2KCl + H₂(g) ↑";
-            state.temperature += 35;
-            
-            createBubbles(40); // Yoğun hidrojen çıkışı
-            state.elements = state.elements.filter(e => e !== 'Metal');
-        }
+        // Egzotermik reaksiyon termal sıçrama
+        let tInterval = setInterval(() => {
+            if(liquid.temperature < 68.5) {
+                liquid.temperature += 1.45;
+                document.getElementById('tempHUD').innerText = liquid.temperature.toFixed(2) + " °C";
+                // Mikroskobik çökelti tanecikleri üret
+                generateParticles();
+            } else { clearInterval(tInterval); }
+        }, 30);
+    }
+}
+
+function generateParticles() {
+    for(let i=0; i<3; i++) {
+        liquid.particles.push({
+            x: Math.random() * (canvas.width - 60) + 30,
+            y: canvas.height - 40,
+            vy: -(Math.random() * 2 + 1),
+            size: Math.random() * 3 + 1,
+            alpha: 1
+        });
+    }
+}
+
+function shakeBeaker() {
+    targetTilt = (Math.random() - 0.5) * 0.4;
+    liquid.waveHeight = 35;
+    liquid.waveSpeed = 0.5;
+}
+
+// --- RENDER DÖNGÜSÜ (60 FPS REAL-TIME CANVAS MOTORU) ---
+let time = 0;
+function render() {
+    time += 0.05;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // İnterpolasyonlar (Yumuşak geçişler)
+    liquid.currentLevel += (liquid.level - liquid.currentLevel) * 0.05;
+    liquid.waveHeight += (0 - liquid.waveHeight) * 0.03; // Sürtünmeyle sönümlenme
+    tilt += (targetTilt - tilt) * 0.1;
+    targetTilt += (0 - targetTilt) * 0.1;
+
+    // Renk Geçiş İnterpolasyonu (Lerp Algoritması)
+    liquid.currentColor.r += (liquid.targetColor.r - liquid.currentColor.r) * 0.05;
+    liquid.currentColor.g += (liquid.targetColor.g - liquid.currentColor.g) * 0.05;
+    liquid.currentColor.b += (liquid.targetColor.b - liquid.currentColor.b) * 0.05;
+    liquid.currentColor.a += (liquid.targetColor.a - liquid.currentColor.a) * 0.05;
+
+    let col = liquid.currentColor;
+    
+    ctx.save();
+    // Beher merkez ekseni etrafında hafif rotasyon simülasyonu
+    ctx.translate(canvas.width/2, canvas.height/2);
+    ctx.rotate(tilt);
+    ctx.translate(-canvas.width/2, -canvas.height/2);
+
+    // 1. Arka Cam Yansıması ve Sıvı Hacmi
+    ctx.beginPath();
+    ctx.moveTo(30, liquid.currentLevel);
+    
+    // Sıvı Yüzeyi Dalga Simülasyonu (Sinüs Fonksiyonu)
+    for (let x = 30; x <= canvas.width - 30; x += 10) {
+        let y = liquid.currentLevel + Math.sin((x * 0.05) + (time * liquid.waveSpeed * 10)) * liquid.waveHeight;
+        ctx.lineTo(x, y);
+    }
+    
+    ctx.lineTo(canvas.width - 30, canvas.height - 30);
+    ctx.quadraticCurveTo(canvas.width/2, canvas.height - 10, 30, canvas.height - 30);
+    ctx.closePath();
+    
+    // Sıvı İç Gradyanı (Hacim hissi veren ışık gölgelemesi)
+    let liquidGrad = ctx.createLinearGradient(0, liquid.currentLevel, 0, canvas.height);
+    liquidGrad.addColorStop(0, `rgba(${col.r}, ${col.g}, ${col.b}, ${col.a})`);
+    liquidGrad.addColorStop(1, `rgba(${col.r * 0.4}, ${col.g * 0.4}, ${col.b * 0.6}, ${col.a + 0.1})`);
+    ctx.fillStyle = liquidGrad;
+    ctx.fill();
+
+    // 2. Parçacık (Çökelti/Kabarcık) İşleme
+    for (let i = liquid.particles.length - 1; i >= 0; i--) {
+        let p = liquid.particles[i];
+        p.y += p.vy;
+        if(p.y < liquid.currentLevel) p.alpha -= 0.02;
         
-        setTimeout(() => { state.isReacting = false; }, 2000);
-    }
-
-    // Kabarcık Oluşturma Mekanizması (Efekt Motoru)
-    function createBubbles(count) {
-        const beaker = document.getElementById('beaker');
-        for (let i = 0; i < count; i++) {
-            setTimeout(() => {
-                if (state.volume === 0) return;
-                const bubble = document.createElement('div');
-                bubble.className = 'bubble';
-                
-                // Rastgele genişlik ve konumlendirme
-                const size = Math.random() * 8 + 4;
-                bubble.style.width = `${size}px`;
-                bubble.style.height = `${size}px`;
-                bubble.style.left = `${Math.random() * 85 + 5}%`;
-                // Akışkanın içinden başlamasını sağla
-                bubble.style.bottom = `${Math.random() * state.volume}%`; 
-                
-                beaker.appendChild(bubble);
-
-                // Animasyon bitince element temizliği
-                setTimeout(() => bubble.remove(), 2000);
-            }, i * 60); // Kabarcıkların sırayla çıkması için delay
-        }
-    }
-
-    // Isıtıcı Fonksiyonu
-    function heatUp() {
-        state.temperature += 10;
-        if (state.temperature > 95) {
-            createBubbles(10); // Kaynama efekti
-        }
-        updatePhysics();
-    }
-
-    // Fiziksel Değişimleri Ekrana Yansıt (Render Loop alternatifi)
-    function updatePhysics() {
-        liquidDom.style.height = `${state.volume}%`;
-        liquidDom.style.backgroundColor = calculateMixColor();
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
         
-        document.getElementById('txt-temp').innerText = state.temperature;
-        document.getElementById('txt-ph').innerText = state.ph.toFixed(1);
+        if (p.alpha <= 0) liquid.particles.splice(i, 1);
     }
 
-    // Beheri Sıfırla
-    function drainBeaker() {
-        state.volume = 0;
-        state.temperature = 25;
-        state.ph = 7.0;
-        state.elements = [];
-        state.isReacting = false;
-        document.getElementById('txt-eq').innerText = "-";
-        updatePhysics();
-    }
+    // 3. Ön Cam ve Çeper Çizimi (Laboratuvar Kalitesi Cam Efekti)
+    ctx.beginPath();
+    ctx.moveTo(30, 40);
+    ctx.lineTo(30, canvas.height - 40);
+    ctx.quadraticCurveTo(30, canvas.height - 20, 50, canvas.height - 20);
+    ctx.lineTo(canvas.width - 50, canvas.height - 20);
+    ctx.quadraticCurveTo(canvas.width - 30, canvas.height - 20, canvas.width - 30, canvas.height - 40);
+    ctx.lineTo(canvas.width - 30, 40);
+    
+    let glassGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    glassGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
+    glassGrad.addColorStop(0.08, 'rgba(255,255,255,0.05)');
+    glassGrad.addColorStop(0.92, 'rgba(255,255,255,0.05)');
+    glassGrad.addColorStop(1, 'rgba(255,255,255,0.4)');
+    
+    ctx.strokeStyle = glassGrad;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    ctx.restore();
+    requestAnimationFrame(render);
+}
+
+// Motoru ateşle
+render();
 </script>
+
 </body>
 </html>
