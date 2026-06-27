@@ -548,11 +548,9 @@ html_content = '''<!DOCTYPE html>
             c.fillStyle = '#ff5555'; c.fill();
         }
 
-        // ===== 3D SURFACE MESH DRAWER =====
-        // Creates a true 3D ellipsoid surface with triangles
         function draw3DEllipsoid(cx, cy, cz, rx, ry, rz, rgb, alpha, rotLocalX, rotLocalY) {
-            const slices = 20;  // longitude
-            const stacks = 14;  // latitude
+            const slices = 20;
+            const stacks = 14;
             const triangles = [];
             
             for (let i = 0; i < slices; i++) {
@@ -562,7 +560,6 @@ html_content = '''<!DOCTYPE html>
                     const v1 = (Math.PI / stacks) * j - Math.PI/2;
                     const v2 = (Math.PI / stacks) * (j + 1) - Math.PI/2;
                     
-                    // Create 4 corners of a quad
                     const corners = [
                         spherePoint(cx, cy, cz, rx, ry, rz, u1, v1, rotLocalX, rotLocalY),
                         spherePoint(cx, cy, cz, rx, ry, rz, u2, v1, rotLocalX, rotLocalY),
@@ -570,7 +567,6 @@ html_content = '''<!DOCTYPE html>
                         spherePoint(cx, cy, cz, rx, ry, rz, u1, v2, rotLocalX, rotLocalY)
                     ];
                     
-                    // Split into 2 triangles
                     triangles.push({
                         p: [corners[0], corners[1], corners[2]],
                         avgZ: (corners[0].z + corners[1].z + corners[2].z) / 3
@@ -582,10 +578,8 @@ html_content = '''<!DOCTYPE html>
                 }
             }
             
-            // Sort by depth (painter's algorithm)
             triangles.sort((a, b) => b.avgZ - a.avgZ);
             
-            // Draw from back to front
             triangles.forEach(tri => {
                 const depth = Math.max(0.15, Math.min(1, 1 - (tri.avgZ + 120) / 350));
                 
@@ -608,7 +602,6 @@ html_content = '''<!DOCTYPE html>
             let y = ry * Math.cos(v) * Math.sin(u);
             let z = rz * Math.sin(v);
             
-            // Local rotation
             if (rotLX || rotLY) {
                 let y1 = y * Math.cos(rotLX || 0) - z * Math.sin(rotLX || 0);
                 let z1 = y * Math.sin(rotLX || 0) + z * Math.cos(rotLX || 0);
@@ -620,20 +613,16 @@ html_content = '''<!DOCTYPE html>
             return project(cx + x, cy + y, cz + z);
         }
 
-        // ===== 3D LOBE that touches origin =====
-        // A lobe is half of an ellipsoid, with one end at origin
         function draw3DLobe(cx, cy, cz, length, radius, rgb, alpha, direction) {
-            // direction: {x, y, z} unit vector pointing away from origin
             const slices = 18;
             const stacks = 12;
             const triangles = [];
             
-            // Build a lobe shape: elongated ellipsoid with one end at origin
             for (let i = 0; i < slices; i++) {
                 for (let j = 0; j < stacks; j++) {
                     const u1 = (Math.PI * 2 / slices) * i;
                     const u2 = (Math.PI * 2 / slices) * (i + 1);
-                    const v1 = (Math.PI / 2 / stacks) * j; // 0 to PI/2 (half sphere)
+                    const v1 = (Math.PI / 2 / stacks) * j;
                     const v2 = (Math.PI / 2 / stacks) * (j + 1);
                     
                     const corners = [
@@ -672,12 +661,9 @@ html_content = '''<!DOCTYPE html>
         }
 
         function lobePoint(cx, cy, cz, length, radius, u, v, dir) {
-            // v: 0 to PI/2 (from origin to tip)
-            // Create a lobe that starts at origin and extends along direction
-            const r = radius * Math.sin(v); // cross-section radius
-            const dist = length * (1 - Math.cos(v)); // distance from origin (0 to length)
+            const r = radius * Math.sin(v);
+            const dist = length * (1 - Math.cos(v));
             
-            // Build perpendicular vectors
             let perp1 = {x: 0, y: 0, z: 0};
             let perp2 = {x: 0, y: 0, z: 0};
             
@@ -687,11 +673,9 @@ html_content = '''<!DOCTYPE html>
                 perp1 = {x: 1, y: 0, z: 0};
             }
             
-            // Normalize perp1
             const len1 = Math.sqrt(perp1.x*perp1.x + perp1.y*perp1.y + perp1.z*perp1.z);
             perp1.x /= len1; perp1.y /= len1; perp1.z /= len1;
             
-            // perp2 = dir × perp1
             perp2.x = dir.y * perp1.z - dir.z * perp1.y;
             perp2.y = dir.z * perp1.x - dir.x * perp1.z;
             perp2.z = dir.x * perp1.y - dir.y * perp1.x;
@@ -703,7 +687,6 @@ html_content = '''<!DOCTYPE html>
             return project(x, y, z);
         }
 
-        // ===== 3D TORUS =====
         function draw3DTorus(cx, cy, cz, majorR, minorR, rgb, alpha) {
             const slices = 24;
             const stacks = 12;
@@ -772,7 +755,6 @@ html_content = '''<!DOCTYPE html>
             c.fill();
         }
 
-        // ===== ORBITAL DRAWERS =====
         function drawSOrbital(rgb) {
             const pulse = 1 + Math.sin(t * 2) * 0.04;
             draw3DEllipsoid(0, 0, 0, 85 * pulse, 85 * pulse, 85 * pulse, rgb, 0.75);
@@ -794,18 +776,15 @@ html_content = '''<!DOCTYPE html>
             const lobeRad = 32;
             
             const dirs = [
-                {x: 1, y: 0, z: 0},   // px: along x
-                {x: 0, y: 1, z: 0},   // py: along y
-                {x: 0, y: 0, z: 1}    // pz: along z
+                {x: 1, y: 0, z: 0},
+                {x: 0, y: 1, z: 0},
+                {x: 0, y: 0, z: 1}
             ];
             const dir = dirs[subIdx];
             
-            // Positive lobe (touches origin, extends in +direction)
             draw3DLobe(0, 0, 0, lobeLen, lobeRad, rgb, 0.78, dir);
-            // Negative lobe (touches origin, extends in -direction)
             draw3DLobe(0, 0, 0, lobeLen, lobeRad, rgb, 0.78, {x: -dir.x, y: -dir.y, z: -dir.z});
             
-            // Nodal plane
             drawNodalPlane(subIdx);
             
             if (elecOn) {
@@ -821,48 +800,33 @@ html_content = '''<!DOCTYPE html>
             drawNucleus();
             
             if (subIdx === 4) {
-                // ===== dz²: Two lobes along z + torus in xy =====
-                // Upper lobe (along +z, touches origin)
                 draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x: 0, y: 0, z: 1});
-                // Lower lobe (along -z, touches origin)
                 draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x: 0, y: 0, z: -1});
-                // Torus ring in xy plane
                 draw3DTorus(0, 0, 0, 55, 16, rgb, 0.45);
                 
             } else if (subIdx === 3) {
-                // ===== dx²-y²: Four lobes ON the axes, all touching origin =====
-                // +x lobe
                 draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 1, y: 0, z: 0});
-                // -x lobe
                 draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: -1, y: 0, z: 0});
-                // +y lobe
                 draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 0, y: 1, z: 0});
-                // -y lobe
                 draw3DLobe(0, 0, 0, 70, 26, rgb, 0.75, {x: 0, y: -1, z: 0});
                 
-                // Nodal lines at 45°
                 drawNodalLine3D(55, 55, 0, -55, -55, 0);
                 drawNodalLine3D(-55, 55, 0, 55, -55, 0);
                 
             } else {
-                // ===== dxy, dyz, dxz: Four lobes BETWEEN axes, all touching origin =====
-                const baseAngles = [Math.PI/4, Math.PI/4, Math.PI/4];
                 const planeDirs = [
-                    // dxy: in xy plane, between x and y
                     [
                         {x: 0.707, y: 0.707, z: 0},
                         {x: -0.707, y: 0.707, z: 0},
                         {x: -0.707, y: -0.707, z: 0},
                         {x: 0.707, y: -0.707, z: 0}
                     ],
-                    // dyz: in yz plane, between y and z
                     [
                         {x: 0, y: 0.707, z: 0.707},
                         {x: 0, y: -0.707, z: 0.707},
                         {x: 0, y: -0.707, z: -0.707},
                         {x: 0, y: 0.707, z: -0.707}
                     ],
-                    // dxz: in xz plane, between x and z
                     [
                         {x: 0.707, y: 0, z: 0.707},
                         {x: -0.707, y: 0, z: 0.707},
@@ -876,7 +840,6 @@ html_content = '''<!DOCTYPE html>
                     draw3DLobe(0, 0, 0, 68, 25, rgb, 0.72, dir);
                 });
                 
-                // Nodal lines along axes
                 if (subIdx === 0) {
                     drawNodalLine3D(-70, 0, 0, 70, 0, 0);
                     drawNodalLine3D(0, -70, 0, 0, 70, 0);
@@ -895,44 +858,36 @@ html_content = '''<!DOCTYPE html>
             drawAxes();
             drawNucleus();
             
-            // f orbitals have 6-8 lobes, all touching origin
             const configs = [
-                // fxyz: 8 lobes in octants
                 { dirs: [
                     {x:0.577,y:0.577,z:0.577}, {x:-0.577,y:0.577,z:0.577},
                     {x:-0.577,y:-0.577,z:0.577}, {x:0.577,y:-0.577,z:0.577},
                     {x:0.577,y:0.577,z:-0.577}, {x:-0.577,y:0.577,z:-0.577},
                     {x:-0.577,y:-0.577,z:-0.577}, {x:0.577,y:-0.577,z:-0.577}
                 ], len: 62, rad: 22 },
-                // fz(x²-y²): 8 lobes, z-oriented
                 { dirs: [
                     {x:0.707,y:0,z:0.707}, {x:-0.707,y:0,z:0.707},
                     {x:0,y:0.707,z:0.707}, {x:0,y:-0.707,z:0.707},
                     {x:0.707,y:0,z:-0.707}, {x:-0.707,y:0,z:-0.707},
                     {x:0,y:0.707,z:-0.707}, {x:0,y:-0.707,z:-0.707}
                 ], len: 58, rad: 20 },
-                // fy(3x²-y²): 6 lobes, y-oriented
                 { dirs: [
                     {x:0.866,y:0.5,z:0}, {x:-0.866,y:0.5,z:0},
                     {x:0,y:1,z:0}, {x:0.866,y:-0.5,z:0},
                     {x:-0.866,y:-0.5,z:0}, {x:0,y:-1,z:0}
                 ], len: 60, rad: 21 },
-                // fz³: 2 z-lobes + ring
                 { dirs: [
                     {x:0,y:0,z:1}, {x:0,y:0,z:-1}
                 ], len: 75, rad: 26, special: 'z3' },
-                // fx(3y²-x²): 6 lobes, x-oriented
                 { dirs: [
                     {x:1,y:0,z:0}, {x:0.5,y:0.866,z:0},
                     {x:0.5,y:-0.866,z:0}, {x:-0.5,y:0.866,z:0},
                     {x:-0.5,y:-0.866,z:0}, {x:-1,y:0,z:0}
                 ], len: 60, rad: 21 },
-                // fz(x²-y²): 4 lobes in xz/yz
                 { dirs: [
                     {x:0.707,y:0,z:0.707}, {x:-0.707,y:0,z:0.707},
                     {x:0.707,y:0,z:-0.707}, {x:-0.707,y:0,z:-0.707}
                 ], len: 65, rad: 23 },
-                // fx³: 8 lobes, x-primary
                 { dirs: [
                     {x:1,y:0,z:0}, {x:0.707,y:0.707,z:0},
                     {x:0.707,y:0,z:0.707}, {x:0.707,y:0,z:-0.707},
@@ -944,10 +899,8 @@ html_content = '''<!DOCTYPE html>
             const cfg = configs[subIdx] || configs[0];
             
             if (cfg.special === 'z3') {
-                // Two big z-lobes
                 draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x:0,y:0,z:1});
                 draw3DLobe(0, 0, 0, 80, 28, rgb, 0.8, {x:0,y:0,z:-1});
-                // Middle ring lobes
                 for (let i = 0; i < 6; i++) {
                     const a = (Math.PI * 2 / 6) * i;
                     const dir = {x: Math.cos(a), y: Math.sin(a), z: 0};
@@ -959,7 +912,6 @@ html_content = '''<!DOCTYPE html>
                 });
             }
             
-            // Inner sphere for some f orbitals
             if (subIdx === 2 || subIdx === 3 || subIdx === 6) {
                 draw3DEllipsoid(0, 0, 0, 18, 18, 18, rgb, 0.2);
             }
@@ -1003,7 +955,6 @@ html_content = '''<!DOCTYPE html>
             c.setLineDash([]);
         }
 
-        // ===== MAIN LOOP =====
         function loop() {
             clear();
             
@@ -1052,7 +1003,6 @@ html_content = '''<!DOCTYPE html>
 
         loop();
 
-        // ===== VIDEOS =====
         let videos = JSON.parse(localStorage.getItem('chemVids') || '[]');
 
         function addVid() {
@@ -1103,7 +1053,9 @@ html_content = '''<!DOCTYPE html>
 </body>
 </html>'''
 
-with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
+output_path = '/mnt/agents/output/kimya_orbitaller_videolar.html'
+with open(output_path, 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print("Dosya güncellendi! Şekiller büyütüldü, loblar orijinde birleşiyor, lob sayıları eksiksiz.")
+print(f"✅ HTML dosyası oluşturuldu: {output_path}")
+print(f"📊 Dosya boyutu: {len(html_content):,} karakter")
