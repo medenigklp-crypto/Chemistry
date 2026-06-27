@@ -1,939 +1,184 @@
-
-html = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Kimya 12 - 3D Laboratuvar Malzemeleri</title>
+    <title>Roni Kimya Laboratuvarı - Akışkan ve Reaksiyon Motoru</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
-            color: #fff;
-            min-height: 100vh;
-            overflow-x: hidden;
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f111a; color: #f0f3f6; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { color: #00e6ff; font-weight: 400; margin-bottom: 5px; }
+        .subtitle { color: #8a99ad; margin-bottom: 25px; font-size: 14px; }
+        
+        /* Laboratuvar Beheri */
+        #beaker { width: 320px; height: 420px; border: 5px solid #e2e8f0; border-top: none; border-radius: 0 0 40px 40px; position: relative; background: rgba(255,255,255,0.03); box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); overflow: hidden; }
+        #beaker::before { content: ''; position: absolute; top: 0; left: 20px; width: 5px; height: 90%; background: rgba(255,255,255,0.2); } /* Derece çizgisi çizgisi */
+
+        /* Akışkan Katmanı */
+        #liquid { position: absolute; bottom: 0; width: 100%; height: 0%; background: transparent; transition: height 0.4s ease, background-color 0.6s ease; }
+        
+        /* Kabarcık Efektleri */
+        .bubble { position: absolute; bottom: 0; background: rgba(255,255,255,0.4); border-radius: 50%; animation: floatUp 2s infinite ease-in; }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.3); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-350px) scale(1.2); opacity: 0; }
         }
-        .header {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0,0,0,0.4);
-            border-bottom: 2px solid #00d4ff;
-        }
-        .header h1 {
-            font-size: 1.4rem;
-            color: #00d4ff;
-            text-shadow: 0 0 15px rgba(0,212,255,0.5);
-        }
-        .header p {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.5);
-            margin-top: 4px;
-        }
-        .content { max-width: 900px; margin: 0 auto; padding: 15px; }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 900px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-        .item {
-            background: rgba(255,255,255,0.06);
-            border: 2px solid rgba(0,212,255,0.3);
-            border-radius: 16px;
-            padding: 12px 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .item:active { transform: scale(0.95); }
-        .item.selected {
-            border-color: #00d4ff;
-            background: rgba(0,212,255,0.15);
-            box-shadow: 0 0 25px rgba(0,212,255,0.3);
-        }
-        .item h3 {
-            font-size: 0.95rem;
-            color: #00d4ff;
-            margin-bottom: 6px;
-        }
-        .item canvas {
-            width: 100% !important;
-            height: auto !important;
-            border-radius: 10px;
-            background: #050510;
-            border: 1px solid rgba(0,212,255,0.15);
-            touch-action: none;
-        }
-        .item p {
-            font-size: 0.68rem;
-            color: rgba(255,255,255,0.5);
-            margin-top: 6px;
-            line-height: 1.3;
-        }
-        .detail-panel {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.92);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .detail-panel.active { display: block; }
-        .detail-close {
-            position: fixed;
-            top: 15px; right: 15px;
-            width: 40px; height: 40px;
-            background: rgba(255,50,50,0.2);
-            border: 1px solid rgba(255,50,50,0.5);
-            border-radius: 50%;
-            color: #ff6666;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .detail-title {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #00d4ff;
-            margin: 50px 0 15px;
-            text-shadow: 0 0 15px rgba(0,212,255,0.4);
-        }
-        .detail-canvas {
-            width: 100% !important;
-            max-width: 500px;
-            height: auto !important;
-            border-radius: 16px;
-            background: #050510;
-            border: 2px solid rgba(0,212,255,0.3);
-            display: block;
-            margin: 0 auto 20px;
-            touch-action: none;
-        }
-        .detail-props {
-            max-width: 500px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            border-left: 3px solid #7b2cbf;
-        }
-        .detail-props h3 {
-            color: #00d4ff;
-            margin-bottom: 12px;
-            font-size: 1rem;
-        }
-        .prop-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-size: 0.85rem;
-        }
-        .prop-row:last-child { border-bottom: none; }
-        .prop-label { color: rgba(255,255,255,0.5); }
-        .prop-val { color: #00d4ff; font-weight: bold; }
-        .prop-desc {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(0,212,255,0.05);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: rgba(255,255,255,0.7);
-        }
-        .hint-drag {
-            text-align: center;
-            color: rgba(255,255,255,0.3);
-            font-size: 0.75rem;
-            margin: 10px 0;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        .ctrl-btn {
-            padding: 8px 16px;
-            background: rgba(0,212,255,0.1);
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 20px;
-            color: #00d4ff;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .ctrl-btn:active { background: rgba(0,212,255,0.3); }
+
+        /* Gösterge Paneli (HUD) */
+        #hud { width: 320px; background: #161925; border: 1px solid #2d3142; border-radius: 12px; padding: 15px; margin: 20px 0; box-sizing: border-box; }
+        .hud-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .hud-row:last-child { margin-bottom: 0; }
+        .formula { color: #00ffaa; font-family: monospace; font-weight: bold; font-size: 15px; }
+
+        /* Kontrol Butonları */
+        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 500px; }
+        button { padding: 12px 20px; background: #1f2335; color: #fff; border: 1px solid #3b4261; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        button:hover { background: #3b4261; border-color: #00e6ff; transform: translateY(-2px); }
+        button.danger { border-color: #ff4a5a; color: #ff4a5a; }
+        button.danger:hover { background: #ff4a5a; color: #fff; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🧪 Kimya 12 - 3D Laboratuvar Malzemeleri</h1>
-        <p>Herhangi bir malzemeye dokunarak 3D detay görünümüne ulaşın</p>
+
+    <h1>Roni Laboratuvar Motoru</h1>
+    <div class="subtitle">Sıvı Enjeksiyonu ve Gerçek Zamanlı Efekt Test Modülü</div>
+
+    <div id="beaker">
+        <div id="liquid"></div>
     </div>
-    <div class="content"><div class="grid" id="grid"></div></div>
-    <div class="detail-panel" id="detailPanel">
-        <button class="detail-close" onclick="closeDetail()">×</button>
-        <div class="detail-title" id="detailTitle"></div>
-        <canvas class="detail-canvas" id="detailCanvas" width="600" height="500"></canvas>
-        <p class="hint-drag">👆 İki parmakla zoom yapın · Tek parmakla döndürün</p>
-        <div class="controls">
-            <button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button>
-            <button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button>
-            <button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button>
-            <button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>
-        </div>
-        <div class="detail-props">
-            <h3>📋 Malzeme Özellikleri</h3>
-            <div class="prop-row"><span class="prop-label">Adı:</span><span class="prop-val" id="dName">-</span></div>
-            <div class="prop-row"><span class="prop-label">Türü:</span><span class="prop-val" id="dType">-</span></div>
-            <div class="prop-row"><span class="prop-label">Malzeme:</span><span class="prop-val" id="dMaterial">-</span></div>
-            <div class="prop-row"><span class="prop-label">Kullanım:</span><span class="prop-val" id="dUsage">-</span></div>
-            <div class="prop-desc" id="dDesc"></div>
-        </div>
+
+    <div id="hud">
+        <div class="hud-row"><span>Sıcaklık:</span> <span><strong id="txt-temp">25</strong> °C</span></div>
+        <div class="hud-row"><span>pH Seviyesi:</span> <span><strong id="txt-ph">7.0</strong></span></div>
+        <div class="hud-row"><span>Kimyasal Denklem:</span> <span id="txt-eq" class="formula">-</span></div>
+    </div>
+
+    <div class="btn-group">
+        <button onclick="injectChemical('Asit')">Asit Ekle (HCl)</button>
+        <button onclick="injectChemical('Baz')">Baz Ekle (NaOH)</button>
+        <button onclick="injectChemical('Metal')">Aktif Metal Ekle (K)</button>
+        <button onclick="heatUp()">Isıyı Artır (+10°C)</button>
+        <button class="danger" onclick="drainBeaker()">Beheri Boşalt</button>
     </div>
 
 <script>
-// ===== 3D ENGINE =====
-let W=600, H=500, rotX=0.4, rotY=0.3, isDragging=false, lastX=0, lastY=0;
-let autoSpin=true, spd=1, t=0, activeItem=null, animFrame=null, zoom=1, startDist=0;
+    // Laboratuvar Durum Değişkenleri
+    let state = {
+        volume: 0,          // Kaptaki toplam sıvı hacmi (%)
+        temperature: 25,    // Santigrat derece
+        ph: 7.0,            // Çözelti pH değeri
+        elements: [],       // İçerideki aktif maddeler
+        isReacting: false
+    };
 
-function rotate3D(x,y,z){
-    let y1=y*Math.cos(rotX)-z*Math.sin(rotX);
-    let z1=y*Math.sin(rotX)+z*Math.cos(rotX);
-    let x2=x*Math.cos(rotY)+z1*Math.sin(rotY);
-    let z2=-x*Math.sin(rotY)+z1*Math.cos(rotY);
-    return {x:x2,y:y1,z:z2};
-}
-function project(x,y,z,cx,cy){
-    const r=rotate3D(x,y,z);
-    const scale=280*zoom/(350+r.z);
-    return {x:(cx||W/2)+r.x*scale,y:(cy||H/2)+r.y*scale,z:r.z,scale:scale};
-}
-function rgba(r,g,b,a){return `rgba(${r},${g},${b},${a})`;}
+    const liquidDom = document.getElementById('liquid');
 
-function drawMesh(tris,baseR,baseG,baseB,alpha){
-    tris.sort((a,b)=>b.avgZ-a.avgZ);
-    tris.forEach(tri=>{
-        const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+150)/400));
-        c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-        c.fillStyle=rgba(baseR,baseG,baseB,alpha*depth*0.65);c.fill();
-        c.strokeStyle=rgba(baseR,baseG,baseB,0.3*depth);c.lineWidth=0.5;c.stroke();
-    });
-}
+    // Renk Skalası Yönetimi
+    function calculateMixColor() {
+        if (state.volume === 0) return 'transparent';
+        // pH değerine göre indikatör rengi (Turnusol efekti)
+        if (state.ph < 5) return `rgba(255, 64, 128, ${0.3 + (state.volume/200)})`; // Asidik: Kırmızımsı
+        if (state.ph > 9) return `rgba(64, 128, 255, ${0.3 + (state.volume/200)})`; // Bazik: Mavi
+        return `rgba(0, 255, 170, ${0.2 + (state.volume/200)})`;                   // Nötr: Yeşil/Turkuaz
+    }
 
-function sphere(cx,cy,cz,rx,ry,rz,slices,stacks,color,alpha){
-    const tris=[];
-    for(let i=0;i<slices;i++){
-        for(let j=0;j<stacks;j++){
-            const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-            const v1=(Math.PI/stacks)*j-Math.PI/2,v2=(Math.PI/stacks)*(j+1)-Math.PI/2;
-            const pts=[
-                project(cx+rx*Math.cos(v1)*Math.cos(u1),cy+ry*Math.cos(v1)*Math.sin(u1),cz+rz*Math.sin(v1)),
-                project(cx+rx*Math.cos(v1)*Math.cos(u2),cy+ry*Math.cos(v1)*Math.sin(u2),cz+rz*Math.sin(v1)),
-                project(cx+rx*Math.cos(v2)*Math.cos(u2),cy+ry*Math.cos(v2)*Math.sin(u2),cz+rz*Math.sin(v2)),
-                project(cx+rx*Math.cos(v2)*Math.cos(u1),cy+ry*Math.cos(v2)*Math.sin(u1),cz+rz*Math.sin(v2))
-            ];
-            tris.push({p:[pts[0],pts[1],pts[2]],avgZ:(pts[0].z+pts[1].z+pts[2].z)/3});
-            tris.push({p:[pts[0],pts[2],pts[3]],avgZ:(pts[0].z+pts[2].z+pts[3].z)/3});
+    // Sıvı/Madde Enjeksiyonu
+    function injectChemical(type) {
+        if (state.volume >= 90) return; // Taşma koruması
+
+        state.volume += 20;
+        if (!state.elements.includes(type)) state.elements.push(type);
+
+        // Kimyasal etkiler
+        if (type === 'Asit') state.ph = Math.max(1.0, state.ph - 2.5);
+        if (type === 'Baz') state.ph = Math.min(14.0, state.ph + 2.5);
+        if (type === 'Metal') state.temperature += 15; // Çözünme/temas ısısı
+
+        updatePhysics();
+        checkChemicalEquations();
+    }
+
+    // Denklem ve Reaksiyon Kontrolü
+    function checkChemicalEquations() {
+        const eqText = document.getElementById('txt-eq');
+        
+        // Senaryo 1: Asit + Baz Nötrleşmesi
+        if (state.elements.includes('Asit') && state.elements.includes('Baz')) {
+            state.isReacting = true;
+            eqText.innerText = "HCl + NaOH → NaCl + H₂O + Isı";
+            state.ph = 7.0; // Nötrleşme
+            state.temperature += 20; // Ekzotermik patlama efekti
+            
+            createBubbles(25); // Yoğun gaz/buhar çıkışı
+            
+            // Reaktifleri tüket
+            state.elements = state.elements.filter(e => e !== 'Asit' && e !== 'Baz');
+        } 
+        // Senaryo 2: Asit + Metal Reaksiyonu
+        else if (state.elements.includes('Asit') && state.elements.includes('Metal')) {
+            state.isReacting = true;
+            eqText.innerText = "2K + 2HCl → 2KCl + H₂(g) ↑";
+            state.temperature += 35;
+            
+            createBubbles(40); // Yoğun hidrojen çıkışı
+            state.elements = state.elements.filter(e => e !== 'Metal');
+        }
+        
+        setTimeout(() => { state.isReacting = false; }, 2000);
+    }
+
+    // Kabarcık Oluşturma Mekanizması (Efekt Motoru)
+    function createBubbles(count) {
+        const beaker = document.getElementById('beaker');
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => {
+                if (state.volume === 0) return;
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                // Rastgele genişlik ve konumlendirme
+                const size = Math.random() * 8 + 4;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 85 + 5}%`;
+                // Akışkanın içinden başlamasını sağla
+                bubble.style.bottom = `${Math.random() * state.volume}%`; 
+                
+                beaker.appendChild(bubble);
+
+                // Animasyon bitince element temizliği
+                setTimeout(() => bubble.remove(), 2000);
+            }, i * 60); // Kabarcıkların sırayla çıkması için delay
         }
     }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
 
-function cylinder(cx,cy,cz,r,h,slices,color,alpha){
-    const tris=[];
-    for(let i=0;i<slices;i++){
-        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
-        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
-        const p1=project(cx+x1,cy-h/2,cz+z1),p2=project(cx+x2,cy-h/2,cz+z2);
-        const p3=project(cx+x2,cy+h/2,cz+z2),p4=project(cx+x1,cy+h/2,cz+z1);
-        tris.push({p:[p1,p2,p3],avgZ:(p1.z+p2.z+p3.z)/3});
-        tris.push({p:[p1,p3,p4],avgZ:(p1.z+p3.z+p4.z)/3});
-        const pc=project(cx,cy+h/2,cz);tris.push({p:[pc,p4,p3],avgZ:(pc.z+p4.z+p3.z)/3});
-        const pb=project(cx,cy-h/2,cz);tris.push({p:[pb,p2,p1],avgZ:(pb.z+p2.z+p1.z)/3});
+    // Isıtıcı Fonksiyonu
+    function heatUp() {
+        state.temperature += 10;
+        if (state.temperature > 95) {
+            createBubbles(10); // Kaynama efekti
+        }
+        updatePhysics();
     }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
 
-function hollowCylinder(cx,cy,cz,r,h,slices,color,alpha){
-    const tris=[];
-    for(let i=0;i<slices;i++){
-        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
-        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
-        const p1=project(cx+x1,cy-h/2,cz+z1),p2=project(cx+x2,cy-h/2,cz+z2);
-        const p3=project(cx+x2,cy+h/2,cz+z2),p4=project(cx+x1,cy+h/2,cz+z1);
-        tris.push({p:[p1,p2,p3],avgZ:(p1.z+p2.z+p3.z)/3});
-        tris.push({p:[p1,p3,p4],avgZ:(p1.z+p3.z+p4.z)/3});
+    // Fiziksel Değişimleri Ekrana Yansıt (Render Loop alternatifi)
+    function updatePhysics() {
+        liquidDom.style.height = `${state.volume}%`;
+        liquidDom.style.backgroundColor = calculateMixColor();
+        
+        document.getElementById('txt-temp').innerText = state.temperature;
+        document.getElementById('txt-ph').innerText = state.ph.toFixed(1);
     }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
 
-function cone(cx,cy,cz,r,h,slices,color,alpha,flip){
-    const tris=[];
-    const topY=flip?cy-h:cy+h,baseY=flip?cy:cy;
-    for(let i=0;i<slices;i++){
-        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
-        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
-        const pt=project(cx,topY,cz),p1=project(cx+x1,baseY,cz+z1),p2=project(cx+x2,baseY,cz+z2);
-        tris.push({p:[pt,p2,p1],avgZ:(pt.z+p2.z+p1.z)/3});
-        if(!flip){const pc=project(cx,baseY,cz);tris.push({p:[pc,p1,p2],avgZ:(pc.z+p1.z+p2.z)/3});}
+    // Beheri Sıfırla
+    function drainBeaker() {
+        state.volume = 0;
+        state.temperature = 25;
+        state.ph = 7.0;
+        state.elements = [];
+        state.isReacting = false;
+        document.getElementById('txt-eq').innerText = "-";
+        updatePhysics();
     }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
-
-function torus(cx,cy,cz,majorR,minorR,slices,stacks,color,alpha){
-    const tris=[];
-    for(let i=0;i<slices;i++){
-        for(let j=0;j<stacks;j++){
-            const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-            const v1=(Math.PI*2/stacks)*j,v2=(Math.PI*2/stacks)*(j+1);
-            const pts=[
-                project(cx+(majorR+minorR*Math.cos(v1))*Math.cos(u1),cy+(majorR+minorR*Math.cos(v1))*Math.sin(u1),cz+minorR*Math.sin(v1)),
-                project(cx+(majorR+minorR*Math.cos(v1))*Math.cos(u2),cy+(majorR+minorR*Math.cos(v1))*Math.sin(u2),cz+minorR*Math.sin(v1)),
-                project(cx+(majorR+minorR*Math.cos(v2))*Math.cos(u2),cy+(majorR+minorR*Math.cos(v2))*Math.sin(u2),cz+minorR*Math.sin(v2)),
-                project(cx+(majorR+minorR*Math.cos(v2))*Math.cos(u1),cy+(majorR+minorR*Math.cos(v2))*Math.sin(u1),cz+minorR*Math.sin(v2))
-            ];
-            tris.push({p:[pts[0],pts[1],pts[2]],avgZ:(pts[0].z+pts[1].z+pts[2].z)/3});
-            tris.push({p:[pts[0],pts[2],pts[3]],avgZ:(pts[0].z+pts[2].z+pts[3].z)/3});
-        }
-    }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
-
-function tube(cx,cy,cz,r,path,color,alpha){
-    const tris=[],segs=path.length-1,slices=12;
-    for(let s=0;s<segs;s++){
-        const p1=path[s],p2=path[s+1];
-        const dx=p2.x-p1.x,dy=p2.y-p1.y,dz=p2.z-p1.z;
-        const len=Math.sqrt(dx*dx+dy*dy+dz*dz);
-        const nx=dx/len,ny=dy/len,nz=dz/len;
-        let perp1={x:0,y:0,z:0};
-        if(Math.abs(ny)<0.9)perp1={x:-nz,y:0,z:nx};else perp1={x:1,y:0,z:0};
-        const l1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
-        perp1.x/=l1;perp1.y/=l1;perp1.z/=l1;
-        const perp2={x:ny*perp1.z-nz*perp1.y,y:nz*perp1.x-nx*perp1.z,z:nx*perp1.y-ny*perp1.x};
-        for(let i=0;i<slices;i++){
-            const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
-            const c1a=Math.cos(a1),s1a=Math.sin(a1),c2a=Math.cos(a2),s2a=Math.sin(a2);
-            const v1={x:cx+p1.x+r*(perp1.x*c1a+perp2.x*s1a),y:cy+p1.y+r*(perp1.y*c1a+perp2.y*s1a),z:cz+p1.z+r*(perp1.z*c1a+perp2.z*s1a)};
-            const v2={x:cx+p1.x+r*(perp1.x*c2a+perp2.x*s2a),y:cy+p1.y+r*(perp1.y*c2a+perp2.y*s2a),z:cz+p1.z+r*(perp1.z*c2a+perp2.z*s2a)};
-            const v3={x:cx+p2.x+r*(perp1.x*c2a+perp2.x*s2a),y:cy+p2.y+r*(perp1.y*c2a+perp2.y*s2a),z:cz+p2.z+r*(perp1.z*c2a+perp2.z*s2a)};
-            const v4={x:cx+p2.x+r*(perp1.x*c1a+perp2.x*s1a),y:cy+p2.y+r*(perp1.y*c1a+perp2.y*s1a),z:cz+p2.z+r*(perp1.z*c1a+perp2.z*s1a)};
-            const pv1=project(v1.x,v1.y,v1.z),pv2=project(v2.x,v2.y,v2.z),pv3=project(v3.x,v3.y,v3.z),pv4=project(v4.x,v4.y,v4.z);
-            tris.push({p:[pv1,pv2,pv3],avgZ:(pv1.z+pv2.z+pv3.z)/3});
-            tris.push({p:[pv1,pv3,pv4],avgZ:(pv1.z+pv3.z+pv4.z)/3});
-        }
-    }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
-
-function flatDisc(cx,cy,cz,r,color,alpha){
-    const tris=[],slices=16,pc=project(cx,cy,cz);
-    for(let i=0;i<slices;i++){
-        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
-        const p1=project(cx+Math.cos(a1)*r,cy,cz+Math.sin(a1)*r),p2=project(cx+Math.cos(a2)*r,cy,cz+Math.sin(a2)*r);
-        tris.push({p:[pc,p1,p2],avgZ:(pc.z+p1.z+p2.z)/3});
-    }
-    drawMesh(tris,color[0],color[1],color[2],alpha);
-}
-
-// ===== MATERIAL COLORS =====
-const GLASS=[180,220,255],GLASS_DARK=[120,170,220],PORCELAIN=[245,245,250],PORCELAIN_DARK=[220,220,230];
-const METAL=[180,180,190],METAL_DARK=[120,120,130],WOOD=[160,110,60],PLASTIC=[255,255,255];
-const PLASTIC_GREEN=[50,180,80],PLASTIC_RED=[255,80,80],PLASTIC_ORANGE=[255,140,40],PAPER=[240,235,220];
-const FLAME=[255,180,50],FLAME_CORE=[255,100,30],AMYANT=[200,200,190];
-
-// ===== LAB ITEMS =====
-const ITEMS=[
-{
-    id:'beherglas',name:'Beherglas',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Karıştırma, Saklama, Isıtma',
-    desc:'Sıvı maddelerin karıştırılması, saklanması ve ısıtılması amacıyla kullanılan silindirik cam malzemedir. Üzerinde yaklaşık hacim göstergeleri bulunur.',
-    draw:function(){
-        hollowCylinder(0,0,0,55,130,24,GLASS,0.5);
-        sphere(0,65,0,55,15,55,16,8,GLASS,0.5);
-        hollowCylinder(0,-65,0,60,8,24,GLASS,0.55);
-        tube(0,0,0,5,[{x:55,y:-62,z:0},{x:72,y:-68,z:0}],GLASS,0.6);
-        for(let i=1;i<=5;i++){
-            const y=45-i*22;
-            const pts=[];
-            for(let a=0;a<10;a++){const ang=(Math.PI*2/10)*a;pts.push(project(56*Math.cos(ang),y,56*Math.sin(ang)));}
-            c.strokeStyle=rgba(100,150,200,0.45);c.lineWidth=1;
-            c.beginPath();c.moveTo(pts[0].x,pts[0].y);
-            for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
-            c.closePath();c.stroke();
-        }
-    }
-},
-{
-    id:'erlenmayer',name:'Erlenmayer',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Titrasyon, Çözelti Hazırlama, Saklama',
-    desc:'Titrasiyon, çözelti hazırlama, saklama, çözme vb. işlemlerde kullanılır. Konik gövdesi karıştırmayı kolaylaştırır.',
-    draw:function(){
-        cone(0,25,0,70,80,24,GLASS,0.5,true);
-        hollowCylinder(0,-45,0,20,55,16,GLASS,0.5);
-        hollowCylinder(0,-72,0,24,6,16,GLASS,0.55);
-        flatDisc(0,25,0,70,GLASS,0.4);
-        for(let i=1;i<=4;i++){
-            const y=15-i*18;
-            const rAtY=70*(1-(y-25+80)/80);
-            const pts=[];
-            for(let a=0;a<8;a++){const ang=(Math.PI*2/8)*a;pts.push(project((rAtY+2)*Math.cos(ang),y,(rAtY+2)*Math.sin(ang)));}
-            c.strokeStyle=rgba(100,150,200,0.4);c.lineWidth=1;
-            c.beginPath();c.moveTo(pts[0].x,pts[0].y);
-            for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
-            c.closePath();c.stroke();
-        }
-    }
-},
-{
-    id:'cambalon',name:'Cam Balon',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Çözelti Hazırlama, Isıtma, Kaynatma',
-    desc:'Çözelti hazırlama, saklama, ısıtma ve kaynatma amacıyla kullanılır. Yuvarlak gövdesi homojen ısı dağılımı sağlar.',
-    draw:function(){
-        sphere(0,10,0,70,60,70,20,14,GLASS,0.5);
-        hollowCylinder(0,-60,0,18,50,14,GLASS,0.5);
-        hollowCylinder(0,-85,0,22,5,14,GLASS,0.55);
-        flatDisc(0,70,0,70,GLASS,0.4);
-    }
-},
-{
-    id:'balonjoje',name:'Balon Joje',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Derişimli Çözelti Hazırlama, Saklama',
-    desc:'Derişimi belli çözeltilerin hazırlanması ve saklanmasında kullanılan cam malzemedir. Tek bir çizgi (mark) ile hassas hacim belirlenir.',
-    draw:function(){
-        sphere(0,30,0,45,35,45,18,12,GLASS,0.5);
-        cone(0,-5,0,45,35,18,GLASS,0.5,true);
-        hollowCylinder(0,-55,0,12,65,12,GLASS,0.5);
-        hollowCylinder(0,-87,0,15,5,12,GLASS,0.55);
-        cylinder(0,-92,0,13,12,12,[220,220,230],0.7);
-        const markY=-50;
-        const pts=[];
-        for(let a=0;a<10;a++){const ang=(Math.PI*2/10)*a;pts.push(project(14*Math.cos(ang),markY,14*Math.sin(ang)));}
-        c.strokeStyle=rgba(80,120,180,0.8);c.lineWidth=2.5;
-        c.beginPath();c.moveTo(pts[0].x,pts[0].y);
-        for(let p=1;p<pts.length;p++)c.lineTo(pts[p].x,pts[p].y);
-        c.closePath();c.stroke();
-    }
-},
-{
-    id:'ayrma',name:'Ayırma Hunisi',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Heterojen Sıvı-Sıvı Karışım Ayırma',
-    desc:'Heterojen sıvı-sıvı karışımların ayrılmasında kullanılır. Musluklu yapısı alt tabakayı kontrollü boşaltmayı sağlar.',
-    draw:function(){
-        sphere(0,15,0,50,40,50,16,12,GLASS,0.5);
-        cone(0,-25,0,50,40,16,GLASS,0.5,true);
-        hollowCylinder(0,-65,0,8,25,10,GLASS,0.5);
-        cylinder(0,-90,0,16,15,10,GLASS_DARK,0.6);
-        cylinder(0,-90,0,4,30,8,[60,60,70],0.8);
-        cylinder(0,-90,0,22,5,8,[60,60,70],0.8);
-        cone(0,-97,0,8,18,10,GLASS,0.5,false);
-        cylinder(0,-67,0,12,10,10,[220,220,230],0.7);
-    }
-},
-{
-    id:'mezur',name:'Dereceli Silindir (Mezür)',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Sıvı Hacmi Ölçme',
-    desc:'Sıvıların hacmini ölçmek için kullanılan cam malzemedir. Hassas derecelendirmesi sayesinde yaklaşık hacim ölçümü yapılır.',
-    draw:function(){
-        hollowCylinder(0,0,0,28,160,20,GLASS,0.5);
-        cylinder(0,80,0,38,10,16,GLASS_DARK,0.6);
-        hollowCylinder(0,-80,0,32,6,16,GLASS,0.55);
-        tube(0,0,0,4,[{x:28,y:-75,z:0},{x:42,y:-82,z:0}],GLASS,0.6);
-        for(let i=0;i<16;i++){
-            const y=70-i*10;
-            const isMajor=i%5===0;
-            const markLen=isMajor?10:5;
-            c.strokeStyle=rgba(80,120,180,isMajor?0.6:0.3);
-            c.lineWidth=isMajor?1.5:0.8;
-            const p1=project(29,y,0),p2=project(29+markLen,y,0);
-            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
-        }
-    }
-},
-{
-    id:'sogutucu',name:'Soğutucu',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Buharın Sıvıya Dönüştürülmesi',
-    desc:'Isıtmayla buharlaşan çözücünün gaz fazından sıvı faza döndürülerek geri kazanılmasını sağlayan cam malzemedir.',
-    draw:function(){
-        hollowCylinder(0,0,0,10,130,14,GLASS,0.4);
-        hollowCylinder(0,0,0,38,90,18,GLASS,0.3);
-        const coilPts=[];
-        for(let i=0;i<=60;i++){
-            const ang=i*0.4;
-            const y=-35+i*1.2;
-            coilPts.push({x:26*Math.cos(ang),y:y,z:26*Math.sin(ang)});
-        }
-        tube(0,0,0,5,coilPts,GLASS,0.5);
-        cylinder(0,-65,0,18,18,10,GLASS,0.5);
-        cylinder(0,65,0,18,18,10,GLASS,0.5);
-        tube(0,0,0,6,[{x:40,y:-25,z:0},{x:55,y:-25,z:0}],GLASS,0.5);
-        tube(0,0,0,6,[{x:40,y:25,z:0},{x:55,y:25,z:0}],GLASS,0.5);
-    }
-},
-{
-    id:'huni',name:'Huni',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Süzme, Dar Ağızlı Kaba Boşaltma',
-    desc:'Süzme işleminde ve sıvıların dar ağızlı kaba boşaltılmasında kullanılır. Koni şekli süzgeç kağıdını destekler.',
-    draw:function(){
-        cone(0,-35,0,65,55,20,GLASS,0.5,true);
-        hollowCylinder(0,55,0,10,80,12,GLASS,0.5);
-        cone(0,95,0,10,10,10,GLASS,0.5,false);
-        hollowCylinder(0,-35,0,68,4,20,GLASS,0.55);
-    }
-},
-{
-    id:'camboru',name:'Cam Boru',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Tepkime Ortamları Bağlantısı',
-    desc:'Tepkime ortamları arasındaki bağlantıyı kurmada kullanılan U şeklindeki cam malzemedir.',
-    draw:function(){
-        const path=[];
-        for(let i=0;i<=40;i++){
-            const t=i/40;
-            if(t<0.25){path.push({x:-35,y:-50+t/0.25*100,z:0});}
-            else if(t<0.75){const ang=((t-0.25)/0.5)*Math.PI;path.push({x:-35+35*(1-Math.cos(ang)),y:50-35*Math.sin(ang),z:0});}
-            else{path.push({x:35,y:50-(t-0.75)/0.25*100,z:0});}
-        }
-        tube(0,0,0,12,path,GLASS,0.5);
-        hollowCylinder(0,-50,-35,14,8,12,GLASS,0.55);
-        hollowCylinder(0,-50,35,14,8,12,GLASS,0.55);
-    }
-},
-{
-    id:'buret',name:'Büret',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Titrasyonda Hassas Hacim Ölçümü',
-    desc:'Titrasiyon işleminde derişimi bilinmeyen maddelerin hacmini hassas ölçebilen cam malzemedir.',
-    draw:function(){
-        hollowCylinder(0,0,0,14,170,14,GLASS,0.5);
-        cone(0,-85,0,20,22,12,GLASS,0.5,true);
-        hollowCylinder(0,-85,0,22,4,12,GLASS,0.55);
-        cylinder(0,85,0,12,18,10,GLASS_DARK,0.6);
-        cylinder(0,85,0,4,25,8,[60,60,70],0.8);
-        cylinder(0,85,0,18,4,8,[60,60,70],0.8);
-        cone(0,93,0,12,14,10,GLASS,0.5,false);
-        for(let i=0;i<18;i++){
-            const y=75-i*9;
-            const isMajor=i%5===0;
-            const markLen=isMajor?7:3;
-            c.strokeStyle=rgba(80,120,180,isMajor?0.6:0.3);
-            c.lineWidth=isMajor?1.5:0.8;
-            const p1=project(15,y,0),p2=project(15+markLen,y,0);
-            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
-        }
-    }
-},
-{
-    id:'pipet',name:'Pipet',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Sıvıların Hassas Ölçümü ve Aktarımı',
-    desc:'Sıvıların hassas bir biçimde ölçülmesi ve aktarılmasına yarayan cam borudur.',
-    draw:function(){
-        hollowCylinder(0,0,0,7,150,14,GLASS,0.5);
-        sphere(0,0,0,20,16,20,14,10,GLASS,0.5);
-        hollowCylinder(0,-75,0,10,8,12,GLASS,0.55);
-        cone(0,75,0,7,15,10,GLASS,0.5,false);
-        for(let i=0;i<10;i++){
-            const y=-55+i*12;
-            c.strokeStyle=rgba(200,100,50,0.7);c.lineWidth=1.5;
-            const p1=project(8,y,0),p2=project(13,y,0);
-            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
-        }
-    }
-},
-{
-    id:'termometre',name:'Termometre',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Sıcaklık Ölçme',
-    desc:'Sıcaklık ölçmek için kullanılan dereceli cam malzemedir. İçinde cıva veya alkol bulunur.',
-    draw:function(){
-        hollowCylinder(0,0,0,10,150,14,GLASS,0.5);
-        sphere(0,80,0,20,22,20,12,10,GLASS,0.5);
-        sphere(0,80,0,16,18,16,10,8,[255,50,50],0.6);
-        hollowCylinder(0,35,0,3,75,8,[255,50,50],0.6);
-        for(let i=0;i<25;i++){
-            const y=65-i*5;
-            const isMajor=i%5===0;
-            const markLen=isMajor?9:4;
-            c.strokeStyle=rgba(80,80,80,isMajor?0.7:0.4);
-            c.lineWidth=isMajor?1.2:0.7;
-            const p1=project(11,y,0),p2=project(11+markLen,y,0);
-            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
-        }
-        cylinder(0,-75,0,12,8,10,GLASS_DARK,0.6);
-    }
-},
-{
-    id:'baget',name:'Baget',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Maddeleri Karıştırma',
-    desc:'Maddeleri karıştırmak için kullanılan çubuk şeklinde cam malzemedir.',
-    draw:function(){
-        cylinder(0,0,0,5,150,12,GLASS,0.6);
-        sphere(0,-75,0,5,7,5,8,6,GLASS,0.6);
-        sphere(0,75,0,5,7,5,8,6,GLASS,0.6);
-    }
-},
-{
-    id:'deneytipu',name:'Deney Tüpü',type:'Cam Malzeme',material:'Borosilikat Cam',
-    usage:'Karıştırma, Isıtma, Soğutma',
-    desc:'Maddelerin karıştırılması, ısıtılması, soğutulması vb. amaçlarla kullanılan cam malzemedir.',
-    draw:function(){
-        const positions=[{x:-30,z:-20},{x:30,z:-20},{x:-30,z:20},{x:30,z:20},{x:0,z:0}];
-        positions.forEach((pos,idx)=>{
-            const h=55+Math.random()*10;
-            hollowCylinder(pos.x,-20+h/2,pos.z,9,h,12,GLASS,0.5);
-            sphere(pos.x,-20+h,pos.z,9,7,9,8,6,GLASS,0.5);
-            hollowCylinder(pos.x,-20,pos.z,11,3,12,GLASS,0.55);
-            if(idx%2===0){
-                const colors=[[255,100,100],[100,255,100],[100,100,255],[255,200,50],[200,100,255]];
-                const col=colors[idx];
-                hollowCylinder(pos.x,-20+h*0.35,pos.z,8,h*0.35,10,col,0.4);
-            }
-        });
-        cylinder(0,38,0,60,7,14,WOOD,0.8);
-        for(let i=0;i<5;i++){
-            const a=(Math.PI*2/5)*i;
-            const rx=32*Math.cos(a),rz=32*Math.sin(a);
-            flatDisc(rx,41,rz,10,[100,70,35],0.9);
-        }
-    }
-},
-{
-    id:'havan',name:'Havan',type:'Porselen Malzeme',material:'Porselen',
-    usage:'Katı Maddeleri Ezme, Toz Haline Getirme',
-    desc:'Katı maddeleri ezmek, toz hâline getirmek amacıyla kullanılır.',
-    draw:function(){
-        sphere(0,15,0,55,35,55,20,12,PORCELAIN,0.85);
-        sphere(0,10,0,42,25,42,18,10,PORCELAIN_DARK,0.9);
-        flatDisc(0,50,0,55,PORCELAIN,0.9);
-        cylinder(20,-5,0,10,55,10,PORCELAIN,0.85);
-        sphere(20,-35,0,14,16,14,10,8,PORCELAIN,0.85);
-        sphere(20,25,0,12,10,12,8,6,PORCELAIN,0.85);
-    }
-},
-{
-    id:'kroze',name:'Kroze',type:'Porselen/Metal Malzeme',material:'Porselen veya Metal',
-    usage:'Yüksek Sıcaklıkta Isıtma ve Yakma',
-    desc:'Yüksek sıcaklıkta ısıtma ve yakma işlemlerinde kullanılan porselen veya metal laboratuvar malzemesidir.',
-    draw:function(){
-        hollowCylinder(0,0,0,48,60,20,PORCELAIN,0.9);
-        cylinder(0,30,0,48,12,16,PORCELAIN_DARK,0.9);
-        hollowCylinder(0,-5,0,40,50,16,[200,200,210],0.95);
-        hollowCylinder(0,-30,0,52,6,20,PORCELAIN,0.9);
-        cone(0,-24,0,52,10,16,PORCELAIN,0.9,true);
-    }
-},
-{
-    id:'damlalik',name:'Damlalık',type:'Plastik Malzeme',material:'Plastik',
-    usage:'Küçük Hacimde Sıvı Aktarma',
-    desc:'Küçük hacimlerde sıvı aktarmak için kullanılan plastik malzemedir.',
-    draw:function(){
-        sphere(0,-30,0,22,18,22,14,10,PLASTIC,0.8);
-        hollowCylinder(0,10,0,5,40,10,GLASS,0.6);
-        cone(0,30,0,5,10,8,GLASS,0.6,false);
-        cylinder(0,-30,0,24,6,12,[40,40,40],0.9);
-    }
-},
-{
-    id:'spatul',name:'Spatül',type:'Plastik/Metal Malzeme',material:'Plastik veya Metal',
-    usage:'Toz veya Küçük Parçalı Katıları Alma',
-    desc:'Toz ya da küçük parçalı katıları almak için kullanılır.',
-    draw:function(){
-        cylinder(0,0,0,7,75,10,PLASTIC_RED,0.8);
-        sphere(0,42,0,16,5,10,10,6,PLASTIC_RED,0.8);
-        hollowCylinder(0,42,0,16,3,12,PLASTIC_RED,0.85);
-        for(let i=0;i<5;i++){
-            const y=-20+i*10;
-            hollowCylinder(0,y,0,8,2,10,[200,50,50],0.9);
-        }
-    }
-},
-{
-    id:'pisett',name:'Piset',type:'Plastik Malzeme',material:'Plastik',
-    usage:'Saf Su ve Yıkama Çözeltisi',
-    desc:'Genellikle saf su ve bazı durumlarda da yıkama çözeltisi kullanımı için tercih edilen plastik şişedir.',
-    draw:function(){
-        cylinder(0,10,0,32,55,16,PLASTIC_GREEN,0.7);
-        cone(0,-18,0,32,18,14,PLASTIC_GREEN,0.7,true);
-        hollowCylinder(0,-35,0,10,22,10,PLASTIC_GREEN,0.7);
-        cylinder(0,-46,0,14,10,10,[30,30,30],0.9);
-        tube(0,0,0,4,[{x:0,y:-46,z:0},{x:0,y:-75,z:0},{x:18,y:-80,z:0}],[200,200,200],0.6);
-        tube(0,0,0,3,[{x:18,y:-80,z:0},{x:28,y:-83,z:0}],[200,200,200],0.6);
-    }
-},
-{
-    id:'puar',name:'Puar',type:'Plastik Malzeme',material:'Plastik (Kauçuk)',
-    usage:'Pipetle Sıvı Çekme',
-    desc:'Pipetlerin arkasına takılarak sıvı veya çözeltilerin çekilmesinde kullanılan plastik malzemelerdir.',
-    draw:function(){
-        sphere(0,0,0,38,30,35,16,12,PLASTIC_ORANGE,0.7);
-        cylinder(0,-30,0,10,14,10,[200,100,30],0.8);
-        tube(0,0,0,6,[{x:0,y:-37,z:0},{x:0,y:-55,z:0}],PLASTIC_ORANGE,0.7);
-        const uPath=[];
-        for(let i=0;i<=20;i++){
-            const t=i/20;
-            const ang=t*Math.PI;
-            uPath.push({x:32*Math.sin(ang),y:-10-20*Math.cos(ang),z:0});
-        }
-        tube(0,0,0,6,uPath,PLASTIC_ORANGE,0.7);
-    }
-},
-{
-    id:'mikropipet',name:'Mikro Pipet',type:'Plastik Malzeme',material:'Plastik',
-    usage:'Küçük Hacimde Hassas Ölçüm',
-    desc:'Küçük hacimlerdeki sıvıları doğru ve hassas bir şekilde ölçmek ve aktarmak için kullanılan laboratuvar aletidir.',
-    draw:function(){
-        cylinder(0,0,0,14,85,12,PLASTIC,0.8);
-        cylinder(0,-48,0,10,14,10,[100,150,200],0.8);
-        cylinder(0,43,0,16,10,10,[150,150,150],0.8);
-        cone(0,51,0,6,18,8,[50,100,200],0.8,false);
-        flatDisc(0,-12,16,8,[50,50,50],0.9);
-        c.fillStyle='rgba(0,200,0,0.8)';
-        const p=project(0,-12,20);
-        c.font='bold 8px sans-serif';c.textAlign='center';
-        c.fillText('100',p.x,p.y);
-    }
-},
-{
-    id:'ispirtocagi',name:'İspirto Ocağı',type:'Cam/Metal Malzeme',material:'Cam ve Metal',
-    usage:'Isıtma Aracı',
-    desc:'Cam bir kabın içinde ispirto emdirilmiş fitil bulunan ısıtma aracıdır.',
-    draw:function(){
-        sphere(0,15,0,48,38,48,18,12,[160,140,100],0.4);
-        sphere(0,25,0,42,28,42,16,10,[200,180,100],0.3);
-        hollowCylinder(0,-25,0,8,32,10,METAL,0.8);
-        cylinder(0,-42,0,4,22,8,[240,240,220],0.9);
-        const flicker=Math.sin(t*8)*2;
-        cone(0,-58+flicker,0,10,28,10,FLAME,0.6,false);
-        cone(0,-58+flicker,0,5,16,8,FLAME_CORE,0.7,false);
-        cylinder(28,-22,0,12,16,8,METAL_DARK,0.8);
-        tube(0,0,0,1,[{x:20,y:-22,z:0},{x:14,y:-12,z:0}],METAL,0.8);
-    }
-},
-{
-    id:'bunzen',name:'Bunzen Bek',type:'Metal Malzeme',material:'Metal',
-    usage:'Isıtma ve Yakma',
-    desc:'Isıtma ve yakma işlemlerinde kullanılan gazlı ocaktır.',
-    draw:function(){
-        cylinder(0,55,0,60,14,16,METAL,0.8);
-        hollowCylinder(0,55,0,64,5,16,METAL_DARK,0.9);
-        hollowCylinder(0,0,0,14,95,14,METAL,0.8);
-        tube(0,0,0,6,[{x:14,y:20,z:0},{x:35,y:26,z:0}],METAL,0.8);
-        hollowCylinder(0,18,0,18,10,14,METAL_DARK,0.9);
-        tube(0,0,0,6,[{x:0,y:48,z:0},{x:0,y:58,z:0},{x:22,y:64,z:0}],METAL,0.8);
-        const flicker=Math.sin(t*10)*1.5;
-        cone(0,-52+flicker,0,9,25,10,[100,150,255],0.5,false);
-        cone(0,-52+flicker,0,4,13,8,FLAME_CORE,0.7,false);
-        cone(0,-48+flicker,0,3,8,6,[50,100,255],0.6,false);
-    }
-},
-{
-    id:'spor',name:'Spor (Destek)',type:'Metal Malzeme',material:'Metal',
-    usage:'Deney Düzeneklerinin Kurulması ve Sabitlenmesi',
-    desc:'Deney düzeneklerinin kurulması ve sabitlenmesi amacıyla kullanılan metal ayak ve çubuktan oluşan malzemedir.',
-    draw:function(){
-        flatDisc(0,75,0,45,METAL_DARK,0.9);
-        cylinder(0,75,0,45,4,16,METAL_DARK,0.9);
-        cylinder(0,15,0,6,120,10,METAL,0.8);
-        cylinder(0,-48,0,5,6,8,METAL_DARK,0.9);
-        for(let i=0;i<3;i++){
-            const a=(Math.PI*2/3)*i;
-            const fx=35*Math.cos(a),fz=35*Math.sin(a);
-            cylinder(fx,72,fz,4,12,8,METAL_DARK,0.9);
-        }
-    }
-},
-{
-    id:'kiskac',name:'Kıskaç',type:'Metal Malzeme',material:'Metal',
-    usage:'Laboratuvar Malzemelerini Sabitleme',
-    desc:'Çeşitli laboratuvar malzemelerini spora sabitlemek için kullanılır.',
-    draw:function(){
-        cylinder(0,0,0,8,50,10,METAL,0.8);
-        cylinder(0,-30,0,6,25,8,METAL_DARK,0.9);
-        cylinder(0,10,0,6,20,8,METAL_DARK,0.9);
-        cylinder(25,0,0,4,20,8,[80,60,40],0.9);
-        sphere(35,0,0,6,6,6,8,6,[80,60,40],0.9);
-        cylinder(-25,0,0,4,15,8,[80,60,40],0.9);
-        sphere(-32,0,0,5,5,5,8,6,[80,60,40],0.9);
-    }
-},
-{
-    id:'sacayagi',name:'Sacayağı',type:'Metal Malzeme',material:'Metal',
-    usage:'Isıtma İşleminde Kullanılan Destek',
-    desc:'Isıtma işleminde kullanılan metalden yapılmış malzemedir. Kroze veya beherglası tutar.',
-    draw:function(){
-        for(let i=0;i<3;i++){
-            const a=(Math.PI*2/3)*i;
-            const lx=30*Math.cos(a),lz=30*Math.sin(a);
-            const path=[{x:lx*0.3,y:40,z:lz*0.3},{x:lx,y:0,z:lz},{x:lx*1.3,y:-30,z:lz*1.3}];
-            tube(0,0,0,4,path,METAL,0.8);
-        }
-        torus(0,40,0,18,4,16,8,METAL,0.8);
-        cylinder(0,40,0,5,15,8,METAL_DARK,0.9);
-    }
-},
-{
-    id:'amyanttel',name:'Amyant Tel',type:'Tel Malzeme',material:'Demir Tel',
-    usage:'Isıtma Desteği',
-    desc:'Bunzen beki aleviyle ısıtma işlemlerinde cam malzemenin direkt alevle olan ilişkisini kesmek, ısının yavaş ve eşit dağılmasını sağlamak için kullanılan telden yapılmış malzemedir.',
-    draw:function(){
-        const size=50;
-        for(let i=-3;i<=3;i++){
-            const y=i*12;
-            const path1=[{x:-size,y:y,z:-size},{x:size,y:y,z:size}];
-            const path2=[{x:-size,y:y,z:size},{x:size,y:y,z:-size}];
-            tube(0,0,0,1.5,path1,AMYANT,0.7);
-            tube(0,0,0,1.5,path2,AMYANT,0.7);
-        }
-        const border=[{x:-size,y:-36,z:-size},{x:size,y:-36,z:-size},{x:size,y:-36,z:size},{x:-size,y:-36,z:size},{x:-size,y:-36,z:-size}];
-        for(let i=0;i<border.length-1;i++){
-            tube(0,0,0,2,[border[i],border[i+1]],AMYANT,0.8);
-        }
-    }
-},
-{
-    id:'suzgeckagidi',name:'Süzgeç Kağıdı',type:'Kağıt Malzeme',material:'Selüloz',
-    usage:'Katı ve Sıvıları Ayırma',
-    desc:'Katı ve sıvıları ayırmada kullanılan çeşitli gözenek boyutlu türleri olan filtre kağıdıdır.',
-    draw:function(){
-        const tris=[],slices=20;
-        for(let i=0;i<slices;i++){
-            const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
-            const r1=45+Math.sin(a1*3)*3,r2=45+Math.sin(a2*3)*3;
-            const p0=project(0,0,0),p1=project(Math.cos(a1)*r1,Math.sin(a1)*r1*0.3,Math.sin(a1)*r1),p2=project(Math.cos(a2)*r2,Math.sin(a2)*r2*0.3,Math.sin(a2)*r2);
-            tris.push({p:[p0,p1,p2],avgZ:(p0.z+p1.z+p2.z)/3});
-        }
-        drawMesh(tris,240,235,220,0.9);
-        for(let i=0;i<4;i++){
-            const a=(Math.PI/4)*i;
-            const p1=project(-45*Math.cos(a),0,-45*Math.sin(a)),p2=project(45*Math.cos(a),0,45*Math.sin(a));
-            c.strokeStyle='rgba(200,195,180,0.5)';c.lineWidth=1;
-            c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
-        }
-    }
-}
-];
-
-// ===== GRID RENDERING =====
-const grid=document.getElementById('grid');
-const detailPanel=document.getElementById('detailPanel');
-const detailTitle=document.getElementById('detailTitle');
-const detailCanvas=document.getElementById('detailCanvas');
-const dc=detailCanvas.getContext('2d');
-
-function createItemCard(item,idx){
-    const div=document.createElement('div');
-    div.className='item';
-    div.innerHTML=`<h3>${item.name}</h3><canvas id="cv${idx}" width="200" height="160"></canvas><p>${item.desc.substring(0,60)}...</p>`;
-    div.onclick=()=>openDetail(idx);
-    return div;
-}
-ITEMS.forEach((item,i)=>{grid.appendChild(createItemCard(item,i));});
-
-function renderThumb(idx){
-    const cv=document.getElementById('cv'+idx);
-    if(!cv)return;
-    const ctx=cv.getContext('2d');
-    const oldC=c,oldW=W,oldH=H;
-    c=ctx;W=200;H=160;
-    rotX=0.4;rotY=0.3+idx*0.15;zoom=0.55;
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#050510';ctx.fillRect(0,0,W,H);
-    ITEMS[idx].draw();
-    c=oldC;W=oldW;H=oldH;
-}
-
-// ===== DETAIL PANEL =====
-function openDetail(idx){
-    activeItem=idx;
-    const item=ITEMS[idx];
-    detailPanel.classList.add('active');
-    detailTitle.textContent=item.name;
-    document.getElementById('dName').textContent=item.name;
-    document.getElementById('dType').textContent=item.type;
-    document.getElementById('dMaterial').textContent=item.material;
-    document.getElementById('dUsage').textContent=item.usage;
-    document.getElementById('dDesc').textContent=item.desc;
-    rotX=0.4;rotY=0.3;zoom=1;t=0;
-    if(animFrame)cancelAnimationFrame(animFrame);
-    loopDetail();
-}
-function closeDetail(){
-    detailPanel.classList.remove('active');
-    activeItem=null;
-    if(animFrame)cancelAnimationFrame(animFrame);
-}
-function loopDetail(){
-    if(activeItem===null)return;
-    c=dc;W=600;H=500;
-    dc.clearRect(0,0,W,H);
-    dc.fillStyle='#050510';dc.fillRect(0,0,W,H);
-    if(autoSpin&&!isDragging){rotY+=0.008*spd;t+=0.015*spd;}else{t+=0.015*spd;}
-    ITEMS[activeItem].draw();
-    dc.fillStyle='rgba(255,255,255,0.25)';
-    dc.font='11px sans-serif';dc.textAlign='left';
-    dc.fillText('👆 Sürükleyerek 3D döndürün',10,H-10);
-    animFrame=requestAnimationFrame(loopDetail);
-}
-
-// ===== CONTROLS =====
-function toggleSpin(){autoSpin=!autoSpin;}
-function setSpeed(v){spd=v;}
-function resetView(){rotX=0.4;rotY=0.3;zoom=1;}
-
-// ===== MOUSE / TOUCH EVENTS =====
-detailCanvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY;});
-detailCanvas.addEventListener('mousemove',e=>{
-    if(!isDragging)return;
-    rotY+=(e.clientX-lastX)*0.01;rotX+=(e.clientY-lastY)*0.01;
-    lastX=e.clientX;lastY=e.clientY;
-});
-detailCanvas.addEventListener('mouseup',()=>isDragging=false);
-detailCanvas.addEventListener('mouseleave',()=>isDragging=false);
-
-detailCanvas.addEventListener('touchstart',e=>{
-    if(e.touches.length===1){isDragging=true;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;}
-    else if(e.touches.length===2){
-        const dx=e.touches[0].clientX-e.touches[1].clientX;
-        const dy=e.touches[0].clientY-e.touches[1].clientY;
-        startDist=Math.sqrt(dx*dx+dy*dy);
-    }
-    e.preventDefault();
-},{passive:false});
-
-detailCanvas.addEventListener('touchmove',e=>{
-    if(e.touches.length===1&&isDragging){
-        rotY+=(e.touches[0].clientX-lastX)*0.015;rotX+=(e.touches[0].clientY-lastY)*0.015;
-        lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;
-    }else if(e.touches.length===2){
-        const dx=e.touches[0].clientX-e.touches[1].clientX;
-        const dy=e.touches[0].clientY-e.touches[1].clientY;
-        const dist=Math.sqrt(dx*dx+dy*dy);
-        if(startDist>0){zoom*=dist/startDist;zoom=Math.max(0.5,Math.min(3,zoom));}
-        startDist=dist;
-    }
-    e.preventDefault();
-},{passive:false});
-
-detailCanvas.addEventListener('touchend',e=>{isDragging=false;startDist=0;});
-detailCanvas.addEventListener('wheel',e=>{e.preventDefault();zoom+=e.deltaY*-0.001;zoom=Math.max(0.5,Math.min(3,zoom));});
-detailPanel.addEventListener('click',e=>{if(e.target===detailPanel)closeDetail();});
-
-let c=dc;
-setTimeout(()=>{ITEMS.forEach((_,i)=>renderThumb(i));},200);
 </script>
 </body>
-</html>'''
-
-output_path = '/mnt/agents/output/kimya12_3d_laboratuvar.html'
-with open(output_path, 'w', encoding='utf-8') as f:
-    f.write(html)
-
-print(f"✅ Dosya yazıldı: {output_path}")
-print(f"📊 Toplam boyut: {len(html):,} karakter")
-print(f"🧪 Toplam malzeme: {len(ITEMS)} adet")
-
+</html>
