@@ -2,709 +2,369 @@
 html = '''<!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Kimya Laboratuvar Malzemeleri - 3D</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#0a0a1a 0%,#1a1a3e 50%,#0f0f2e 100%);color:#fff;min-height:100vh}
-.header{text-align:center;padding:15px;background:rgba(0,0,0,0.4);border-bottom:2px solid #00d4ff}
-.header h1{font-size:1.4rem;color:#00d4ff;text-shadow:0 0 15px rgba(0,212,255,0.5)}
-.header p{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:4px}
-.tabs{display:flex;justify-content:center;gap:8px;padding:12px;flex-wrap:wrap}
-.tab-btn{padding:8px 16px;border:2px solid #00d4ff;background:rgba(0,212,255,0.1);color:#00d4ff;border-radius:20px;cursor:pointer;font-size:0.85rem;font-weight:bold;transition:all 0.3s}
-.tab-btn.active{background:#00d4ff;color:#000}
-.content{max-width:900px;margin:0 auto;padding:0 15px 30px}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
-.card{background:rgba(255,255,255,0.06);border:2px solid rgba(0,212,255,0.3);border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.3s}
-.card:active{transform:scale(0.95)}
-.card.selected{border-color:#00d4ff;background:rgba(0,212,255,0.15);box-shadow:0 0 25px rgba(0,212,255,0.3)}
-.card h3{font-size:1rem;color:#00d4ff;margin-bottom:3px}
-.card p{font-size:0.68rem;color:rgba(255,255,255,0.6)}
-.sim-box{background:rgba(0,0,0,0.5);border-radius:16px;padding:15px;margin-bottom:15px;border:1px solid rgba(0,212,255,0.2)}
-.sim-title{text-align:center;font-size:1.2rem;color:#00d4ff;margin-bottom:10px;text-shadow:0 0 10px rgba(0,212,255,0.3)}
-#canvas3D{display:block;width:100%!important;height:auto!important;border-radius:12px;background:#050510;border:1px solid rgba(0,212,255,0.2);touch-action:none}
-.controls{display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap}
-.ctrl-btn{padding:8px 16px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:20px;color:#00d4ff;font-size:0.8rem;cursor:pointer}
-.ctrl-btn:active{background:rgba(0,212,255,0.3)}
-.hint-drag{text-align:center;color:rgba(255,255,255,0.3);font-size:0.75rem;margin-top:8px}
-.props{background:rgba(255,255,255,0.05);border-radius:12px;padding:18px;border-left:3px solid #7b2cbf;margin-bottom:15px}
-.props h3{color:#00d4ff;margin-bottom:12px;font-size:1rem}
-.prop-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:0.85rem}
-.prop-row:last-child{border-bottom:none}
-.prop-label{color:rgba(255,255,255,0.5)}
-.prop-val{color:#00d4ff;font-weight:bold}
-.prop-desc{margin-top:12px;padding:12px;background:rgba(0,212,255,0.05);border-radius:8px;font-size:0.85rem;line-height:1.6;color:rgba(255,255,255,0.7)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kimya 12 - 3D Laboratuvar Malzemeleri</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 2px solid #00d4ff;
+        }
+        .header h1 {
+            font-size: 1.4rem;
+            color: #00d4ff;
+            text-shadow: 0 0 15px rgba(0,212,255,0.5);
+        }
+        .header p {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+        }
+        .content { max-width: 900px; margin: 0 auto; padding: 15px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+        .item {
+            background: rgba(255,255,255,0.06);
+            border: 2px solid rgba(0,212,255,0.3);
+            border-radius: 16px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .item:active { transform: scale(0.95); }
+        .item.selected {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.15);
+            box-shadow: 0 0 25px rgba(0,212,255,0.3);
+        }
+        .item h3 {
+            font-size: 0.95rem;
+            color: #00d4ff;
+            margin-bottom: 6px;
+        }
+        .item canvas {
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 10px;
+            background: #050510;
+            border: 1px solid rgba(0,212,255,0.15);
+            touch-action: none;
+        }
+        .item p {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 6px;
+            line-height: 1.3;
+        }
+        .detail-panel {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .detail-panel.active { display: block; }
+        .detail-close {
+            position: fixed;
+            top: 15px; right: 15px;
+            width: 40px; height: 40px;
+            background: rgba(255,50,50,0.2);
+            border: 1px solid rgba(255,50,50,0.5);
+            border-radius: 50%;
+            color: #ff6666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin: 50px 0 15px;
+            text-shadow: 0 0 15px rgba(0,212,255,0.4);
+        }
+        .detail-canvas {
+            width: 100% !important;
+            max-width: 500px;
+            height: auto !important;
+            border-radius: 16px;
+            background: #050510;
+            border: 2px solid rgba(0,212,255,0.3);
+            display: block;
+            margin: 0 auto 20px;
+            touch-action: none;
+        }
+        .detail-props {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            border-left: 3px solid #7b2cbf;
+        }
+        .detail-props h3 {
+            color: #00d4ff;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .prop-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.85rem;
+        }
+        .prop-row:last-child { border-bottom: none; }
+        .prop-label { color: rgba(255,255,255,0.5); }
+        .prop-val { color: #00d4ff; font-weight: bold; }
+        .prop-desc {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0,212,255,0.05);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.7);
+        }
+        .hint-drag {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.75rem;
+            margin: 10px 0;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .ctrl-btn {
+            padding: 8px 16px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .ctrl-btn:active { background: rgba(0,212,255,0.3); }
+    </style>
 </head>
 <body>
-<div class="header">
-<h1>🧪 Kimya Laboratuvar Malzemeleri</h1>
-<p>PDF'deki 24 malzeme - 3D Etkileşimli Görselleştirme</p>
-</div>
-<div class="tabs" id="tabBar"></div>
-<div class="content">
-<div id="panels"></div>
-</div>
+    <div class="header">
+        <h1>🧪 Kimya 12 - 3D Laboratuvar Malzemeleri</h1>
+        <p>Herhangi bir malzemeye dokunarak 3D detay görünümüne ulaşın</p>
+    </div>
+    <div class="content"><div class="grid" id="grid"></div></div>
+    <div class="detail-panel" id="detailPanel">
+        <button class="detail-close" onclick="closeDetail()">×</button>
+        <div class="detail-title" id="detailTitle"></div>
+        <canvas class="detail-canvas" id="detailCanvas" width="600" height="500"></canvas>
+        <p class="hint-drag">👆 İki parmakla zoom yapın · Tek parmakla döndürün</p>
+        <div class="controls">
+            <button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button>
+            <button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button>
+            <button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button>
+            <button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>
+        </div>
+        <div class="detail-props">
+            <h3>📋 Malzeme Özellikleri</h3>
+            <div class="prop-row"><span class="prop-label">Adı:</span><span class="prop-val" id="dName">-</span></div>
+            <div class="prop-row"><span class="prop-label">Türü:</span><span class="prop-val" id="dType">-</span></div>
+            <div class="prop-row"><span class="prop-label">Malzeme:</span><span class="prop-val" id="dMaterial">-</span></div>
+            <div class="prop-row"><span class="prop-label">Kullanım:</span><span class="prop-val" id="dUsage">-</span></div>
+            <div class="prop-desc" id="dDesc"></div>
+        </div>
+    </div>
+
 <script>
-const canvas=document.createElement('canvas');
-canvas.id='canvas3D';canvas.width=600;canvas.height=420;
-const c=canvas.getContext('2d');
-let W=600,H=420,activeItem=null,t=0,autoSpin=true,spd=1,animFrame=null,rotX=0.4,rotY=0.3,isDragging=false,lastX=0,lastY=0;
-
-const ITEMS=[
-{id:'beherglas',name:'Beherglas',group:'Cam Malzemeler',material:'Cam',volume:'50-5000 mL',precision:'Yaklaşık',usage:'Sıvı maddelerin karıştırılması, saklanması ve ısıtılması amacıyla kullanılan malzemedir.',color:[0,180,255],type:'beherglas'},
-{id:'erlenmayer',name:'Erlenmayer',group:'Cam Malzemeler',material:'Cam',volume:'50-5000 mL',precision:'Yaklaşık',usage:'Titrasyon, çözelti hazırlama, saklama, çözme vb. işlemlerde kullanılır.',color:[0,180,255],type:'erlenmayer'},
-{id:'cambalon',name:'Cam Balon',group:'Cam Malzemeler',material:'Cam',volume:'100-5000 mL',precision:'Yaklaşık',usage:'Çözelti hazırlama, saklama, ısıtma ve kaynatma amacıyla kullanılır.',color:[0,180,255],type:'cambalon'},
-{id:'balonjoje',name:'Balon Joje',group:'Cam Malzemeler',material:'Cam',volume:'25-1000 mL',precision:'Hassas',usage:'Derişimi belli çözeltilerin hazırlanması ve saklanmasında kullanılan cam malzemedir.',color:[0,180,255],type:'balonjoje'},
-{id:'ayrmahunisi',name:'Ayırma Hunisi',group:'Ayırma Malzemeleri',material:'Cam',volume:'50-1000 mL',precision:'Yaklaşık',usage:'Heterojen sıvı-sıvı karışımların ayrılmasında kullanılır.',color:[255,107,107],type:'ayrmahunisi'},
-{id:'derecelisilindir',name:'Dereceli Silindir (Mezür)',group:'Ölçüm Malzemeleri',material:'Cam',volume:'10-2000 mL',precision:'Yaklaşık',usage:'Sıvıların hacmini ölçmek için kullanılan cam malzemedir.',color:[255,200,0],type:'derecelisilindir'},
-{id:'sogutucu',name:'Soğutucu',group:'Isıtma Malzemeleri',material:'Cam',volume:'-',precision:'-',usage:'Isıtmayla buharlaşan çözücünün gaz fazından sıvı faza dönüştürülerek geri kazanılmasını sağlayan cam malzemedir.',color:[0,180,255],type:'sogutucu'},
-{id:'huni',name:'Huni',group:'Ayırma Malzemeleri',material:'Cam',volume:'-',precision:'-',usage:'Süzme işleminde ve sıvıların dar ağızlı kaba boşaltılmasında kullanılır.',color:[255,107,107],type:'huni'},
-{id:'camboru',name:'Cam Boru',group:'Cam Malzemeler',material:'Cam',volume:'-',precision:'-',usage:'Tepkime ortamları arasındaki bağlantıyı kurmada kullanılan U şeklindeki cam malzemedir.',color:[0,180,255],type:'camboru'},
-{id:'buret',name:'Büret',group:'Ölçüm Malzemeleri',material:'Cam',volume:'10-50 mL',precision:'Hassas (±0.05 mL)',usage:'Titrasyon işleminde derişimi bilinmeyen maddelerin hacmini hassas ölçebilen cam malzemedir.',color:[255,200,0],type:'buret'},
-{id:'pipet',name:'Pipet',group:'Ölçüm Malzemeleri',material:'Cam',volume:'1-100 mL',precision:'Hassas (±0.01 mL)',usage:'Sıvıların hassas bir biçimde ölçülmesi ve aktarılmasına yarayan cam borudur.',color:[255,200,0],type:'pipet'},
-{id:'termometre',name:'Termometre',group:'Ölçüm Malzemeleri',material:'Cam',volume:'-',precision:'±0.1°C',usage:'Sıcaklık ölçmek için kullanılan dereceli cam malzemedir.',color:[255,200,0],type:'termometre'},
-{id:'baget',name:'Baget',group:'Karıştırma Malzemeleri',material:'Cam',volume:'-',precision:'-',usage:'Maddeleri karıştırmak için kullanılan çubuk şeklinde cam malzemedir.',color:[0,255,136],type:'baget'},
-{id:'deneytupu',name:'Deney Tüpü',group:'Cam Malzemeler',material:'Cam',volume:'5-50 mL',precision:'Yaklaşık',usage:'Maddelerin karıştırılması, ısıtılması, soğutulması vb. amaçlarla kullanılan cam malzemedir.',color:[0,180,255],type:'deneytupu'},
-{id:'havan',name:'Havan',group:'Öğütme Malzemeleri',material:'Porselen',volume:'-',precision:'-',usage:'Katı maddeleri ezmek, toz hâline getirmek amacıyla kullanılır.',color:[255,220,180],type:'havan'},
-{id:'kroze',name:'Kroze',group:'Isıtma Malzemeleri',material:'Porselen/Metal',volume:'5-100 mL',precision:'-',usage:'Yüksek sıcaklıkta ısıtma ve yakma işlemlerinde kullanılan porselen veya metal laboratuvar malzemesidir.',color:[255,220,180],type:'kroze'},
-{id:'damlalik',name:'Damlalık',group:'Aktarma Malzemeleri',material:'Plastik',volume:'1-5 mL',precision:'Yaklaşık',usage:'Küçük hacimlerde sıvı aktarmak için kullanılan plastik malzemedir.',color:[0,255,136],type:'damlalik'},
-{id:'spatul',name:'Spatül',group:'Aktarma Malzemeleri',material:'Metal/Plastik',volume:'-',precision:'-',usage:'Toz ya da küçük parçalı katıları almak için kullanılır.',color:[0,255,136],type:'spatul'},
-{id:'piset',name:'Piset',group:'Yıkama Malzemeleri',material:'Plastik',volume:'250-1000 mL',precision:'-',usage:'Genellikle saf su ve bazı durumlarda da yıkama çözeltisi kullanımı için tercih edilen plastik şişedir.',color:[0,255,136],type:'piset'},
-{id:'puar',name:'Puar',group:'Aktarma Malzemeleri',material:'Plastik/Kauçuk',volume:'-',precision:'-',usage:'Pipetlerin arkasına takılarak sıvı veya çözeltilerin çekilmesinde kullanılan plastik malzemelerdir.',color:[0,255,136],type:'puar'},
-{id:'mikropipet',name:'Mikro Pipet',group:'Ölçüm Malzemeleri',material:'Plastik',volume:'1-1000 µL',precision:'Çok Hassas (±0.01 µL)',usage:'Küçük hacimlerdeki sıvıları doğru ve hassas bir şekilde ölçmek ve aktarmak için kullanılan laboratuvar aletidir.',color:[255,200,0],type:'mikropipet'},
-{id:'isirtocagi',name:'İspirto Ocağı',group:'Isıtma Malzemeleri',material:'Metal/Cam',volume:'-',precision:'-',usage:'Cam bir kabın içinde ispirto emdirilmiş fitil bulunan ısıtma aracıdır.',color:[255,100,50],type:'isirtocagi'},
-{id:'bunzenbek',name:'Bunzen Bek',group:'Isıtma Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Isıtma ve yakma işlemlerinde kullanılan gazlı ocaktır.',color:[255,100,50],type:'bunzenbek'},
-{id:'spor',name:'Spor (Destek)',group:'Destek Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Deney düzeneklerinin kurulması ve sabitlenmesi amacıyla kullanılan metal ayak ve çubuktan oluşan malzemedir.',color:[180,180,180],type:'spor'},
-{id:'sacayagi',name:'Sacayağı',group:'Destek Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Isıtma işleminde kullanılan metalden yapılmış malzemedir.',color:[180,180,180],type:'sacayagi'},
-{id:'kiskac',name:'Kıskaç',group:'Destek Malzemeleri',material:'Metal',volume:'-',precision:'-',usage:'Çeşitli laboratuvar malzemelerini spora sabitlemek için kullanılır.',color:[180,180,180],type:'kiskac'},
-{id:'amyanthtel',name:'Amyant Tel',group:'Isıtma Malzemeleri',material:'Asbest/Magnezyum',volume:'-',precision:'-',usage:'Bunzen beki aleviyle ısıtma işlemlerinde cam malzemenin direkt alevle olan ilişkisini kesmek, ısının yavaş ve eşit dağılmasını sağlamak için kullanılan telden yapılmış malzemedir.',color:[255,100,50],type:'amyanthtel'},
-{id:'suzgeckagidi',name:'Süzgeç Kâğıdı',group:'Ayırma Malzemeleri',material:'Selüloz',volume:'-',precision:'-',usage:'Katı ve sıvıları ayırmada kullanılan çeşitli gözenek boyutlu türleri olan filtre kâğıdıdır.',color:[255,107,107],type:'suzgeckagidi'}
-];
-
-const GROUPS=[...new Set(ITEMS.map(i=>i.group))];
-
-function buildTabs(){
-const bar=document.getElementById('tabBar');
-const panels=document.getElementById('panels');
-bar.innerHTML='';panels.innerHTML='';
-GROUPS.forEach((g,idx)=>{
-const btn=document.createElement('button');
-btn.className='tab-btn'+(idx===0?' active':'');
-btn.textContent=g;
-btn.onclick=()=>switchTab(idx);
-bar.appendChild(btn);
-const panel=document.createElement('div');
-panel.className='tab-panel'+(idx===0?' active':'');
-panel.id='panel-'+idx;
-const grid=document.createElement('div');
-grid.className='grid';
-const groupItems=ITEMS.filter(i=>i.group===g);
-groupItems.forEach(item=>{
-const card=document.createElement('div');
-card.className='card';
-card.innerHTML='<h3>'+item.name+'</h3><p>'+item.material+'</p>';
-card.onclick=()=>selectItem(item,card);
-grid.appendChild(card);
-});
-panel.appendChild(grid);
-panels.appendChild(panel);
-});
-}
-
-function switchTab(idx){
-document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-document.getElementById('panel-'+idx).classList.add('active');
-document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-}
-
-function selectItem(item,cardEl){
-activeItem=item;
-document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected'));
-cardEl.classList.add('selected');
-let simBox=document.getElementById('simBox');
-if(!simBox){
-simBox=document.createElement('div');
-simBox.id='simBox';
-simBox.className='sim-box';
-document.querySelector('.content').insertBefore(simBox,document.querySelector('.content').firstChild);
-simBox.innerHTML='<div class="sim-title" id="simTitle"></div>';
-simBox.appendChild(canvas);
-const hint=document.createElement('p');
-hint.className='hint-drag';
-hint.textContent='👆 Ekrana dokunarak 3D döndürün';
-simBox.appendChild(hint);
-const controls=document.createElement('div');
-controls.className='controls';
-controls.innerHTML='<button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button><button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button><button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button><button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>';
-simBox.appendChild(controls);
-const props=document.createElement('div');
-props.className='props';
-props.id='propsBox';
-document.querySelector('.content').insertBefore(props,document.querySelector('.content').firstChild.nextSibling);
-}
-document.getElementById('simTitle').textContent=item.name+' - 3D Görselleştirme';
-const props=document.getElementById('propsBox');
-props.innerHTML='<h3>📋 '+item.name+' Özellikleri</h3><div class="prop-row"><span class="prop-label">Malzeme:</span><span class="prop-val">'+item.material+'</span></div><div class="prop-row"><span class="prop-label">Hacim:</span><span class="prop-val">'+item.volume+'</span></div><div class="prop-row"><span class="prop-label">Hassasiyet:</span><span class="prop-val">'+item.precision+'</span></div><div class="prop-row"><span class="prop-label">Grup:</span><span class="prop-val">'+item.group+'</span></div><div class="prop-desc">'+item.usage+'</div>';
-t=0;rotX=0.4;rotY=0.3;
-if(animFrame)cancelAnimationFrame(animFrame);
-loop();
-window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function resizeCanvas(){
-const simBox=document.getElementById('simBox');
-if(!simBox)return;
-const rect=canvas.getBoundingClientRect();
-const dpr=window.devicePixelRatio||1;
-canvas.width=rect.width*dpr;
-canvas.height=rect.height*dpr;
-W=rect.width;H=rect.height;
-c.scale(dpr,dpr);
-}
-window.addEventListener('resize',resizeCanvas);
-
-canvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY});
-canvas.addEventListener('mousemove',e=>{if(!isDragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;rotY+=dx*0.01;rotX+=dy*0.01;lastX=e.clientX;lastY=e.clientY});
-canvas.addEventListener('mouseup',()=>isDragging=false);
-canvas.addEventListener('mouseleave',()=>isDragging=false);
-canvas.addEventListener('touchstart',e=>{isDragging=true;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;e.preventDefault()},{passive:false});
-canvas.addEventListener('touchmove',e=>{if(!isDragging)return;const dx=e.touches[0].clientX-lastX,dy=e.touches[0].clientY-lastY;rotY+=dx*0.015;rotX+=dy*0.015;lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;e.preventDefault()},{passive:false});
-canvas.addEventListener('touchend',()=>isDragging=false);
+// ===== 3D ENGINE =====
+let W=600, H=500, rotX=0.4, rotY=0.3, isDragging=false, lastX=0, lastY=0;
+let autoSpin=true, spd=1, t=0, activeItem=null, animFrame=null, zoom=1, lastDist=0;
 
 function rotate3D(x,y,z){
-let y1=y*Math.cos(rotX)-z*Math.sin(rotX);
-let z1=y*Math.sin(rotX)+z*Math.cos(rotX);
-let x2=x*Math.cos(rotY)+z1*Math.sin(rotY);
-let z2=-x*Math.sin(rotY)+z1*Math.cos(rotY);
-return{x:x2,y:y1,z:z2};
+    let y1=y*Math.cos(rotX)-z*Math.sin(rotX);
+    let z1=y*Math.sin(rotX)+z*Math.cos(rotX);
+    let x2=x*Math.cos(rotY)+z1*Math.sin(rotY);
+    let z2=-x*Math.sin(rotY)+z1*Math.cos(rotY);
+    return {x:x2,y:y1,z:z2};
+}
+function project(x,y,z,cx,cy){
+    const r=rotate3D(x,y,z);
+    const scale=280*zoom/(350+r.z);
+    return {x:(cx||W/2)+r.x*scale,y:(cy||H/2)+r.y*scale,z:r.z,scale:scale};
+}
+function rgba(r,g,b,a){return `rgba(${r},${g},${b},${a})`;}
+
+function drawMesh(tris,baseR,baseG,baseB,alpha){
+    tris.sort((a,b)=>b.avgZ-a.avgZ);
+    tris.forEach(tri=>{
+        const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+150)/400));
+        c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
+        c.fillStyle=rgba(baseR,baseG,baseB,alpha*depth*0.65);c.fill();
+        c.strokeStyle=rgba(baseR,baseG,baseB,0.3*depth);c.lineWidth=0.5;c.stroke();
+    });
 }
 
-function project(x,y,z){
-const r=rotate3D(x,y,z);
-const scale=280/(350+r.z);
-return{x:W/2+r.x*scale,y:H/2+r.y*scale,z:r.z,scale:scale};
+function sphere(cx,cy,cz,rx,ry,rz,slices,stacks,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        for(let j=0;j<stacks;j++){
+            const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+            const v1=(Math.PI/stacks)*j-Math.PI/2,v2=(Math.PI/stacks)*(j+1)-Math.PI/2;
+            const pts=[
+                project(cx+rx*Math.cos(v1)*Math.cos(u1),cy+ry*Math.cos(v1)*Math.sin(u1),cz+rz*Math.sin(v1)),
+                project(cx+rx*Math.cos(v1)*Math.cos(u2),cy+ry*Math.cos(v1)*Math.sin(u2),cz+rz*Math.sin(v1)),
+                project(cx+rx*Math.cos(v2)*Math.cos(u2),cy+ry*Math.cos(v2)*Math.sin(u2),cz+rz*Math.sin(v2)),
+                project(cx+rx*Math.cos(v2)*Math.cos(u1),cy+ry*Math.cos(v2)*Math.sin(u1),cz+rz*Math.sin(v2))
+            ];
+            tris.push({p:[pts[0],pts[1],pts[2]],avgZ:(pts[0].z+pts[1].z+pts[2].z)/3});
+            tris.push({p:[pts[0],pts[2],pts[3]],avgZ:(pts[0].z+pts[2].z+pts[3].z)/3});
+        }
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-function rgba(rgb,a){return'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+a+')'}
-
-function clear(){
-c.clearRect(0,0,W,H);
-c.fillStyle='#050510';
-c.fillRect(0,0,W,H);
+function cylinder(cx,cy,cz,r,h,slices,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
+        const p1=project(cx+x1,cy-h/2,cz+z1),p2=project(cx+x2,cy-h/2,cz+z2);
+        const p3=project(cx+x2,cy+h/2,cz+z2),p4=project(cx+x1,cy+h/2,cz+z1);
+        tris.push({p:[p1,p2,p3],avgZ:(p1.z+p2.z+p3.z)/3});
+        tris.push({p:[p1,p3,p4],avgZ:(p1.z+p3.z+p4.z)/3});
+        const pc=project(cx,cy+h/2,cz);tris.push({p:[pc,p4,p3],avgZ:(pc.z+p4.z+p3.z)/3});
+        const pb=project(cx,cy-h/2,cz);tris.push({p:[pb,p2,p1],avgZ:(pb.z+p2.z+p1.z)/3});
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-function drawAxes(){
-const len=100;
-const axes=[{x:len,y:0,z:0,label:'x',col:'#ff5555'},{x:0,y:-len,z:0,label:'y',col:'#55ff55'},{x:0,y:0,z:len,label:'z',col:'#5555ff'}];
-c.strokeStyle='rgba(255,255,255,0.12)';c.lineWidth=1.5;
-axes.forEach(ax=>{
-const p=project(ax.x,ax.y,ax.z);
-const o=project(0,0,0);
-c.beginPath();c.moveTo(o.x,o.y);c.lineTo(p.x,p.y);c.stroke();
-c.fillStyle=ax.col;c.font='bold 11px sans-serif';c.textAlign='center';
-c.fillText(ax.label,p.x+10,p.y-5);
-});
+function hollowCylinder(cx,cy,cz,r,h,slices,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
+        const p1=project(cx+x1,cy-h/2,cz+z1),p2=project(cx+x2,cy-h/2,cz+z2);
+        const p3=project(cx+x2,cy+h/2,cz+z2),p4=project(cx+x1,cy+h/2,cz+z1);
+        tris.push({p:[p1,p2,p3],avgZ:(p1.z+p2.z+p3.z)/3});
+        tris.push({p:[p1,p3,p4],avgZ:(p1.z+p3.z+p4.z)/3});
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-// ===== 3D PRIMITIVES =====
-function drawCylinder(x,y,z,r,h,rgb,alpha,rotLocalX,rotLocalY){
-const slices=20,stacks=1;
-const triangles=[];
-for(let i=0;i<slices;i++){
-for(let j=0;j<stacks;j++){
-const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-const v1=j/stacks,v2=(j+1)/stacks;
-const corners=[cylPoint(x,y,z,r,h,u1,v1,rotLocalX,rotLocalY),cylPoint(x,y,z,r,h,u2,v1,rotLocalX,rotLocalY),cylPoint(x,y,z,r,h,u2,v2,rotLocalX,rotLocalY),cylPoint(x,y,z,r,h,u1,v2,rotLocalX,rotLocalY)];
-triangles.push({p:[corners[0],corners[1],corners[2]],avgZ:(corners[0].z+corners[1].z+corners[2].z)/3});
-triangles.push({p:[corners[0],corners[2],corners[3]],avgZ:(corners[0].z+corners[2].z+corners[3].z)/3});
-}}
-triangles.sort((a,b)=>b.avgZ-a.avgZ);
-triangles.forEach(tri=>{
-const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
-c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
-c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
-});
+function cone(cx,cy,cz,r,h,slices,color,alpha,flip){
+    const tris=[];
+    const topY=flip?cy-h:cy+h,baseY=flip?cy:cy;
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const x1=Math.cos(a1)*r,z1=Math.sin(a1)*r,x2=Math.cos(a2)*r,z2=Math.sin(a2)*r;
+        const pt=project(cx,topY,cz),p1=project(cx+x1,baseY,cz+z1),p2=project(cx+x2,baseY,cz+z2);
+        tris.push({p:[pt,p2,p1],avgZ:(pt.z+p2.z+p1.z)/3});
+        if(!flip){const pc=project(cx,baseY,cz);tris.push({p:[pc,p1,p2],avgZ:(pc.z+p1.z+p2.z)/3});}
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-function cylPoint(cx,cy,cz,r,h,u,v,rotLX,rotLY){
-let x=r*Math.cos(u),y=-h/2+h*v,z=r*Math.sin(u);
-if(rotLX||rotLY){
-let y1=y*Math.cos(rotLX||0)-z*Math.sin(rotLX||0);
-let z1=y*Math.sin(rotLX||0)+z*Math.cos(rotLX||0);
-let x2=x*Math.cos(rotLY||0)+z1*Math.sin(rotLY||0);
-let z2=-x*Math.sin(rotLY||0)+z1*Math.cos(rotLY||0);
-x=x2;y=y1;z=z2;
-}
-return project(cx+x,cy+y,cz+z);
-}
-
-function drawSphere(x,y,z,r,rgb,alpha){
-const slices=16,stacks=12;
-const triangles=[];
-for(let i=0;i<slices;i++){
-for(let j=0;j<stacks;j++){
-const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-const v1=(Math.PI/stacks)*j-Math.PI/2,v2=(Math.PI/stacks)*(j+1)-Math.PI/2;
-const corners=[spherePoint(x,y,z,r,u1,v1),spherePoint(x,y,z,r,u2,v1),spherePoint(x,y,z,r,u2,v2),spherePoint(x,y,z,r,u1,v2)];
-triangles.push({p:[corners[0],corners[1],corners[2]],avgZ:(corners[0].z+corners[1].z+corners[2].z)/3});
-triangles.push({p:[corners[0],corners[2],corners[3]],avgZ:(corners[0].z+corners[2].z+corners[3].z)/3});
-}}
-triangles.sort((a,b)=>b.avgZ-a.avgZ);
-triangles.forEach(tri=>{
-const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
-c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
-c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
-});
+function torus(cx,cy,cz,majorR,minorR,slices,stacks,color,alpha){
+    const tris=[];
+    for(let i=0;i<slices;i++){
+        for(let j=0;j<stacks;j++){
+            const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
+            const v1=(Math.PI*2/stacks)*j,v2=(Math.PI*2/stacks)*(j+1);
+            const pts=[
+                project(cx+(majorR+minorR*Math.cos(v1))*Math.cos(u1),cy+(majorR+minorR*Math.cos(v1))*Math.sin(u1),cz+minorR*Math.sin(v1)),
+                project(cx+(majorR+minorR*Math.cos(v1))*Math.cos(u2),cy+(majorR+minorR*Math.cos(v1))*Math.sin(u2),cz+minorR*Math.sin(v1)),
+                project(cx+(majorR+minorR*Math.cos(v2))*Math.cos(u2),cy+(majorR+minorR*Math.cos(v2))*Math.sin(u2),cz+minorR*Math.sin(v2)),
+                project(cx+(majorR+minorR*Math.cos(v2))*Math.cos(u1),cy+(majorR+minorR*Math.cos(v2))*Math.sin(u1),cz+minorR*Math.sin(v2))
+            ];
+            tris.push({p:[pts[0],pts[1],pts[2]],avgZ:(pts[0].z+pts[1].z+pts[2].z)/3});
+            tris.push({p:[pts[0],pts[2],pts[3]],avgZ:(pts[0].z+pts[2].z+pts[3].z)/3});
+        }
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-function spherePoint(cx,cy,cz,r,u,v){
-return project(cx+r*Math.cos(v)*Math.cos(u),cy+r*Math.cos(v)*Math.sin(u),cz+r*Math.sin(v));
+function tube(cx,cy,cz,r,path,color,alpha){
+    const tris=[],segs=path.length-1,slices=12;
+    for(let s=0;s<segs;s++){
+        const p1=path[s],p2=path[s+1];
+        const dx=p2.x-p1.x,dy=p2.y-p1.y,dz=p2.z-p1.z;
+        const len=Math.sqrt(dx*dx+dy*dy+dz*dz);
+        const nx=dx/len,ny=dy/len,nz=dz/len;
+        let perp1={x:0,y:0,z:0};
+        if(Math.abs(ny)<0.9)perp1={x:-nz,y:0,z:nx};else perp1={x:1,y:0,z:0};
+        const l1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
+        perp1.x/=l1;perp1.y/=l1;perp1.z/=l1;
+        const perp2={x:ny*perp1.z-nz*perp1.y,y:nz*perp1.x-nx*perp1.z,z:nx*perp1.y-ny*perp1.x};
+        for(let i=0;i<slices;i++){
+            const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+            const c1a=Math.cos(a1),s1a=Math.sin(a1),c2a=Math.cos(a2),s2a=Math.sin(a2);
+            const v1={x:cx+p1.x+r*(perp1.x*c1a+perp2.x*s1a),y:cy+p1.y+r*(perp1.y*c1a+perp2.y*s1a),z:cz+p1.z+r*(perp1.z*c1a+perp2.z*s1a)};
+            const v2={x:cx+p1.x+r*(perp1.x*c2a+perp2.x*s2a),y:cy+p1.y+r*(perp1.y*c2a+perp2.y*s2a),z:cz+p1.z+r*(perp1.z*c2a+perp2.z*s2a)};
+            const v3={x:cx+p2.x+r*(perp1.x*c2a+perp2.x*s2a),y:cy+p2.y+r*(perp1.y*c2a+perp2.y*s2a),z:cz+p2.z+r*(perp1.z*c2a+perp2.z*s2a)};
+            const v4={x:cx+p2.x+r*(perp1.x*c1a+perp2.x*s1a),y:cy+p2.y+r*(perp1.y*c1a+perp2.y*s1a),z:cz+p2.z+r*(perp1.z*c1a+perp2.z*s1a)};
+            const pv1=project(v1.x,v1.y,v1.z),pv2=project(v2.x,v2.y,v2.z),pv3=project(v3.x,v3.y,v3.z),pv4=project(v4.x,v4.y,v4.z);
+            tris.push({p:[pv1,pv2,pv3],avgZ:(pv1.z+pv2.z+pv3.z)/3});
+            tris.push({p:[pv1,pv3,pv4],avgZ:(pv1.z+pv3.z+pv4.z)/3});
+        }
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-function drawDisk(x,y,z,r,rgb,alpha){
-const slices=20;
-const triangles=[];
-const o=project(x,y,z);
-for(let i=0;i<slices;i++){
-const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-const p1=project(x+r*Math.cos(u1),y,z+r*Math.sin(u1));
-const p2=project(x+r*Math.cos(u2),y,z+r*Math.sin(u2));
-triangles.push({p:[o,p1,p2],avgZ:(o.z+p1.z+p2.z)/3});
-}
-triangles.sort((a,b)=>b.avgZ-a.avgZ);
-triangles.forEach(tri=>{
-const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
-c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
-c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
-});
+function flatDisc(cx,cy,cz,r,color,alpha){
+    const tris=[],slices=16,pc=project(cx,cy,cz);
+    for(let i=0;i<slices;i++){
+        const a1=(Math.PI*2/slices)*i,a2=(Math.PI*2/slices)*(i+1);
+        const p1=project(cx+Math.cos(a1)*r,cy,cz+Math.sin(a1)*r),p2=project(cx+Math.cos(a2)*r,cy,cz+Math.sin(a2)*r);
+        tris.push({p:[pc,p1,p2],avgZ:(pc.z+p1.z+p2.z)/3});
+    }
+    drawMesh(tris,color[0],color[1],color[2],alpha);
 }
 
-function drawCone(x,y,z,r,h,rgb,alpha,dir){
-const slices=20;
-const triangles=[];
-const tip=project(x+dir.x*h,y+dir.y*h,z+dir.z*h);
-for(let i=0;i<slices;i++){
-const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-let perp1={x:0,y:0,z:0},perp2={x:0,y:0,z:0};
-if(Math.abs(dir.y)<0.9){perp1={x:-dir.z,y:0,z:dir.x}}
-else{perp1={x:1,y:0,z:0}}
-const len1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
-perp1.x/=len1;perp1.y/=len1;perp1.z/=len1;
-perp2.x=dir.y*perp1.z-dir.z*perp1.y;
-perp2.y=dir.z*perp1.x-dir.x*perp1.z;
-perp2.z=dir.x*perp1.y-dir.y*perp1.x;
-const p1=project(x+r*(perp1.x*Math.cos(u1)+perp2.x*Math.sin(u1)),y+r*(perp1.y*Math.cos(u1)+perp2.y*Math.sin(u1)),z+r*(perp1.z*Math.cos(u1)+perp2.z*Math.sin(u1)));
-const p2=project(x+r*(perp1.x*Math.cos(u2)+perp2.x*Math.sin(u2)),y+r*(perp1.y*Math.cos(u2)+perp2.y*Math.sin(u2)),z+r*(perp1.z*Math.cos(u2)+perp2.z*Math.sin(u2)));
-triangles.push({p:[tip,p1,p2],avgZ:(tip.z+p1.z+p2.z)/3});
-}
-triangles.sort((a,b)=>b.avgZ-a.avgZ);
-triangles.forEach(tri=>{
-const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
-c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
-c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
-});
+// ===== MATERIAL COLORS =====
+const GLASS=[180,220,255],GLASS_DARK=[120,170,220],PORCELAIN=[245,245,250],PORCELAIN_DARK=[220,220,230];
+const METAL=[180,180,190],METAL_DARK=[120,120,130],WOOD=[160,110,60],PLASTIC=[255,255,255];
+const PLASTIC_GREEN=[50,180,80],PLASTIC_RED=[255,80,80],PLASTIC_ORANGE=[255,140,40],PAPER=[240,235,220];
+const FLAME=[255,180,50],FLAME_CORE=[255,100,30],AMYANT=[200,200,190];
+
+// ===== GRADUATION MARK HELPER =====
+function drawGradMarks(cx,cy,cz,r,h,steps,color,side){
+    for(let i=0;i<steps;i++){
+        const y=cy-h/2+i*(h/steps);
+        const isMajor=i%5===0;
+        const markLen=isMajor?10:5;
+        c.strokeStyle=rgba(color[0],color[1],color[2],isMajor?0.5:0.25);
+        c.lineWidth=isMajor?1.2:0.7;
+        const p1=project(cx+r,side?y:cy,cz+(side?0:y-cy));
+        const p2=project(cx+r+markLen,side?y:cy,cz+(side?0:y-cy));
+        c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);c.stroke();
+    }
 }
 
-function drawTube(x1,y1,z1,x2,y2,z2,r,rgb,alpha){
-const slices=16;
-const triangles=[];
-const dx=x2-x1,dy=y2-y1,dz=z2-z1;
-const len=Math.sqrt(dx*dx+dy*dy+dz*dz);
-const dir={x:dx/len,y:dy/len,z:dz/len};
-let perp1={x:0,y:0,z:0},perp2={x:0,y:0,z:0};
-if(Math.abs(dir.y)<0.9){perp1={x:-dir.z,y:0,z:dir.x}}
-else{perp1={x:1,y:0,z:0}}
-const len1=Math.sqrt(perp1.x*perp1.x+perp1.y*perp1.y+perp1.z*perp1.z);
-perp1.x/=len1;perp1.y/=len1;perp1.z/=len1;
-perp2.x=dir.y*perp1.z-dir.z*perp1.y;
-perp2.y=dir.z*perp1.x-dir.x*perp1.z;
-perp2.z=dir.x*perp1.y-dir.y*perp1.x;
-for(let i=0;i<slices;i++){
-const u1=(Math.PI*2/slices)*i,u2=(Math.PI*2/slices)*(i+1);
-const c1=Math.cos(u1),s1=Math.sin(u1),c2=Math.cos(u2),s2=Math.sin(u2);
-const ax1=x1+r*(perp1.x*c1+perp2.x*s1);
-const ay1=y1+r*(perp1.y*c1+perp2.y*s1);
-const az1=z1+r*(perp1.z*c1+perp2.z*s1);
-const ax2=x1+r*(perp1.x*c2+perp2.x*s2);
-const ay2=y1+r*(perp1.y*c2+perp2.y*s2);
-const az2=z1+r*(perp1.z*c2+perp2.z*s2);
-const bx1=x2+r*(perp1.x*c1+perp2.x*s1);
-const by1=y2+r*(perp1.y*c1+perp2.y*s1);
-const bz1=z2+r*(perp1.z*c1+perp2.z*s1);
-const bx2=x2+r*(perp1.x*c2+perp2.x*s2);
-const by2=y2+r*(perp1.y*c2+perp2.y*s2);
-const bz2=z2+r*(perp1.z*c2+perp2.z*s2);
-const pa1=project(ax1,ay1,az1),pa2=project(ax2,ay2,az2);
-const pb1=project(bx1,by1,bz1),pb2=project(bx2,by2,bz2);
-triangles.push({p:[pa1,pa2,pb2],avgZ:(pa1.z+pa2.z+pb2.z)/3});
-triangles.push({p:[pa1,pb2,pb1],avgZ:(pa1.z+pb2.z+pb1.z)/3});
-}
-triangles.sort((a,b)=>b.avgZ-a.avgZ);
-triangles.forEach(tri=>{
-const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
-c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
-c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
-});
-}
-
-function drawBox(x,y,z,w,h,d,rgb,alpha){
-const hw=w/2,hh=h/2,hd=d/2;
-const corners=[project(x-hw,y-hh,z-hd),project(x+hw,y-hh,z-hd),project(x+hw,y+hh,z-hd),project(x-hw,y+hh,z-hd),project(x-hw,y-hh,z+hd),project(x+hw,y-hh,z+hd),project(x+hw,y+hh,z+hd),project(x-hw,y+hh,z+hd)];
-const faces=[{p:[0,1,2,3],n:[0,0,-1]},{p:[4,5,6,7],n:[0,0,1]},{p:[0,1,5,4],n:[0,-1,0]},{p:[2,3,7,6],n:[0,1,0]},{p:[0,3,7,4],n:[-1,0,0]},{p:[1,2,6,5],n:[1,0,0]}];
-const tris=[];
-faces.forEach(f=>{
-const p0=corners[f.p[0]],p1=corners[f.p[1]],p2=corners[f.p[2]],p3=corners[f.p[3]];
-tris.push({p:[p0,p1,p2],avgZ:(p0.z+p1.z+p2.z)/3});
-tris.push({p:[p0,p2,p3],avgZ:(p0.z+p2.z+p3.z)/3});
-});
-tris.sort((a,b)=>b.avgZ-a.avgZ);
-tris.forEach(tri=>{
-const depth=Math.max(0.15,Math.min(1,1-(tri.avgZ+120)/350));
-c.beginPath();c.moveTo(tri.p[0].x,tri.p[0].y);c.lineTo(tri.p[1].x,tri.p[1].y);c.lineTo(tri.p[2].x,tri.p[2].y);c.closePath();
-c.fillStyle=rgba(rgb,alpha*depth*0.6);c.fill();
-c.strokeStyle=rgba(rgb,0.3*depth);c.lineWidth=0.5;c.stroke();
-});
-}
-
-function drawGraduations(x,y,z,h,r,rgb,count){
-for(let i=0;i<=count;i++){
-const yy=y-h/2+(h/count)*i;
-const p1=project(x-r-3,yy,z);
-const p2=project(x-r+3,yy,z);
-c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);
-c.strokeStyle=rgba(rgb,0.6);c.lineWidth=1;c.stroke();
-}
-}
-
-// ===== SPECIFIC ITEM DRAWERS =====
-function drawBeherglas(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCylinder(0,0,0,50*p,70*p,rgb,0.5);
-drawTube(0,-35*p,0,0,-38*p,0,52*p,rgb,0.7);
-drawCone(0,-35*p,0,8*p,12*p,rgb,0.6,{x:0.7,y:0,z:0.7});
-drawDisk(0,35*p,0,48*p,rgb,0.6);
-drawCylinder(0,10*p,0,45*p,40*p,[0,150,255],0.3);
-drawGraduations(0,0,0,60*p,50*p,[255,255,255],5);
-}
-
-function drawErlenmayer(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,15*p,0,35*p,rgb,0.5);
-drawCylinder(0,-25*p,0,18*p,30*p,rgb,0.5);
-drawTube(0,-40*p,0,0,-43*p,0,20*p,rgb,0.7);
-drawSphere(0,15*p,0,30*p,[0,150,255],0.3);
-drawGraduations(0,-25*p,0,25*p,18*p,[255,255,255],3);
-}
-
-function drawCamBalon(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,0,0,50*p,rgb,0.5);
-drawCylinder(0,-55*p,0,15*p,25*p,rgb,0.5);
-drawTube(0,-67*p,0,0,-70*p,0,17*p,rgb,0.7);
-drawSphere(0,5*p,0,42*p,[0,150,255],0.3);
-}
-
-function drawBalonJoje(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,10*p,0,40*p,rgb,0.5);
-drawCylinder(0,-45*p,0,12*p,50*p,rgb,0.5);
-drawTube(0,-70*p,0,0,-73*p,0,14*p,rgb,0.7);
-drawCylinder(0,-75*p,0,14*p,8*p,[200,200,200],0.8);
-drawSphere(0,10*p,0,35*p,[0,150,255],0.3);
-const p1=project(-42*p,-20*p,0),p2=project(42*p,-20*p,0);
-c.beginPath();c.moveTo(p1.x,p1.y);c.lineTo(p2.x,p2.y);
-c.strokeStyle=rgba([255,255,255],0.8);c.lineWidth=2;c.stroke();
-}
-
-function drawAyirmaHunisi(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCone(0,-30*p,0,45*p,-35*p,rgb,0.5,{x:0,y:-1,z:0});
-drawTube(0,0,0,0,40*p,0,8*p,rgb,0.5);
-drawBox(0,35*p,0,15*p,10*p,15*p,[100,100,100],0.8);
-drawTube(8*p,35*p,0,18*p,35*p,0,3*p,[100,100,100],0.8);
-}
-
-function drawDereceliSilindir(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCylinder(0,0,0,25*p,100*p,rgb,0.5);
-drawDisk(0,50*p,0,30*p,rgb,0.6);
-drawTube(0,-50*p,0,0,-53*p,0,27*p,rgb,0.7);
-drawCylinder(0,10*p,0,22*p,60*p,[0,150,255],0.3);
-drawGraduations(0,0,0,90*p,25*p,[255,255,255],10);
-}
-
-function drawSogutucu(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-50*p,0,0,50*p,0,12*p,rgb,0.4);
-for(let i=0;i<8;i++){
-const y=-40*p+(80*p/8)*i;
-const r=25*p;
-const a=(i%2===0)?0:Math.PI;
-drawTube(r*Math.cos(a),y,r*Math.sin(a),r*Math.cos(a+Math.PI),y+10*p,r*Math.sin(a+Math.PI),6*p,rgb,0.5);
-}
-drawTube(-25*p,-50*p,0,-40*p,-60*p,0,5*p,rgb,0.6);
-drawTube(25*p,50*p,0,40*p,60*p,0,5*p,rgb,0.6);
-}
-
-function drawHuni(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCone(0,-20*p,0,40*p,-35*p,rgb,0.5,{x:0,y:-1,z:0});
-drawTube(0,0,0,0,35*p,0,8*p,rgb,0.5);
-drawTube(0,-20*p,0,0,-23*p,0,42*p,rgb,0.7);
-}
-
-function drawCamBoru(rgb){
-const p=1+Math.sin(t*2)*0.02;
-const r=30*p,tr=8*p;
-drawTube(-r,-30*p,0,-r,30*p,0,tr,rgb,0.5);
-drawTube(r,-30*p,0,r,30*p,0,tr,rgb,0.5);
-for(let i=0;i<10;i++){
-const a1=Math.PI+(Math.PI/10)*i;
-const a2=Math.PI+(Math.PI/10)*(i+1);
-const x1=r*Math.cos(a1),z1=r*Math.sin(a1);
-const x2=r*Math.cos(a2),z2=r*Math.sin(a2);
-drawTube(x1,30*p,z1,x2,30*p,z2,tr,rgb,0.5);
-}
-}
-
-function drawBuret(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-60*p,0,0,50*p,0,8*p,rgb,0.5);
-drawGraduations(0,0,0,100*p,8*p,[255,255,255],10);
-drawBox(0,55*p,0,12*p,10*p,12*p,[100,100,100],0.8);
-drawCone(0,60*p,0,4*p,10*p,rgb,0.6,{x:0,y:1,z:0});
-drawCone(0,-60*p,0,15*p,-12*p,rgb,0.5,{x:0,y:-1,z:0});
-}
-
-function drawPipet(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,-50*p,0,12*p,rgb,0.5);
-drawTube(0,-40*p,0,0,40*p,0,5*p,rgb,0.5);
-drawGraduations(0,0,0,70*p,5*p,[255,255,255],7);
-drawCone(0,40*p,0,3*p,8*p,rgb,0.6,{x:0,y:1,z:0});
-}
-
-function drawTermometre(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-50*p,0,0,50*p,0,6*p,rgb,0.5);
-drawSphere(0,55*p,0,10*p,[255,50,50],0.6);
-drawTube(0,-30*p,0,0,50*p,0,2*p,[255,50,50],0.8);
-drawGraduations(0,0,0,90*p,6*p,[255,255,255],9);
-}
-
-function drawBaget(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-40*p,0,0,40*p,0,4*p,rgb,0.6);
-drawTube(0,-40*p,0,0,-50*p,0,6*p,rgb,0.7);
-}
-
-function drawDeneyTupu(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-30*p,0,0,30*p,0,12*p,rgb,0.5);
-drawSphere(0,30*p,0,12*p,rgb,0.5);
-drawTube(0,-30*p,0,0,-33*p,0,14*p,rgb,0.7);
-drawTube(0,10*p,0,0,30*p,0,10*p,[0,150,255],0.3);
-}
-
-function drawHavan(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,10*p,0,35*p,rgb,0.6);
-drawTube(0,-30*p,0,0,10*p,0,8*p,[200,180,160],0.7);
-drawTube(0,-30*p,0,0,-55*p,0,6*p,[200,180,160],0.7);
-drawSphere(0,10*p,0,10*p,[200,180,160],0.7);
-}
-
-function drawKroze(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCylinder(0,0,0,30*p,25*p,rgb,0.6);
-drawDisk(0,12*p,0,28*p,rgb,0.6);
-drawTube(0,-12*p,0,0,-15*p,0,32*p,rgb,0.7);
-drawTube(35*p,0,0,50*p,0,0,4*p,[150,150,150],0.8);
-}
-
-function drawDamlalik(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,-20*p,0,15*p,rgb,0.6);
-drawTube(0,-5*p,0,0,25*p,0,5*p,rgb,0.6);
-drawCone(0,25*p,0,3*p,5*p,rgb,0.6,{x:0,y:1,z:0});
-drawCylinder(0,-28*p,0,18*p,8*p,[50,50,50],0.8);
-}
-
-function drawSpatul(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-30*p,0,0,10*p,0,5*p,[200,50,50],0.7);
-drawBox(0,20*p,0,15*p,8*p,20*p,[200,50,50],0.7);
-}
-
-function drawPiset(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCylinder(0,0,0,30*p,50*p,rgb,0.5);
-drawCylinder(0,-35*p,0,12*p,20*p,rgb,0.5);
-drawCylinder(0,-45*p,0,14*p,8*p,[50,50,50],0.8);
-drawTube(0,-45*p,0,0,20*p,0,4*p,rgb,0.5);
-}
-
-function drawPuar(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawSphere(0,0,0,25*p,[255,80,80],0.6);
-drawTube(0,-25*p,0,0,-50*p,0,8*p,[255,80,80],0.6);
-drawTube(0,-50*p,0,0,-60*p,0,10*p,[255,80,80],0.6);
-}
-
-function drawMikroPipet(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawBox(0,-40*p,0,15*p,60*p,15*p,[200,200,200],0.7);
-drawTube(0,20*p,0,0,40*p,0,4*p,rgb,0.5);
-drawCone(0,40*p,0,2*p,5*p,rgb,0.6,{x:0,y:1,z:0});
-drawBox(0,-45*p,0,20*p,10*p,20*p,[100,100,100],0.8);
-}
-
-function drawIsirtocagi(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCylinder(0,0,0,25*p,40*p,[100,80,60],0.6);
-drawCylinder(0,-25*p,0,20*p,15*p,[100,80,60],0.6);
-drawTube(0,-32*p,0,0,-45*p,0,3*p,[255,200,100],0.8);
-drawSphere(0,-45*p,0,4*p,[255,150,50],0.9);
-drawBox(0,20*p,0,30*p,8*p,30*p,[150,150,150],0.8);
-}
-
-function drawBunzenbek(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawCylinder(0,0,0,20*p,40*p,[150,150,150],0.7);
-drawTube(0,-20*p,0,0,-30*p,0,25*p,[150,150,150],0.7);
-drawTube(0,20*p,0,0,35*p,0,8*p,[150,150,150],0.7);
-drawSphere(0,35*p,0,5*p,[255,150,50],0.9);
-drawTube(25*p,-10*p,0,40*p,-10*p,0,4*p,[100,100,100],0.8);
-}
-
-function drawSpor(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,40*p,0,0,-40*p,0,6*p,rgb,0.7);
-drawBox(0,-40*p,0,50*p,10*p,50*p,rgb,0.8);
-drawTube(-30*p,40*p,0,-30*p,-40*p,0,4*p,rgb,0.7);
-drawTube(30*p,40*p,0,30*p,-40*p,0,4*p,rgb,0.7);
-}
-
-function drawSacayagi(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,40*p,0,0,-40*p,0,6*p,rgb,0.7);
-drawBox(0,-40*p,0,50*p,10*p,50*p,rgb,0.8);
-}
-
-function drawKiskac(rgb){
-const p=1+Math.sin(t*2)*0.02;
-drawTube(0,-20*p,0,0,20*p,0,5*p,rgb,0.7);
-drawTube(0,20*p,0,0,35*p,0,8*p,rgb,0.7);
-// Jaws
-for(let i=0;i<5;i++){
-const y=25*p+i*3*p;
-drawTube(-10*p,y,0,10*p,y,0,2*p,rgb,0.7);
-}
-}
-
-function drawAmyanthtel(rgb){
-const p=1+Math.sin(t*2)*0.02;
-// Wire mesh grid
-for(let i=0;i<5;i++){
-const y=-20*p+i*10*p;
-drawTube(-30*p,y,0,30*p,y,0,2*p,rgb,0.7);
-}
-for(let i=0;i<5;i++){
-const x=-20*p+i*10*p;
-drawTube(x,-20*p,0,x,20*p,0,2*p,rgb,0.7);
-}
-}
-
-function drawSuzgeckagidi(rgb){
-const p=1+Math.sin(t*2)*0.02;
-// Flat sheet with texture
-for(let i=0;i<8;i++){
-for(let j=0;j<8;j++){
-const x=-30*p+i*8*p;
-const z=-30*p+j*8*p;
-const y=Math.sin(i+j)*2*p;
-const pp=project(x,y,z);
-c.beginPath();
-c.arc(pp.x,pp.y,3*p*pp.scale,0,Math.PI*2);
-c.fillStyle=rgba(rgb,0.4);
-c.fill();
-}
-}
-}
-
-function loop(){
-clear();
-if(!activeItem){
-c.fillStyle='rgba(255,255,255,0.3)';
-c.font='bold 15px sans-serif';
-c.textAlign='center';
-c.fillText('Bir malzeme seçin',W/2,H/2);
-animFrame=requestAnimationFrame(loop);
-return;
-}
-if(autoSpin&&!isDragging){rotY+=0.008*spd;t+=0.015*spd}
-else{t+=0.015*spd}
-const rgb=activeItem.color;
-const type=activeItem.type;
-switch(type){
-case'beherglas':drawBeherglas(rgb);break;
-case'erlenmayer':drawErlenmayer(rgb);break;
-case'cambalon':drawCamBalon(rgb);break;
-case'balonjoje':drawBalonJoje(rgb);break;
-case'ayrmahunisi':drawAyirmaHunisi(rgb);break;
-case'derecelisilindir':drawDereceliSilindir(rgb);break;
-case'sogutucu':drawSogutucu(rgb);break;
-case'huni':drawHuni(rgb);break;
-case'camboru':drawCamBoru(rgb);break;
-case'buret':drawBuret(rgb);break;
-case'pipet':drawPipet(rgb);break;
-case'termometre':drawTermometre(rgb);break;
-case'baget':drawBaget(rgb);break;
-case'deneytupu':drawDeneyTupu(rgb);break;
-case'havan':drawHavan(rgb);break;
-case'kroze':drawKroze(rgb);break;
-case'damlalik':drawDamlalik(rgb);break;
-case'spatul':drawSpatul(rgb);break;
-case'piset':drawPiset(rgb);break;
-case'puar':drawPuar(rgb);break;
-case'mikropipet':drawMikroPipet(rgb);break;
-case'isirtocagi':drawIsirtocagi(rgb);break;
-case'bunzenbek':drawBunzenbek(rgb);break;
-case'spor':drawSpor(rgb);break;
-case'sacayagi':drawSacayagi(rgb);break;
-case'kiskac':drawKiskac(rgb);break;
-case'amyanthtel':drawAmyanthtel(rgb);break;
-case'suzgeckagidi':drawSuzgeckagidi(rgb);break;
-}
-drawAxes();
-c.textAlign='left';
-c.font='10px sans-serif';
-c.fillStyle='rgba(255,255,255,0.35)';
-c.fillText('👆 Sürükleyerek 3D döndürün',10,H-10);
-animFrame=requestAnimationFrame(loop);
-}
-
-function toggleSpin(){autoSpin=!autoSpin}
-function setSpeed(v){spd=v}
-function resetView(){rotX=0.4;rotY=0.3}
-
-buildTabs();
-loop();
-</script>
-</body>
-</html>'''
-
-with open('/mnt/agents/output/kimya_laboratuvar_malzemeleri_3d.html', 'w', encoding='utf-8') as f:
-    f.write(html)
-
-print(f"✅ Dosya yazıldı: {len(html)} bytes")
+// ===== LAB ITEMS =====
+const ITEMS=[
+'''
+print(f"Part 1: {len(html)} chars")
