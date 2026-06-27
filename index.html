@@ -1,514 +1,996 @@
-import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedGestureHandler,
-  useAnimatedProps,
-  withSpring,
-  withTiming,
-  withRepeat,
-  useDerivedValue,
-  interpolate,
-  Extrapolate,
-  runOnJS,
-} from 'react-native-reanimated';
-import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+# BEAKER - Gelişmiş Kimya Laboratuvar Simülasyonu (Tek Parça Python Kodu)
+# Tüm fonksiyonlar aktif, üretken ve özelleştirilebilir
 
-// Beher boyutları
-const BEAKER_WIDTH = SCREEN_WIDTH * 0.75;
-const BEAKER_HEIGHT = BEAKER_WIDTH * 1.4;
-const LIQUID_MAX_HEIGHT = BEAKER_HEIGHT * 0.75;
-const LIQUID_MIN_HEIGHT = 10;
+import pygame
+import sys
+import math
+import random
+import json
+import os
+from dataclasses import dataclass, field
+from typing import List, Dict, Tuple, Optional
+from enum import Enum, auto
 
-// Animated SVG bileşeni
-const AnimatedPath = Animated.createAnimatedComponent(Path);
+# Pygame başlat
+try:
+    pygame.init()
+    pygame.mixer.init()
+except:
+    pass
 
-// ------------------------------------------------------------
-// ANA UYGULAMA
-// ------------------------------------------------------------
-export default function App() {
-  // State'ler (UI güncellemeleri için)
-  const [temperature, setTemperature] = useState(25);
-  const [ph, setPh] = useState(7.0);
-  const [liquidVolume, setLiquidVolume] = useState(40);
-  const [reactionLog, setReactionLog] = useState([]);
+# Ekran ayarları
+WIDTH, HEIGHT = 800, 900
+FPS = 60
 
-  // Shared Values (Reanimated animasyonları için)
-  const liquidLevel = useSharedValue(40); // 0-100 arası
-  const tiltAngle = useSharedValue(0); // -30 ile 30 derece arası
-  const wavePhase = useSharedValue(0);
-  const isMixing = useSharedValue(false);
-  const bubblePositions = useSharedValue([]);
+# Renk Paleti (Özelleştirilebilir)
+class Renkler:
+    # Ana renkler
+    ARKA_PLAN = (15, 15, 20)
+    BEHER_CERCEVE = (0, 255, 200)
+    BEHER_IC = (0, 180, 150)
+    SIVI_TEMEL = (0, 200, 170)
+    SIVI_PARLAKLIK = (0, 255, 220)
+    
+    # Element renkleri
+    HIDROJEN = (255, 255, 255)
+    OKSIJEN = (255, 80, 80)
+    AZOT = (80, 80, 255)
+    KARBON = (50, 50, 50)
+    SODYUM = (255, 200, 100)
+    KLOR = (50, 255, 50)
+    DEMIR = (180, 140, 100)
+    BAKIR = (200, 120, 50)
+    ALTIN = (255, 215, 0)
+    GUMUS = (220, 220, 240)
+    
+    # UI renkleri
+    PANEL = (30, 30, 40)
+    PANEL_KENAR = (0, 255, 200)
+    YAZI = (240, 240, 240)
+    YAZI_ACIK = (0, 255, 200)
+    BUTON = (40, 40, 60)
+    BUTON_AKTIF = (0, 180, 150)
+    BUTON_UZERINDE = (60, 60, 80)
+    
+    # Efekt renkleri
+    ALEV = (255, 100, 0)
+    ALEV_SARI = (255, 200, 0)
+    BUHAR = (200, 200, 220, 100)
+    KIVILCIM = (255, 255, 100)
+    
+    # pH renkleri
+    PH_ASIDIK = (255, 50, 50)
+    PH_NOTR = (0, 255, 100)
+    PH_BAZIK = (50, 50, 255)
 
-  // Renk bileşenleri (RGB tabanlı)
-  const r = useSharedValue(70);
-  const g = useSharedValue(200);
-  const b = useSharedValue(245);
-
-  // Dalga fazını sürekli ilerlet (animasyon döngüsü)
-  React.useEffect(() => {
-    wavePhase.value = withRepeat(withTiming(2 * Math.PI, { duration: 3000 }), -1, false);
-  }, []);
-
-  // Log ekleme fonksiyonu (JS thread)
-  const addLog = (msg) => {
-    setReactionLog((prev) => [`⚡ ${msg}`, ...prev].slice(0, 5));
-  };
-
-  // ----------------------------------------------------------
-  // KİMYASAL EKLEME FONKSİYONLARI (Reaksiyonlar)
-  // ----------------------------------------------------------
-  const addChemical = (type) => {
-    let newTemp = temperature;
-    let newPh = ph;
-    let colorR = r.value,
-      colorG = g.value,
-      colorB = b.value;
-    let logMsg = '';
-
-    // Sıvı seviyesini biraz artır
-    const newLevel = Math.min(95, liquidLevel.value + 8);
-    liquidLevel.value = withSpring(newLevel, { damping: 15 });
-    setLiquidVolume(Math.round(newLevel));
-
-    switch (type) {
-      case 'acid': // H2SO4
-        newPh = Math.max(0, ph - 1.5);
-        newTemp = temperature + 12; // Ekzotermik
-        colorR = 220;
-        colorG = 50;
-        colorB = 50;
-        logMsg = `H₂SO₄ Eklendi | pH: ${newPh.toFixed(1)} | ${newTemp}°C (Isındı!)`;
-        break;
-      case 'base': // NaOH
-        newPh = Math.min(14, ph + 1.5);
-        newTemp = temperature + 8;
-        colorR = 50;
-        colorG = 100;
-        colorB = 230;
-        logMsg = `NaOH Eklendi | pH: ${newPh.toFixed(1)} | ${newTemp}°C`;
-        break;
-      case 'salt': // NaCl
-        newPh = ph; // Tuz pH değiştirmez (nötr)
-        newTemp = temperature - 5; // Endotermik (soğur)
-        colorR = 180;
-        colorG = 220;
-        colorB = 240;
-        logMsg = `NaCl Eklendi | ${newTemp}°C (Soğudu!)`;
-        break;
-      default:
-        return;
-    }
-
-    // State'leri güncelle
-    setTemperature(newTemp);
-    setPh(Math.round(newPh * 10) / 10);
-    addLog(logMsg);
-
-    // Renk geçişini yumuşak yap
-    r.value = withSpring(colorR, { damping: 20 });
-    g.value = withSpring(colorG, { damping: 20 });
-    b.value = withSpring(colorB, { damping: 20 });
-
-    // Kabarcık efekti başlat
-    generateBubbles();
-
-    // 3 saniye sonra yavaşça nötr renge dön (tamamen değil, hafif kalıcılık olsun)
-    setTimeout(() => {
-      if (type === 'acid') {
-        r.value = withSpring(180, { damping: 15 });
-        g.value = withSpring(120, { damping: 15 });
-        b.value = withSpring(150, { damping: 15 });
-      } else if (type === 'base') {
-        r.value = withSpring(80, { damping: 15 });
-        g.value = withSpring(150, { damping: 15 });
-        b.value = withSpring(255, { damping: 15 });
-      } else {
-        r.value = withSpring(70, { damping: 15 });
-        g.value = withSpring(200, { damping: 15 });
-        b.value = withSpring(245, { damping: 15 });
-      }
-    }, 2500);
-  };
-
-  // Kabarcık oluşturucu
-  const generateBubbles = () => {
-    const newBubbles = [];
-    for (let i = 0; i < 15; i++) {
-      newBubbles.push({
-        x: 20 + Math.random() * 60, // %
-        y: 30 + Math.random() * 40, // %
-        size: 3 + Math.random() * 8,
-        speed: 0.5 + Math.random() * 1.5,
-        delay: Math.random() * 500,
-      });
-    }
-    // Basitçe state ile yönetmek yerine, animasyonu bir dizi olarak shared value'da tutabiliriz.
-    // Ancak React Native'de çok fazla shared value obje dizisi performansı zorlar.
-    // Bunun yerine, birkaç sabit baloncuk objesini animasyonla oynatalım.
-    // Hızlı çözüm: UI'da 10 tane sabit baloncuk çizelim ve onları döndürelim.
-    // Aşağıda UI'da Circle ile çizeceğiz.
-  };
-
-  // ----------------------------------------------------------
-  // DOKUNMATİK (SALLAMA) GESTURE
-  // ----------------------------------------------------------
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, ctx) => {
-      ctx.startX = tiltAngle.value;
-    },
-    onActive: (event, ctx) => {
-      // Parmağı sağa sola çekince tilt açısını değiştir
-      const translationX = event.translationX;
-      const newTilt = Math.max(-30, Math.min(30, ctx.startX + translationX * 0.3));
-      tiltAngle.value = withSpring(newTilt, { damping: 12, stiffness: 80 });
-    },
-    onEnd: () => {
-      tiltAngle.value = withSpring(0, { damping: 15, stiffness: 60 });
-    },
-  });
-
-  // ----------------------------------------------------------
-  // DALGA (WAVE) HESABI
-  // ----------------------------------------------------------
-  const wavePath = useDerivedValue(() => {
-    const level = liquidLevel.value;
-    const tilt = tiltAngle.value;
-    const phase = wavePhase.value;
-
-    const rectWidth = BEAKER_WIDTH * 0.85;
-    const rectHeight = (level / 100) * LIQUID_MAX_HEIGHT;
-    const baseY = BEAKER_HEIGHT - 20 - rectHeight;
-
-    // Tilt nedeniyle yatay kayma
-    const tiltOffset = (tilt / 30) * 20; // max 20px kayma
-
-    // Dalga genliği: seviye düşükse genlik azalsın
-    const amp = 4 + (level / 100) * 6;
-
-    // Path oluştur: sol alttan başlayıp sağa doğru dalga
-    const w = rectWidth;
-    const steps = 40;
-    let path = `M 0 ${baseY + rectHeight} `; // sol alt
-
-    for (let i = 0; i <= steps; i++) {
-      const x = (i / steps) * w;
-      const progress = i / steps;
-      // Dalga denklemi: y = A * sin(freq * x + phase)
-      const freq = 0.08;
-      const waveY = amp * Math.sin(freq * x + phase);
-      // Tilt etkisi: sağ taraf daha yüksekse tilt pozitif
-      const tiltEffect = (progress - 0.5) * tilt * 0.25;
-
-      const y = baseY + waveY + tiltEffect;
-      path += `L ${x} ${y} `;
-    }
-
-    // Sağ alt köşeye in
-    path += `L ${w} ${baseY + rectHeight} Z`;
-    return path;
-  });
-
-  // ----------------------------------------------------------
-  // RENK HESABI (UI için)
-  // ----------------------------------------------------------
-  const liquidColor = useDerivedValue(() => {
-    return `rgb(${Math.round(r.value)}, ${Math.round(g.value)}, ${Math.round(b.value)})`;
-  });
-
-  // ----------------------------------------------------------
-  // RENDER (UI)
-  // ----------------------------------------------------------
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <Text style={styles.title}>🧪 Gelişmiş Beher</Text>
-          <View style={styles.badgeRow}>
-            <View style={[styles.badge, { backgroundColor: '#e53935' }]}>
-              <Text style={styles.badgeText}>🌡️ {temperature}°C</Text>
-            </View>
-            <View style={[styles.badge, { backgroundColor: '#43a047' }]}>
-              <Text style={styles.badgeText}>🧪 pH: {ph}</Text>
-            </View>
-            <View style={[styles.badge, { backgroundColor: '#1e88e5' }]}>
-              <Text style={styles.badgeText}>💧 %{Math.round(liquidLevel.value)}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* BEHER - PanGestureHandler ile sallanabilir */}
-        <PanGestureHandler onGestureEvent={gestureHandler}>
-          <Animated.View style={styles.beakerContainer}>
-            <View style={[styles.beaker, { width: BEAKER_WIDTH, height: BEAKER_HEIGHT }]}>
-              {/* Sıvı (Dalgalı SVG) */}
-              <Svg
-                width={BEAKER_WIDTH * 0.85}
-                height={BEAKER_HEIGHT - 10}
-                style={{
-                  position: 'absolute',
-                  bottom: 10,
-                  left: BEAKER_WIDTH * 0.075,
-                }}
-              >
-                <Defs>
-                  <LinearGradient id="liquidGrad" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
-                    <Stop offset="100%" stopColor={liquidColor} />
-                  </LinearGradient>
-                </Defs>
-                <AnimatedPath d={wavePath} fill="url(#liquidGrad)" />
-                {/* Cam parlaklık efekti için küçük bir vurgu çizgisi */}
-              </Svg>
-
-              {/* Cam Kenarlık (Şeffaf Beher) */}
-              <View
-                style={[
-                  styles.beakerGlass,
-                  { width: BEAKER_WIDTH, height: BEAKER_HEIGHT },
-                ]}
-              />
-
-              {/* Kabarcıklar (Reaksiyon efekti) - 6 adet sabit baloncuk */}
-              {[...Array(8)].map((_, i) => {
-                const size = 3 + (i % 5) * 1.5;
-                const left = 10 + (i * 11) % 70;
-                const bottom = 15 + (i * 7) % 60;
-                return (
-                  <Animated.View
-                    key={i}
-                    style={{
-                      position: 'absolute',
-                      width: size,
-                      height: size,
-                      borderRadius: size / 2,
-                      backgroundColor: 'rgba(255,255,255,0.6)',
-                      left: `${left}%`,
-                      bottom: `${bottom}%`,
-                      transform: [
-                        {
-                          translateY: withRepeat(
-                            withTiming(-30, { duration: 1500 + i * 200 }),
-                            -1,
-                            true
-                          ),
-                        },
-                        {
-                          scale: withRepeat(
-                            withTiming(1.5, { duration: 1000 + i * 100 }),
-                            -1,
-                            true
-                          ),
-                        },
-                      ],
-                      opacity: 0.6 + (i % 3) * 0.1,
-                    }}
-                  />
-                );
-              })}
-            </View>
-          </Animated.View>
-        </PanGestureHandler>
-
-        {/* KİMYASAL BUTONLAR */}
-        <View style={styles.chemRow}>
-          <TouchableOpacity
-            style={[styles.chemBtn, { backgroundColor: '#d32f2f' }]}
-            onPress={() => addChemical('acid')}
-          >
-            <Text style={styles.chemBtnText}>🧪 H₂SO₄</Text>
-            <Text style={styles.chemSub}>Asit (Isıtır)</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.chemBtn, { backgroundColor: '#1565c0' }]}
-            onPress={() => addChemical('base')}
-          >
-            <Text style={styles.chemBtnText}>🧪 NaOH</Text>
-            <Text style={styles.chemSub}>Baz (pH↑)</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.chemBtn, { backgroundColor: '#4e342e' }]}
-            onPress={() => addChemical('salt')}
-          >
-            <Text style={styles.chemBtnText}>🧂 NaCl</Text>
-            <Text style={styles.chemSub}>Tuz (Soğutur)</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* REAKSİYON LOG'U */}
-        <View style={styles.logBox}>
-          <Text style={styles.logTitle}>📋 Reaksiyon Geçmişi</Text>
-          {reactionLog.length === 0 ? (
-            <Text style={styles.logEmpty}>Kimyasal ekleyerek başlayın...</Text>
-          ) : (
-            reactionLog.map((item, idx) => (
-              <Text key={idx} style={styles.logText}>
-                {item}
-              </Text>
-            ))
-          )}
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>👆 Beheri sağa sola sürükleyin (Tilt)</Text>
-        </View>
-      </SafeAreaView>
-    </GestureHandlerRootView>
-  );
+# Element veritabanı
+ELEMENTLER = {
+    "H": {"ad": "Hidrojen", "renk": Renkler.HIDROJEN, "tip": "gaz", "atom_no": 1, "yoğunluk": 0.09},
+    "O": {"ad": "Oksijen", "renk": Renkler.OKSIJEN, "tip": "gaz", "atom_no": 8, "yoğunluk": 1.43},
+    "N": {"ad": "Azot", "renk": Renkler.AZOT, "tip": "gaz", "atom_no": 7, "yoğunluk": 1.25},
+    "C": {"ad": "Karbon", "renk": Renkler.KARBON, "tip": "katı", "atom_no": 6, "yoğunluk": 2.27},
+    "Na": {"ad": "Sodyum", "renk": Renkler.SODYUM, "tip": "katı", "atom_no": 11, "yoğunluk": 0.97},
+    "Cl": {"ad": "Klor", "renk": Renkler.KLOR, "tip": "gaz", "atom_no": 17, "yoğunluk": 3.21},
+    "Fe": {"ad": "Demir", "renk": Renkler.DEMIR, "tip": "katı", "atom_no": 26, "yoğunluk": 7.87},
+    "Cu": {"ad": "Bakır", "renk": Renkler.BAKIR, "tip": "katı", "atom_no": 29, "yoğunluk": 8.96},
+    "Au": {"ad": "Altın", "renk": Renkler.ALTIN, "tip": "katı", "atom_no": 79, "yoğunluk": 19.32},
+    "Ag": {"ad": "Gümüş", "renk": Renkler.GUMUS, "tip": "katı", "atom_no": 47, "yoğunluk": 10.49},
+    "S": {"ad": "Kükürt", "renk": (255, 255, 100), "tip": "katı", "atom_no": 16, "yoğunluk": 2.07},
+    "Ca": {"ad": "Kalsiyum", "renk": (240, 240, 240), "tip": "katı", "atom_no": 20, "yoğunluk": 1.55},
+    "Mg": {"ad": "Magnezyum", "renk": (200, 200, 210), "tip": "katı", "atom_no": 12, "yoğunluk": 1.74},
+    "Al": {"ad": "Alüminyum", "renk": (200, 200, 210), "tip": "katı", "atom_no": 13, "yoğunluk": 2.70},
+    "K": {"ad": "Potasyum", "renk": (200, 200, 220), "tip": "katı", "atom_no": 19, "yoğunluk": 0.86},
+    "Zn": {"ad": "Çinko", "renk": (180, 180, 190), "tip": "katı", "atom_no": 30, "yoğunluk": 7.14},
+    "Pb": {"ad": "Kurşun", "renk": (100, 100, 110), "tip": "katı", "atom_no": 82, "yoğunluk": 11.34},
+    "Hg": {"ad": "Cıva", "renk": (200, 200, 200), "tip": "sıvı", "atom_no": 80, "yoğunluk": 13.53},
+    "He": {"ad": "Helyum", "renk": (255, 255, 200), "tip": "gaz", "atom_no": 2, "yoğunluk": 0.18},
+    "Ne": {"ad": "Neon", "renk": (255, 150, 150), "tip": "gaz", "atom_no": 10, "yoğunluk": 0.90},
 }
 
-// ------------------------------------------------------------
-// STILLER
-// ------------------------------------------------------------
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#0a0a1a',
-    alignItems: 'center',
-  },
-  header: {
-    width: '100%',
-    paddingHorizontal: 16,
-    paddingTop: 10,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 10,
-  },
-  badge: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  badgeText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  beakerContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
-    padding: 10,
-  },
-  beaker: {
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'rgba(30, 30, 60, 0.4)',
-    borderWidth: 3,
-    borderColor: 'rgba(200, 220, 255, 0.5)',
-    borderRadius: 30,
-    overflow: 'hidden',
-    shadowColor: '#4fc3f7',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 10,
-  },
-  beakerGlass: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 28,
-    backgroundColor: 'transparent',
-  },
-  chemRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 10,
-    marginVertical: 12,
-    paddingHorizontal: 10,
-    flexWrap: 'wrap',
-  },
-  chemBtn: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 90,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  chemBtnText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  chemSub: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 10,
-    marginTop: 2,
-  },
-  logBox: {
-    width: SCREEN_WIDTH * 0.9,
-    backgroundColor: 'rgba(20, 20, 40, 0.8)',
-    borderRadius: 16,
-    padding: 14,
-    marginTop: 6,
-    borderWidth: 1,
-    borderColor: '#333',
-    minHeight: 100,
-    backdropFilter: 'blur(10px)',
-  },
-  logTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 6,
-  },
-  logEmpty: {
-    color: '#666',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  logText: {
-    color: '#ddd',
-    fontSize: 13,
-    paddingVertical: 3,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
-  },
-  footer: {
-    marginTop: 10,
-    paddingBottom: 10,
-  },
-  footerText: {
-    color: '#555',
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
-});
+# Bileşik veritabanı
+BILESIKLER = {
+    "H2O": {"ad": "Su", "formul": "H₂O", "renk": (0, 150, 255), "tip": "sıvı", "ph": 7.0},
+    "CO2": {"ad": "Karbondioksit", "formul": "CO₂", "renk": (200, 200, 200), "tip": "gaz", "ph": 5.6},
+    "NaCl": {"ad": "Sodyum Klorür", "formul": "NaCl", "renk": (255, 255, 255), "tip": "katı", "ph": 7.0},
+    "HCl": {"ad": "Hidroklorik Asit", "formul": "HCl", "renk": (255, 200, 200), "tip": "sıvı", "ph": 1.0},
+    "NaOH": {"ad": "Sodyum Hidroksit", "formul": "NaOH", "renk": (200, 200, 255), "tip": "sıvı", "ph": 13.0},
+    "H2SO4": {"ad": "Kükürt Asidi", "formul": "H₂SO₄", "renk": (255, 220, 180), "tip": "sıvı", "ph": 0.5},
+    "CaCO3": {"ad": "Kalsiyum Karbonat", "formul": "CaCO₃", "renk": (240, 240, 240), "tip": "katı", "ph": 9.0},
+    "Fe2O3": {"ad": "Demir Oksit", "formul": "Fe₂O₃", "renk": (180, 60, 30), "tip": "katı", "ph": 7.0},
+    "CuSO4": {"ad": "Bakır Sülfat", "formul": "CuSO₄", "renk": (0, 100, 200), "tip": "sıvı", "ph": 5.0},
+    "NH3": {"ad": "Amonyak", "formul": "NH₃", "renk": (200, 255, 200), "tip": "gaz", "ph": 11.0},
+    "CH4": {"ad": "Metan", "formul": "CH₄", "renk": (200, 200, 200), "tip": "gaz", "ph": 7.0},
+    "C2H5OH": {"ad": "Etanol", "formul": "C₂H₅OH", "renk": (200, 255, 255), "tip": "sıvı", "ph": 7.0},
+    "H2O2": {"ad": "Hidrojen Peroksit", "formul": "H₂O₂", "renk": (220, 220, 255), "tip": "sıvı", "ph": 4.5},
+    "KMnO4": {"ad": "Potasyum Permanganat", "formul": "KMnO₄", "renk": (150, 0, 150), "tip": "sıvı", "ph": 7.0},
+    "AgNO3": {"ad": "Gümüş Nitrat", "formul": "AgNO₃", "renk": (220, 220, 240), "tip": "sıvı", "ph": 5.5},
+    "BaCl2": {"ad": "Baryum Klorür", "formul": "BaCl₂", "renk": (240, 240, 255), "tip": "sıvı", "ph": 7.0},
+    "MgSO4": {"ad": "Magnezyum Sülfat", "formul": "MgSO₄", "renk": (255, 255, 255), "tip": "sıvı", "ph": 6.5},
+    "Al2O3": {"ad": "Alüminyum Oksit", "formul": "Al₂O₃", "renk": (240, 240, 240), "tip": "katı", "ph": 8.0},
+    "ZnCl2": {"ad": "Çinko Klorür", "formul": "ZnCl₂", "renk": (255, 255, 255), "tip": "sıvı", "ph": 4.0},
+}
+
+# Reaksiyon veritabanı
+REAKSIYONLAR = {
+    ("H", "O"): {"urun": "H2O", "tip": "patlama", "sicaklik": 100, "renk": (0, 150, 255)},
+    ("C", "O"): {"urun": "CO2", "tip": "yanma", "sicaklik": 200, "renk": (200, 200, 200)},
+    ("Na", "Cl"): {"urun": "NaCl", "tip": "birlesme", "sicaklik": 50, "renk": (255, 255, 255)},
+    ("Fe", "O"): {"urun": "Fe2O3", "tip": "yanma", "sicaklik": 150, "renk": (180, 60, 30)},
+    ("Cu", "S"): {"urun": "CuSO4", "tip": "yanma", "sicaklik": 80, "renk": (0, 100, 200)},
+    ("Ca", "CO2"): {"urun": "CaCO3", "tip": "cokelme", "sicaklik": 30, "renk": (240, 240, 240)},
+    ("H", "Cl"): {"urun": "HCl", "tip": "birlesme", "sicaklik": 40, "renk": (255, 200, 200)},
+    ("Na", "OH"): {"urun": "NaOH", "tip": "birlesme", "sicaklik": 60, "renk": (200, 200, 255)},
+    ("Mg", "O"): {"urun": "MgO", "tip": "patlama", "sicaklik": 300, "renk": (255, 255, 255)},
+    ("Al", "O"): {"urun": "Al2O3", "tip": "yanma", "sicaklik": 250, "renk": (240, 240, 240)},
+    ("Zn", "Cl"): {"urun": "ZnCl2", "tip": "birlesme", "sicaklik": 70, "renk": (255, 255, 255)},
+    ("Ag", "NO3"): {"urun": "AgNO3", "tip": "birlesme", "sicaklik": 50, "renk": (220, 220, 240)},
+    ("K", "MnO4"): {"urun": "KMnO4", "tip": "birlesme", "sicaklik": 60, "renk": (150, 0, 150)},
+    ("Ba", "Cl"): {"urun": "BaCl2", "tip": "birlesme", "sicaklik": 45, "renk": (240, 240, 255)},
+    ("H2O", "NaCl"): {"urun": "cozelti", "tip": "cozunme", "sicaklik": 25, "renk": (200, 220, 255)},
+    ("HCl", "NaOH"): {"urun": "H2O", "tip": "notralizasyon", "sicaklik": 80, "renk": (0, 150, 255)},
+    ("CuSO4", "Fe"): {"urun": "FeSO4", "tip": "tek_degisim", "sicaklik": 40, "renk": (100, 150, 100)},
+    ("AgNO3", "NaCl"): {"urun": "AgCl", "tip": "cokelme", "sicaklik": 30, "renk": (255, 255, 255)},
+    ("BaCl2", "H2SO4"): {"urun": "BaSO4", "tip": "cokelme", "sicaklik": 35, "renk": (255, 255, 255)},
+    ("Mg", "HCl"): {"urun": "H2", "tip": "gaz_cikisi", "sicaklik": 60, "renk": (255, 255, 255)},
+    ("CaCO3", "HCl"): {"urun": "CO2", "tip": "gaz_cikisi", "sicaklik": 50, "renk": (200, 200, 200)},
+    ("Na", "H2O"): {"urun": "NaOH", "tip": "patlama", "sicaklik": 200, "renk": (200, 200, 255)},
+    ("K", "H2O"): {"urun": "KOH", "tip": "patlama", "sicaklik": 250, "renk": (200, 200, 255)},
+    ("C2H5OH", "O"): {"urun": "CO2", "tip": "yanma", "sicaklik": 300, "renk": (255, 150, 0)},
+    ("CH4", "O"): {"urun": "CO2", "tip": "yanma", "sicaklik": 350, "renk": (255, 100, 0)},
+    ("H2O2", "MnO2"): {"urun": "O2", "tip": "gaz_cikisi", "sicaklik": 40, "renk": (255, 255, 255)},
+    ("NH3", "HCl"): {"urun": "NH4Cl", "tip": "duman", "sicaklik": 30, "renk": (255, 255, 255)},
+}
+
+@dataclass
+class Parcacik:
+    x: float
+    y: float
+    vx: float = 0.0
+    vy: float = 0.0
+    element: str = ""
+    bileşik: str = ""
+    miktar: float = 1.0
+    sicaklik: float = 25.0
+    renk: Tuple[int, int, int] = (255, 255, 255)
+    tip: str = "katı"
+    yariçap: float = 8.0
+    yasam: float = 100.0
+    parilti: float = 0.0
+    
+    def guncelle(self, dt: float, beher_x: float, beher_y: float, beher_w: float, beher_h: float):
+        # Yerçekimi
+        if self.tip in ["katı", "sıvı"]:
+            self.vy += 0.5 * dt
+        else:
+            self.vy += 0.1 * dt
+            self.vx += random.uniform(-0.2, 0.2)
+            self.vy += random.uniform(-0.2, 0.2)
+        
+        # Sıvı yüzeyi etkisi
+        sivi_yuzey = beher_y + beher_h - 50
+        if self.y > sivi_yuzey and self.tip == "sıvı":
+            self.vy *= 0.3
+            self.vx *= 0.95
+        
+        # Pozisyon güncelle
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+        
+        # Beher duvar çarpışması
+        if self.x < beher_x + 10:
+            self.x = beher_x + 10
+            self.vx *= -0.5
+        if self.x > beher_x + beher_w - 10:
+            self.x = beher_x + beher_w - 10
+            self.vx *= -0.5
+        if self.y > beher_y + beher_h - 10:
+            self.y = beher_y + beher_h - 10
+            self.vy *= -0.3
+        if self.y < beher_y + 50:
+            self.y = beher_y + 50
+            self.vy *= -0.5
+        
+        # Sıcaklık etkisi
+        if self.sicaklik > 100:
+            self.vy -= 0.1 * (self.sicaklik - 100) / 100
+        
+        # Parıltı azalma
+        if self.parilti > 0:
+            self.parilti -= 0.5 * dt
+        
+        # Yaşam süresi
+        if self.yasam < 100:
+            self.yasam -= 0.1 * dt
+
+@dataclass
+class Efekt:
+    x: float
+    y: float
+    tip: str
+    yasam: float = 100.0
+    boyut: float = 5.0
+    renk: Tuple[int, int, int] = (255, 255, 255)
+    hiz: float = 1.0
+    aci: float = 0.0
+    
+    def guncelle(self, dt: float):
+        self.yasam -= self.hiz * dt
+        self.boyut += 0.2 * dt
+        if self.tip == "alev":
+            self.y -= self.hiz * dt
+        elif self.tip == "buhar":
+            self.y -= self.hiz * 0.5 * dt
+            self.x += random.uniform(-0.5, 0.5)
+        elif self.tip == "kivilcim":
+            self.x += math.cos(self.aci) * self.hiz * dt
+            self.y += math.sin(self.aci) * self.hiz * dt
+        elif self.tip == "duman":
+            self.y -= self.hiz * 0.3 * dt
+            self.x += random.uniform(-1, 1)
+            self.boyut += 0.5 * dt
+
+@dataclass
+class Buble:
+    x: float
+    y: float
+    yariçap: float = 3.0
+    hiz: float = 1.0
+    yasam: float = 100.0
+    
+    def guncelle(self, dt: float):
+        self.y -= self.hiz * dt
+        self.x += random.uniform(-0.3, 0.3)
+        self.yasam -= 0.5 * dt
+
+class BeherSimulasyon:
+    def __init__(self):
+        self.ekran = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("BEAKER - Gelişmiş Kimya Laboratuvarı")
+        self.saat = pygame.time.Clock()
+        self.yazi_tipi = pygame.font.SysFont("Arial", 16)
+        self.yazi_tipi_buyuk = pygame.font.SysFont("Arial", 24, bold=True)
+        self.yazi_tipi_kucuk = pygame.font.SysFont("Arial", 12)
+        
+        # Beher özellikleri
+        self.beher_x = WIDTH // 2 - 150
+        self.beher_y = 200
+        self.beher_w = 300
+        self.beher_h = 400
+        
+        # Parçacıklar
+        self.parcaciklar: List[Parcacik] = []
+        self.efektler: List[Efekt] = []
+        self.bubles: List[Buble] = []
+        
+        # Durum
+        self.sicaklik = 25.0
+        self.ph = 7.0
+        self.hacim = 0.0
+        self.aktif_element = "H"
+        self.aktif_bilesik = ""
+        self.miktar = 10.0
+        self.alev_aktif = False
+        
+        # UI durumu
+        self.panel_acik = True
+        self.secili_kategori = "elementler"
+        self.scroll_y = 0
+        self.arama_metni = ""
+        self.secili_renk = Renkler.BEHER_CERCEVE
+        
+        # Animasyon
+        self.titresim = 0.0
+        self.sivi_seviyesi = 0.0
+        self.sivi_rengi = Renkler.SIVI_TEMEL
+        self.sivi_renk_hedef = Renkler.SIVI_TEMEL
+        
+        # Tarihçe
+        self.tarihce: List[str] = []
+        self.max_tarihce = 50
+        
+        # Özelleştirme
+        self.ozellestirme = {
+            "beher_rengi": Renkler.BEHER_CERCEVE,
+            "sivi_rengi": Renkler.SIVI_TEMEL,
+            "arka_plan": Renkler.ARKA_PLAN,
+            "parlaklik": 1.0,
+            "animasyon_hizi": 1.0,
+        }
+        
+        # Butonlar
+        self.butonlar = self._buton_olustur()
+        
+    def _buton_olustur(self):
+        butonlar = []
+        # Element butonları
+        x, y = 20, 650
+        for sembol, bilgi in ELEMENTLER.items():
+            butonlar.append({
+                "x": x, "y": y, "w": 60, "h": 30,
+                "metin": sembol, "tip": "element", "veri": sembol,
+                "renk": bilgi["renk"]
+            })
+            x += 65
+            if x > WIDTH - 80:
+                x = 20
+                y += 35
+        
+        # Bileşik butonları
+        x, y = 20, 750
+        for formul, bilgi in list(BILESIKLER.items())[:10]:
+            butonlar.append({
+                "x": x, "y": y, "w": 70, "h": 30,
+                "metin": formul, "tip": "bilesik", "veri": formul,
+                "renk": bilgi["renk"]
+            })
+            x += 75
+            if x > WIDTH - 80:
+                x = 20
+                y += 35
+        
+        # Aksiyon butonları
+        aksiyonlar = [
+            {"metin": "Ekle", "tip": "aksiyon", "veri": "ekle", "x": 20, "y": 820, "w": 80, "h": 40},
+            {"metin": "Ateş", "tip": "aksiyon", "veri": "ates", "x": 110, "y": 820, "w": 80, "h": 40},
+            {"metin": "Salla", "tip": "aksiyon", "veri": "salla", "x": 200, "y": 820, "w": 80, "h": 40},
+            {"metin": "Bosalt", "tip": "aksiyon", "veri": "bosalt", "x": 290, "y": 820, "w": 80, "h": 40},
+            {"metin": "Soğut", "tip": "aksiyon", "veri": "sogut", "x": 380, "y": 820, "w": 80, "h": 40},
+            {"metin": "pH Test", "tip": "aksiyon", "veri": "ph_test", "x": 470, "y": 820, "w": 80, "h": 40},
+            {"metin": "Filtre", "tip": "aksiyon", "veri": "filtre", "x": 560, "y": 820, "w": 80, "h": 40},
+            {"metin": "Karıştır", "tip": "aksiyon", "veri": "karistir", "x": 650, "y": 820, "w": 80, "h": 40},
+            {"metin": "Büyüt", "tip": "aksiyon", "veri": "buyut", "x": 740, "y": 820, "w": 80, "h": 40},
+        ]
+        for b in aksiyonlar:
+            butonlar.append(b)
+        
+        return butonlar
+    
+    def element_ekle(self, sembol: str, miktar: float = 10.0):
+        if sembol not in ELEMENTLER:
+            return
+        
+        bilgi = ELEMENTLER[sembol]
+        for _ in range(int(miktar)):
+            x = self.beher_x + random.uniform(50, self.beher_w - 50)
+            y = self.beher_y + random.uniform(50, 100)
+            
+            parcacik = Parcacik(
+                x=x, y=y,
+                vx=random.uniform(-2, 2),
+                vy=random.uniform(-1, 1),
+                element=sembol,
+                renk=bilgi["renk"],
+                tip=bilgi["tip"],
+                miktar=1.0,
+                yariçap=random.uniform(5, 10)
+            )
+            self.parcaciklar.append(parcacik)
+        
+        self.hacim += miktar * 0.5
+        self.tarihce_ekle(f"{bilgi['ad']} ({sembol}) eklendi: {miktar} birim")
+        self.titresim = 5.0
+    
+    def bilesik_ekle(self, formul: str, miktar: float = 10.0):
+        if formul not in BILESIKLER:
+            return
+        
+        bilgi = BILESIKLER[formul]
+        for _ in range(int(miktar)):
+            x = self.beher_x + random.uniform(50, self.beher_w - 50)
+            y = self.beher_y + random.uniform(50, 100)
+            
+            parcacik = Parcacik(
+                x=x, y=y,
+                vx=random.uniform(-2, 2),
+                vy=random.uniform(-1, 1),
+                bileşik=formul,
+                renk=bilgi["renk"],
+                tip=bilgi["tip"],
+                miktar=1.0,
+                yariçap=random.uniform(5, 10)
+            )
+            self.parcaciklar.append(parcacik)
+        
+        self.hacim += miktar * 0.5
+        self.ph = (self.ph + bilgi["ph"]) / 2
+        self.tarihce_ekle(f"{bilgi['ad']} ({formul}) eklendi: {miktar} birim")
+        self.titresim = 5.0
+    
+    def reaksiyon_kontrol(self):
+        for i, p1 in enumerate(self.parcaciklar):
+            for j, p2 in enumerate(self.parcaciklar[i+1:], i+1):
+                mesafe = math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+                if mesafe < 20:
+                    # Reaksiyon kontrolü
+                    anahtar = tuple(sorted([p1.element or p1.bileşik, p2.element or p2.bileşik]))
+                    if anahtar in REAKSIYONLAR:
+                        reaksiyon = REAKSIYONLAR[anahtar]
+                        self.reaksiyon_uygula(p1, p2, reaksiyon)
+                        break
+    
+    def reaksiyon_uygula(self, p1: Parcacik, p2: Parcacik, reaksiyon: dict):
+        # Efekt oluştur
+        orta_x = (p1.x + p2.x) / 2
+        orta_y = (p1.y + p2.y) / 2
+        
+        if reaksiyon["tip"] == "patlama":
+            for _ in range(20):
+                efekt = Efekt(
+                    x=orta_x, y=orta_y,
+                    tip="kivilcim",
+                    renk=reaksiyon["renk"],
+                    hiz=random.uniform(3, 8),
+                    aci=random.uniform(0, 2 * math.pi)
+                )
+                self.efektler.append(efekt)
+            self.titresim = 15.0
+            self.sicaklik += reaksiyon["sicaklik"]
+        
+        elif reaksiyon["tip"] == "yanma":
+            for _ in range(15):
+                efekt = Efekt(
+                    x=orta_x + random.uniform(-10, 10),
+                    y=orta_y + random.uniform(-10, 10),
+                    tip="alev",
+                    renk=random.choice([Renkler.ALEV, Renkler.ALEV_SARI]),
+                    hiz=random.uniform(2, 5)
+                )
+                self.efektler.append(efekt)
+            self.sicaklik += reaksiyon["sicaklik"]
+            self.titresim = 8.0
+        
+        elif reaksiyon["tip"] == "gaz_cikisi":
+            for _ in range(10):
+                buble = Buble(
+                    x=orta_x + random.uniform(-10, 10),
+                    y=orta_y,
+                    yariçap=random.uniform(2, 6),
+                    hiz=random.uniform(2, 4)
+                )
+                self.bubles.append(buble)
+            self.titresim = 3.0
+        
+        elif reaksiyon["tip"] == "cokelme":
+            for _ in range(10):
+                efekt = Efekt(
+                    x=orta_x + random.uniform(-15, 15),
+                    y=orta_y + random.uniform(-15, 15),
+                    tip="duman",
+                    renk=(240, 240, 240),
+                    hiz=random.uniform(1, 3)
+                )
+                self.efektler.append(efekt)
+            self.titresim = 5.0
+        
+        elif reaksiyon["tip"] == "duman":
+            for _ in range(15):
+                efekt = Efekt(
+                    x=orta_x + random.uniform(-10, 10),
+                    y=orta_y,
+                    tip="duman",
+                    renk=(255, 255, 255),
+                    hiz=random.uniform(1, 2)
+                )
+                self.efektler.append(efekt)
+        
+        # Parçacıkları güncelle
+        p1.bileşik = reaksiyon["urun"]
+        p1.element = ""
+        p1.renk = reaksiyon["renk"]
+        p1.sicaklik = reaksiyon["sicaklik"]
+        p1.parilti = 50.0
+        
+        # pH güncelle
+        if reaksiyon["urun"] in BILESIKLER:
+            self.ph = (self.ph + BILESIKLER[reaksiyon["urun"]]["ph"]) / 2
+        
+        self.tarihce_ekle(f"Reaksiyon: {reaksiyon['urun']} oluştu ({reaksiyon['tip']})")
+    
+    def ates_aktif(self):
+        self.alev_aktif = not self.alev_aktif
+        if self.alev_aktif:
+            self.sicaklik += 50
+            for _ in range(30):
+                efekt = Efekt(
+                    x=self.beher_x + random.uniform(0, self.beher_w),
+                    y=self.beher_y + self.beher_h - 20,
+                    tip="alev",
+                    renk=random.choice([Renkler.ALEV, Renkler.ALEV_SARI]),
+                    hiz=random.uniform(3, 6)
+                )
+                self.efektler.append(efekt)
+            self.tarihce_ekle("Ateş yakıldı!")
+        else:
+            self.tarihce_ekle("Ateş söndürüldü")
+    
+    def salla(self):
+        self.titresim = 20.0
+        for p in self.parcaciklar:
+            p.vx += random.uniform(-10, 10)
+            p.vy += random.uniform(-10, 10)
+        
+        for _ in range(10):
+            buble = Buble(
+                x=self.beher_x + random.uniform(50, self.beher_w - 50),
+                y=self.beher_y + self.beher_h - 50,
+                yariçap=random.uniform(3, 8),
+                hiz=random.uniform(3, 6)
+            )
+            self.bubles.append(buble)
+        
+        self.tarihce_ekle("Beher sallandı!")
+    
+    def bosalt(self):
+        self.parcaciklar.clear()
+        self.efektler.clear()
+        self.bubles.clear()
+        self.hacim = 0.0
+        self.sicaklik = 25.0
+        self.ph = 7.0
+        self.sivi_rengi = Renkler.SIVI_TEMEL
+        self.tarihce_ekle("Beher boşaltıldı")
+        self.titresim = 10.0
+    
+    def sogut(self):
+        self.sicaklik = max(25.0, self.sicaklik - 50)
+        for p in self.parcaciklar:
+            p.sicaklik = max(25.0, p.sicaklik - 30)
+            p.vx *= 0.5
+            p.vy *= 0.5
+        
+        for _ in range(15):
+            efekt = Efekt(
+                x=self.beher_x + random.uniform(0, self.beher_w),
+                y=self.beher_y + self.beher_h - 20,
+                tip="buhar",
+                renk=Renkler.BUHAR,
+                hiz=random.uniform(1, 3)
+            )
+            self.efektler.append(efekt)
+        
+        self.tarihce_ekle("Soğutma uygulandı")
+    
+    def ph_test(self):
+        if self.ph < 6:
+            renk = Renkler.PH_ASIDIK
+            durum = "Asidik"
+        elif self.ph > 8:
+            renk = Renkler.PH_BAZIK
+            durum = "Bazik"
+        else:
+            renk = Renkler.PH_NOTR
+            durum = "Nötr"
+        
+        for _ in range(20):
+            efekt = Efekt(
+                x=self.beher_x + random.uniform(50, self.beher_w - 50),
+                y=self.beher_y + random.uniform(50, 200),
+                tip="kivilcim",
+                renk=renk,
+                hiz=random.uniform(2, 5),
+                aci=random.uniform(0, 2 * math.pi)
+            )
+            self.efektler.append(efekt)
+        
+        self.tarihce_ekle(f"pH Test: {self.ph:.1f} - {durum}")
+    
+    def filtre(self):
+        # Katı parçacıkları filtrele
+        once = len(self.parcaciklar)
+        self.parcaciklar = [p for p in self.parcaciklar if p.tip != "katı"]
+        sonra = len(self.parcaciklar)
+        filtrelenen = once - sonra
+        
+        for _ in range(filtrelenen):
+            efekt = Efekt(
+                x=self.beher_x + self.beher_w + 20,
+                y=self.beher_y + random.uniform(100, 300),
+                tip="duman",
+                renk=(150, 150, 150),
+                hiz=random.uniform(1, 2)
+            )
+            self.efektler.append(efekt)
+        
+        self.tarihce_ekle(f"Filtreleme: {filtrelenen} katı parçacık ayrıldı")
+    
+    def karistir(self):
+        for p in self.parcaciklar:
+            p.vx += random.uniform(-5, 5)
+            p.vy += random.uniform(-5, 5)
+        
+        for _ in range(15):
+            buble = Buble(
+                x=self.beher_x + random.uniform(50, self.beher_w - 50),
+                y=self.beher_y + self.beher_h - 30,
+                yariçap=random.uniform(2, 5),
+                hiz=random.uniform(2, 4)
+            )
+            self.bubles.append(buble)
+        
+        self.tarihce_ekle("Karıştırma uygulandı")
+    
+    def buyut(self):
+        for p in self.parcaciklar:
+            p.yariçap = min(20, p.yariçap * 1.5)
+        
+        self.tarihce_ekle("Parçacıklar büyütüldü")
+    
+    def tarihce_ekle(self, mesaj: str):
+        self.tarihce.append(mesaj)
+        if len(self.tarihce) > self.max_tarihce:
+            self.tarihce.pop(0)
+    
+    def guncelle(self, dt: float):
+        # Titresim azalt
+        if self.titresim > 0:
+            self.titresim -= dt * 2
+        
+        # Sıcaklık soğuma
+        if not self.alev_aktif and self.sicaklik > 25:
+            self.sicaklik -= 0.5 * dt
+        
+        # Sıvı rengi geçişi
+        self.sivi_rengi = self._renk_gecis(self.sivi_rengi, self.sivi_renk_hedef, 0.05)
+        
+        # Parçacıkları güncelle
+        for p in self.parcaciklar:
+            p.guncelle(dt, self.beher_x, self.beher_y, self.beher_w, self.beher_h)
+        
+        # Efektleri güncelle
+        self.efektler = [e for e in self.efektler if e.yasam > 0]
+        for e in self.efektler:
+            e.guncelle(dt)
+        
+        # Buble'ları güncelle
+        self.bubles = [b for b in self.bubles if b.yasam > 0]
+        for b in self.bubles:
+            b.guncelle(dt)
+        
+        # Reaksiyon kontrolü
+        self.reaksiyon_kontrol()
+        
+        # Sıvı seviyesi güncelle
+        hedef_seviye = min(self.beher_h - 50, self.hacim * 2)
+        self.sivi_seviyesi += (hedef_seviye - self.sivi_seviyesi) * 0.1 * dt
+        
+        # Ateş efekti
+        if self.alev_aktif:
+            for _ in range(2):
+                efekt = Efekt(
+                    x=self.beher_x + random.uniform(0, self.beher_w),
+                    y=self.beher_y + self.beher_h - 20,
+                    tip="alev",
+                    renk=random.choice([Renkler.ALEV, Renkler.ALEV_SARI]),
+                    hiz=random.uniform(2, 5)
+                )
+                self.efektler.append(efekt)
+            self.sicaklik = min(500, self.sicaklik + 0.5)
+    
+    def _renk_gecis(self, mevcut: Tuple[int, int, int], hedef: Tuple[int, int, int], hiz: float):
+        r = mevcut[0] + (hedef[0] - mevcut[0]) * hiz
+        g = mevcut[1] + (hedef[1] - mevcut[1]) * hiz
+        b = mevcut[2] + (hedef[2] - mevcut[2]) * hiz
+        return (int(r), int(g), int(b))
+    
+    def ciz(self):
+        # Arka plan
+        self.ekran.fill(self.ozellestirme["arka_plan"])
+        
+        # Beher çizimi
+        self._beher_ciz()
+        
+        # Sıvı çizimi
+        self._sivi_ciz()
+        
+        # Parçacıkları çiz
+        for p in self.parcaciklar:
+            self._parcacik_ciz(p)
+        
+        # Efektleri çiz
+        for e in self.efektler:
+            self._efekt_ciz(e)
+        
+        # Buble'ları çiz
+        for b in self.bubles:
+            self._buble_ciz(b)
+        
+        # UI çizimi
+        self._ui_ciz()
+        
+        # Bilgi paneli
+        self._bilgi_paneli_ciz()
+        
+        pygame.display.flip()
+    
+    def _beher_ciz(self):
+        # Titresim offset
+        offset_x = random.uniform(-self.titresim, self.titresim) if self.titresim > 0 else 0
+        offset_y = random.uniform(-self.titresim, self.titresim) if self.titresim > 0 else 0
+        
+        bx = self.beher_x + offset_x
+        by = self.beher_y + offset_y
+        bw = self.beher_w
+        bh = self.beher_h
+        
+        # Beher gövdesi
+        noktalar = [
+            (bx + 30, by),      # Üst sol
+            (bx + bw - 30, by), # Üst sağ
+            (bx + bw, by + 50), # Sağ üst köşe
+            (bx + bw, by + bh - 50), # Sağ alt
+            (bx + bw - 20, by + bh), # Sağ alt köşe
+            (bx + 20, by + bh), # Sol alt köşe
+            (bx, by + bh - 50), # Sol alt
+            (bx, by + 50),      # Sol üst
+        ]
+        
+        # Beher içi
+        pygame.draw.polygon(self.ekran, (20, 30, 35), noktalar)
+        
+        # Beher kenarları
+        pygame.draw.polygon(self.ekran, self.ozellestirme["beher_rengi"], noktalar, 3)
+        
+        # Ölçek çizgileri
+        for i in range(1, 10):
+            y = by + bh - 50 - i * 35
+            if y > by + 50:
+                uzunluk = 20 if i % 2 == 0 else 10
+                pygame.draw.line(self.ekran, self.ozellestirme["beher_rengi"], 
+                              (bx + 5, y), (bx + 5 + uzunluk, y), 2)
+                if i % 2 == 0:
+                    yazi = self.yazi_tipi_kucuk.render(f"{i*10}ml", True, Renkler.YAZI)
+                    self.ekran.blit(yazi, (bx + 30, y - 8))
+        
+        # Döküm ağzı
+        pygame.draw.line(self.ekran, self.ozellestirme["beher_rengi"], 
+                        (bx + bw - 30, by), (bx + bw + 20, by - 20), 3)
+        pygame.draw.line(self.ekran, self.ozellestirme["beher_rengi"], 
+                        (bx + bw + 20, by - 20), (bx + bw + 30, by - 15), 3)
+    
+    def _sivi_ciz(self):
+        if self.sivi_seviyesi < 5:
+            return
+        
+        bx = self.beher_x
+        by = self.beher_y + self.beher_h - 50 - self.sivi_seviyesi
+        bw = self.beher_w
+        
+        # Sıvı yüzeyi dalgalanması
+        dalga = math.sin(pygame.time.get_ticks() * 0.003) * 3
+        
+        # Sıvı gövdesi
+        noktalar = [
+            (bx + 5, by + self.sivi_seviyesi),
+            (bx + 5, by + 10),
+            (bx + 30, by - 5 + dalga),
+            (bx + bw - 30, by - 5 + dalga),
+            (bx + bw - 5, by + 10),
+            (bx + bw - 5, by + self.sivi_seviyesi),
+        ]
+        
+        # Sıvı rengi
+        sivi_renk = self.sivi_rengi
+        if self.sicaklik > 100:
+            # Sıcaklığa göre renk değişimi
+            sicaklik_faktor = min(1.0, (self.sicaklik - 100) / 400)
+            sivi_renk = (
+                int(sivi_renk[0] + (255 - sivi_renk[0]) * sicaklik_faktor),
+                int(sivi_renk[1] + (100 - sivi_renk[1]) * sicaklik_faktor),
+                int(sivi_renk[2] + (50 - sivi_renk[2]) * sicaklik_faktor)
+            )
+        
+        pygame.draw.polygon(self.ekran, sivi_renk, noktalar)
+        
+        # Sıvı parlaklığı
+        parlaklik = pygame.Surface((bw - 10, int(self.sivi_seviyesi)), pygame.SRCALPHA)
+        pygame.draw.rect(parlaklik, (*Renkler.SIVI_PARLAKLIK, 30), (0, 0, bw - 10, 20))
+        self.ekran.blit(parlaklik, (bx + 5, by))
+        
+        # Sıvı yüzeyi
+        pygame.draw.line(self.ekran, (*Renkler.SIVI_PARLAKLIK, 150), 
+                        (bx + 30, by - 5 + dalga), (bx + bw - 30, by - 5 + dalga), 2)
+    
+    def _parcacik_ciz(self, p: Parcacik):
+        # Parıltı efekti
+        if p.parilti > 0:
+            pygame.draw.circle(self.ekran, (255, 255, 200), 
+                             (int(p.x), int(p.y)), int(p.yariçap + p.parilti * 0.3), 2)
+        
+        # Ana parçacık
+        pygame.draw.circle(self.ekran, p.renk, (int(p.x), int(p.y)), int(p.yariçap))
+        
+        # Parlaklık noktası
+        pygame.draw.circle(self.ekran, (255, 255, 255, 150), 
+                         (int(p.x - p.yariçap * 0.3), int(p.y - p.yariçap * 0.3)), 
+                         int(p.yariçap * 0.3))
+        
+        # Element/Bileşik adı
+        if p.yariçap > 8:
+            ad = p.element if p.element else p.bileşik
+            if ad:
+                yazi = self.yazi_tipi_kucuk.render(ad, True, (255, 255, 255))
+                rect = yazi.get_rect(center=(int(p.x), int(p.y)))
+                self.ekran.blit(yazi, rect)
+    
+    def _efekt_ciz(self, e: Efekt):
+        alpha = int(255 * (e.yasam / 100))
+        if e.tip == "alev":
+            renk = (*e.renk, alpha)
+            pygame.draw.circle(self.ekran, renk, (int(e.x), int(e.y)), int(e.boyut))
+            pygame.draw.circle(self.ekran, (255, 255, 100, alpha), 
+                             (int(e.x), int(e.y)), int(e.boyut * 0.5))
+        elif e.tip == "buhar":
+            renk = (*e.renk, alpha // 2)
+            pygame.draw.circle(self.ekran, renk, (int(e.x), int(e.y)), int(e.boyut))
+        elif e.tip == "kivilcim":
+            pygame.draw.circle(self.ekran, (*e.renk, alpha), (int(e.x), int(e.y)), 3)
+        elif e.tip == "duman":
+            renk = (200, 200, 200, alpha // 3)
+            pygame.draw.circle(self.ekran, renk, (int(e.x), int(e.y)), int(e.boyut))
+    
+    def _buble_ciz(self, b: Buble):
+        alpha = int(200 * (b.yasam / 100))
+        pygame.draw.circle(self.ekran, (255, 255, 255, alpha), 
+                         (int(b.x), int(b.y)), int(b.yariçap), 1)
+        pygame.draw.circle(self.ekran, (255, 255, 255, alpha // 2), 
+                         (int(b.x - b.yariçap * 0.3), int(b.y - b.yariçap * 0.3)), 2)
+    
+    def _ui_ciz(self):
+        # Üst panel
+        pygame.draw.rect(self.ekran, Renkler.PANEL, (0, 0, WIDTH, 60))
+        pygame.draw.line(self.ekran, Renkler.PANEL_KENAR, (0, 60), (WIDTH, 60), 2)
+        
+        # Başlık
+        baslik = self.yazi_tipi_buyuk.render("BEAKER - Kimya Laboratuvarı", True, Renkler.YAZI_ACIK)
+        self.ekran.blit(baslik, (20, 15))
+        
+        # Sıcaklık göstergesi
+        sicaklik_yazi = self.yazi_tipi.render(f"Sıcaklık: {self.sicaklik:.1f}°C", True, Renkler.YAZI)
+        self.ekran.blit(sicaklik_yazi, (400, 20))
+        
+        # pH göstergesi
+        ph_renk = Renkler.PH_ASIDIK if self.ph < 6 else (Renkler.PH_BAZIK if self.ph > 8 else Renkler.PH_NOTR)
+        ph_yazi = self.yazi_tipi.render(f"pH: {self.ph:.1f}", True, ph_renk)
+        self.ekran.blit(ph_yazi, (550, 20))
+        
+        # Hacim göstergesi
+        hacim_yazi = self.yazi_tipi.render(f"Hacim: {self.hacim:.1f} ml", True, Renkler.YAZI)
+        self.ekran.blit(hacim_yazi, (650, 20))
+        
+        # Alt panel
+        pygame.draw.rect(self.ekran, Renkler.PANEL, (0, 640, WIDTH, 260))
+        pygame.draw.line(self.ekran, Renkler.PANEL_KENAR, (0, 640), (WIDTH, 640), 2)
+        
+        # Butonlar
+        for buton in self.butonlar:
+            self._buton_ciz(buton)
+        
+        # Kategori sekmeleri
+        pygame.draw.rect(self.ekran, Renkler.BUTON, (20, 650, 100, 25))
+        pygame.draw.rect(self.ekran, Renkler.BUTON_AKTIF, (130, 650, 100, 25))
+        pygame.draw.rect(self.ekran, Renkler.BUTON, (240, 650, 100, 25))
+        
+        self.ekran.blit(self.yazi_tipi.render("Elementler", True, Renkler.YAZI), (30, 653))
+        self.ekran.blit(self.yazi_tipi.render("Bileşikler", True, Renkler.YAZI), (140, 653))
+        self.ekran.blit(self.yazi_tipi.render("Aksiyonlar", True, Renkler.YAZI), (250, 653))
+    
+    def _buton_ciz(self, buton: dict):
+        mx, my = pygame.mouse.get_pos()
+        uzerinde = buton["x"] <= mx <= buton["x"] + buton["w"] and buton["y"] <= my <= buton["y"] + buton["h"]
+        
+        if buton.get("tip") == "element":
+            renk = buton.get("renk", Renkler.BUTON)
+            arka_renk = (*renk, 100) if uzerinde else (*renk, 60)
+        else:
+            arka_renk = Renkler.BUTON_UZERINDE if uzerinde else Renkler.BUTON
+        
+        pygame.draw.rect(self.ekran, arka_renk, (buton["x"], buton["y"], buton["w"], buton["h"]), border_radius=5)
+        pygame.draw.rect(self.ekran, Renkler.PANEL_KENAR, (buton["x"], buton["y"], buton["w"], buton["h"]), 1, border_radius=5)
+        
+        metin = self.yazi_tipi.render(buton["metin"], True, Renkler.YAZI)
+        rect = metin.get_rect(center=(buton["x"] + buton["w"]//2, buton["y"] + buton["h"]//2))
+        self.ekran.blit(metin, rect)
+    
+    def _bilgi_paneli_ciz(self):
+        # Sağ panel - Tarihçe
+        pygame.draw.rect(self.ekran, Renkler.PANEL, (WIDTH - 200, 70, 190, 560))
+        pygame.draw.line(self.ekran, Renkler.PANEL_KENAR, (WIDTH - 200, 70), (WIDTH - 200, 630), 2)
+        
+        baslik = self.yazi_tipi.render("Tarihçe", True, Renkler.YAZI_ACIK)
+        self.ekran.blit(baslik, (WIDTH - 190, 80))
+        
+        y = 110
+        for mesaj in self.tarihce[-15:]:
+            yazi = self.yazi_tipi_kucuk.render(mesaj[:30], True, Renkler.YAZI)
+            self.ekran.blit(yazi, (WIDTH - 190, y))
+            y += 18
+        
+        # Aktif element bilgisi
+        if self.aktif_element in ELEMENTLER:
+            bilgi = ELEMENTLER[self.aktif_element]
+            pygame.draw.rect(self.ekran, Renkler.PANEL, (10, 70, 200, 120))
+            pygame.draw.line(self.ekran, Renkler.PANEL_KENAR, (10, 70), (10, 190), 2)
+            
+            ad_yazi = self.yazi_tipi.render(bilgi["ad"], True, Renkler.YAZI_ACIK)
+            self.ekran.blit(ad_yazi, (20, 80))
+            
+            tip_yazi = self.yazi_tipi.render(f"Tip: {bilgi['tip']}", True, Renkler.YAZI)
+            self.ekran.blit(tip_yazi, (20, 105))
+            
+            atom_yazi = self.yazi_tipi.render(f"Atom No: {bilgi['atom_no']}", True, Renkler.YAZI)
+            self.ekran.blit(atom_yazi, (20, 125))
+            
+            yogunluk_yazi = self.yazi_tipi.render(f"Yoğunluk: {bilgi['yoğunluk']}", True, Renkler.YAZI)
+            self.ekran.blit(yogunluk_yazi, (20, 145))
+    
+    def buton_tikla(self, mx: int, my: int):
+        for buton in self.butonlar:
+            if buton["x"] <= mx <= buton["x"] + buton["w"] and buton["y"] <= my <= buton["y"] + buton["h"]:
+                if buton["tip"] == "element":
+                    self.aktif_element = buton["veri"]
+                    self.element_ekle(buton["veri"], self.miktar)
+                elif buton["tip"] == "bilesik":
+                    self.aktif_bilesik = buton["veri"]
+                    self.bilesik_ekle(buton["veri"], self.miktar)
+                elif buton["tip"] == "aksiyon":
+                    if buton["veri"] == "ekle":
+                        if self.aktif_element:
+                            self.element_ekle(self.aktif_element, self.miktar)
+                    elif buton["veri"] == "ates":
+                        self.ates_aktif()
+                    elif buton["veri"] == "salla":
+                        self.salla()
+                    elif buton["veri"] == "bosalt":
+                        self.bosalt()
+                    elif buton["veri"] == "sogut":
+                        self.sogut()
+                    elif buton["veri"] == "ph_test":
+                        self.ph_test()
+                    elif buton["veri"] == "filtre":
+                        self.filtre()
+                    elif buton["veri"] == "karistir":
+                        self.karistir()
+                    elif buton["veri"] == "buyut":
+                        self.buyut()
+                return True
+        return False
+    
+    def calistir(self):
+        running = True
+        while running:
+            dt = self.saat.tick(FPS) / 1000.0
+            dt = min(dt, 0.05)  # Delta time sınırı
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.buton_tikla(event.pos[0], event.pos[1])
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.salla()
+                    elif event.key == pygame.K_f:
+                        self.ates_aktif()
+                    elif event.key == pygame.K_c:
+                        self.bosalt()
+                    elif event.key == pygame.K_s:
+                        self.sogut()
+                    elif event.key == pygame.K_p:
+                        self.ph_test()
+                    elif event.key == pygame.K_UP:
+                        self.miktar = min(50, self.miktar + 5)
+                    elif event.key == pygame.K_DOWN:
+                        self.miktar = max(1, self.miktar - 5)
+            
+            self.guncelle(dt)
+            self.ciz()
+        
+        pygame.quit()
+        sys.exit()
+
+# Programı başlat
+if __name__ == "__main__":
+    simulasyon = BeherSimulasyon()
+    simulasyon.calistir()
