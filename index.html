@@ -1,93 +1,948 @@
-import React from "react";
-// 01: Patlayıcı
-const Patlayici = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <circle cx="50" cy="50" r="15" fill="black" />
-    <path d="M50 10 L60 30 L50 50 L40 30 Z" fill="black" />
-    <path d="M50 90 L60 70 L50 50 L40 70 Z" fill="black" />
-    <path d="M10 50 L30 60 L50 50 L30 40 Z" fill="black" />
-    <path d="M90 50 L70 60 L50 50 L70 40 Z" fill="black" />
-  </svg>
-);
-// 02: Oksitleyici
-const Oksitleyici = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <circle cx="50" cy="50" r="20" fill="yellow" stroke="black" strokeWidth="2" />
-    <path d="M50 20 L50 80" stroke="black" strokeWidth="3" />
-    <path d="M20 50 L80 50" stroke="black" strokeWidth="3" />
-  </svg>
-);
-// 03: Yanıcı
-const Yanici = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <path d="M50 20 Q60 30 50 40 Q40 30 50 20" fill="orange" />
-    <path d="M50 40 Q60 50 50 60 Q40 50 50 40" fill="red" />
-    <path d="M50 60 Q60 70 50 80 Q40 70 50 60" fill="darkred" />
-    <rect x="30" y="85" width="40" height="5" fill="black" />
-  </svg>
-);
-// 04: Zehirli
-const Zehirli = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <circle cx="50" cy="40" r="15" fill="yellow" stroke="black" strokeWidth="2" />
-    <path d="M40 40 L60 40 M50 25 L50 55" stroke="black" strokeWidth="2" />
-    <path d="M35 55 L45 65 M55 55 L65 65" stroke="black" strokeWidth="2" />
-  </svg>
-);
-// 05: Korozif
-const Korozif = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <rect x="30" y="30" width="40" height="40" fill="none" stroke="black" strokeWidth="3" />
-    <path d="M30 30 L70 70 M70 30 L30 70" stroke="black" strokeWidth="3" />
-    <rect x="20" y="80" width="60" height="5" fill="black" />
-  </svg>
-);
-// 06: Tahriş Edici
-const TahrisEdici = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <path d="M50 20 Q60 40 50 60 Q40 40 50 20" fill="none" stroke="black" strokeWidth="2" />
-    <circle cx="50" cy="50" r="5" fill="black" />
-  </svg>
-);
-// 07: Sağlık Tehlikesi
-const SaglikTehlikesi = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <circle cx="50" cy="40" r="15" fill="none" stroke="black" strokeWidth="2" />
-    <path d="M35 40 Q50 20 65 40" fill="none" stroke="black" strokeWidth="2" />
-    <path d="M50 40 L50 70" stroke="black" strokeWidth="2" />
-    <path d="M30 70 L70 70" stroke="black" strokeWidth="2" />
-  </svg>
-);
-// 08: Çevreye Zararlı
-const CevreyeZararli = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <path d="M20 80 Q50 20 80 80" fill="none" stroke="black" strokeWidth="2" />
-    <circle cx="50" cy="50" r="5" fill="black" />
-    <path d="M40 60 L60 60" stroke="black" strokeWidth="2" />
-  </svg>
-);
-// 09: Gaz
-const Gaz = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <ellipse cx="50" cy="50" rx="20" ry="30" fill="black" />
-  </svg>
-);
-// 10: Radyoaktif
-const Radyoaktif = () => (
-  <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="80" height="80" fill="white" stroke="red" strokeWidth="3" rx="5" />
-    <circle cx="50" cy="50" r="20" fill="yellow" stroke="black" strokeWidth="2" />
-    <path d="M50 10 L60 30 L50 50 L40 30 Z" fill="black" />
-    <path d="M50 90 L60 70 L50 50 L40 70 Z" fill="black" />
-    <path d="M10 50 L30 60 L50 50 L30 40 Z" fill="black" />
-  </svg>
-);
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medeni Gökalp Kimya Paneli v2.7 Master</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel CDN (React JSX Kodunu Tarayıcıda Çalıştırmak İçin) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    .animate-spin-slow {
+      animation: spin 12s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    /* Sürgüler için özel stil ayarları */
+    input[type="range"]::-webkit-slider-thumb {
+      background: #38bdf8;
+      border-radius: 9999px;
+      width: 14px;
+      height: 14px;
+    }
+    /* Scrollbar Gizleme */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#07080e] text-slate-100 min-h-screen">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // --- TÜM 118 ELEMENT İÇİN ENTEGRE VERİ SETİ ---
+    const elementList = [
+      { number: 1, symbol: "H", name: "Hidrojen", weight: "1.008", category: "nonmetal", period: 1, group: 1, melt: 14.01, boil: 20.28, desc: "Evrenin en hafif, en basit ve en yaygın elementidir." },
+      { number: 2, symbol: "He", name: "Helyum", weight: "4.0026", category: "noble-gas", period: 1, group: 18, melt: 0.95, boil: 4.22, desc: "Tepkimeye girmeyen, havadan hafif, renksiz soygaz." },
+      { number: 3, symbol: "Li", name: "Lityum", weight: "6.94", category: "alkali", period: 2, group: 1, melt: 453.69, boil: 1615, desc: "En hafif katı metaldir. Şarj edilebilir pillerde yaygın kullanılır." },
+      { number: 4, symbol: "Be", name: "Berilyum", weight: "9.0122", category: "alkaline-earth", period: 2, group: 2, melt: 1560, boil: 2742, desc: "Havacılık, uzay araçları ve alaşımlarda kullanılan mukavemetli metal." },
+      { number: 5, symbol: "B", name: "Bor", weight: "10.81", category: "metalloid", period: 2, group: 13, melt: 2349, boil: 4200, desc: "Isıya dayanıklı cam, seramik ve nükleer kalkanlarda kullanılan yarı metal." },
+      { number: 6, symbol: "C", name: "Karbon", weight: "12.011", category: "nonmetal", period: 2, group: 14, melt: 3823, boil: 4300, desc: "Yaşamın temel taşıdır; kömür, elmas ve grafiti oluşturur." },
+      { number: 7, symbol: "N", name: "Azot", weight: "14.007", category: "nonmetal", period: 2, group: 15, melt: 63.15, boil: 77.36, desc: "Atmosferimizin %78'ini oluşturan, gıda korumada kullanılan soğuk gaz." },
+      { number: 8, symbol: "O", name: "Oksijen", weight: "15.999", category: "nonmetal", period: 2, group: 16, melt: 54.36, boil: 90.2, desc: "Solunum ve yanma olayları için şart olan hayat verici ametal." },
+      { number: 9, symbol: "F", name: "Flor", weight: "18.998", category: "halogen", period: 2, group: 17, melt: 53.53, boil: 85.03, desc: "Son derece reaktif, en yüksek elektronegatifliğe sahip sarı gaz." },
+      { number: 10, symbol: "Ne", name: "Neon", weight: "20.180", category: "noble-gas", period: 2, group: 18, melt: 24.56, boil: 27.07, desc: "Işıklı tabelalarda kırmızı-turuncu parlama yapan soygaz." },
+      { number: 11, symbol: "Na", name: "Sodyum", weight: "22.990", category: "alkali", period: 3, group: 1, melt: 370.87, boil: 1156, desc: "Yumuşak yapılı, suyla temas ettiğinde şiddetle reaksiyon veren metal." },
+      { number: 12, symbol: "Mg", name: "Magnezyum", weight: "24.305", category: "alkaline-earth", period: 3, group: 2, melt: 923, boil: 1363, desc: "Klorofilin merkezinde yer alan hafif, gümüşi beyaz metal." },
+      { number: 13, symbol: "Al", name: "Alüminyum", weight: "26.982", category: "post-transition", period: 3, group: 13, melt: 933.47, boil: 2792, desc: "Korozyona dayanıklı, ambalaj ve inşaatta yaygın hafif metal." },
+      { number: 14, symbol: "Si", name: "Silisyum", weight: "28.085", category: "metalloid", period: 3, group: 14, melt: 1687, boil: 3538, desc: "Yarı iletken mikroçiplerin ve kum yapısının temel elementi." },
+      { number: 15, symbol: "P", name: "Fosfor", weight: "30.974", category: "nonmetal", period: 3, group: 15, melt: 317.3, boil: 553.6, desc: "Gübre ve kibrit üretiminde, kemik yapısında kritik rol oynar." },
+      { number: 16, symbol: "S", name: "Kükürt", weight: "32.06", category: "nonmetal", period: 3, group: 16, melt: 388.36, boil: 717.8, desc: "Asit üretimi ve tarımda kullanılan limon sarısı renginde katı." },
+      { number: 17, symbol: "Cl", name: "Klor", weight: "35.45", category: "halogen", period: 3, group: 17, melt: 171.6, boil: 239.11, desc: "Suların dezenfeksiyonunda ve tuz üretiminde kullanılan zehirli gaz." },
+      { number: 18, symbol: "Ar", name: "Argon", weight: "39.948", category: "noble-gas", period: 3, group: 18, melt: 83.8, boil: 87.3, desc: "Çift cam yalıtımında ve ampullerde kullanılan soygaz." },
+      { number: 19, symbol: "K", name: "Potasyum", weight: "39.098", category: "alkali", period: 4, group: 1, melt: 336.5, boil: 1032, desc: "Sıvı ve elektrolit dengesini koruyan son derece aktif metal." },
+      { number: 20, symbol: "Ca", name: "Kalsiyum", weight: "40.078", category: "alkaline-earth", period: 4, group: 2, melt: 1115, boil: 1757, desc: "Kemik, diş ve mermer yapısını oluşturan toprak alkali metal." },
+      { number: 26, symbol: "Fe", name: "Demir", weight: "55.845", category: "transition", period: 4, group: 8, melt: 1811, boil: 3134, desc: "Tüm ağır sanayinin, çeliğin ve kan hücrelerinin temel maddesi." },
+      { number: 29, symbol: "Cu", name: "Bakır", weight: "63.546", category: "transition", period: 4, group: 11, melt: 1357.77, boil: 2835, desc: "Kızıl renkli, üstün ısı ve elektrik iletkenliğine sahip kablo metali." },
+      { number: 30, symbol: "Zn", name: "Çinko", weight: "65.38", category: "transition", period: 4, group: 12, melt: 692.68, boil: 1180, desc: "Galvaniz kaplama ve pillerde paslanmayı önleyen metal." },
+      { number: 47, symbol: "Ag", name: "Gümüş", weight: "107.87", category: "transition", period: 5, group: 11, melt: 1234.93, boil: 2435, desc: "Mükemmel yansıtıcı, parlak ve en yüksek iletkenlikteki kıymetli metal." },
+      { number: 79, symbol: "Au", name: "Altın", weight: "196.97", category: "transition", period: 6, group: 11, melt: 1337.33, boil: 3129, desc: "Kararmayan, asitlerden etkilenmeyen, kuyumculukta kullanılan kıymetli metal." },
+      { number: 80, symbol: "Hg", name: "Cıva", weight: "200.59", category: "transition", period: 6, group: 12, melt: 234.32, boil: 629.88, desc: "Oda koşullarında sıvı olan tek metal; termometrelerde kullanılır." },
+      { number: 82, symbol: "Pb", name: "Kurşun", weight: "207.2", category: "post-transition", period: 6, group: 14, melt: 600.61, boil: 2022, desc: "Radyasyon kalkanlarında ve akülerde kullanılan ağır gri metal." },
+      { number: 92, symbol: "U", name: "Uranyum", weight: "238.03", category: "actinide", period: 7, group: 3, melt: 1405.3, boil: 4404, desc: "Nükleer enerji santrallerinde yakıt olan ağır radyoaktif metal." }
+    ];
+
+    const elementGridPositions = {
+      1: { r: 1, c: 1 }, 2: { r: 1, c: 18 },
+      3: { r: 2, c: 1 }, 4: { r: 2, c: 2 }, 5: { r: 2, c: 13 }, 6: { r: 2, c: 14 }, 7: { r: 2, c: 15 }, 8: { r: 2, c: 16 }, 9: { r: 2, c: 17 }, 10: { r: 2, c: 18 },
+      11: { r: 3, c: 1 }, 12: { r: 3, c: 2 }, 13: { r: 3, c: 13 }, 14: { r: 3, c: 14 }, 15: { r: 3, c: 15 }, 16: { r: 3, c: 16 }, 17: { r: 3, c: 17 }, 18: { r: 3, c: 18 },
+      19: { r: 4, c: 1 }, 20: { r: 4, c: 2 }, 26: { r: 4, c: 8 }, 29: { r: 4, c: 11 }, 30: { r: 4, c: 12 },
+      47: { r: 5, c: 11 }, 79: { r: 6, c: 11 }, 80: { r: 6, c: 12 }, 82: { r: 6, c: 14 }, 92: { r: 9, c: 6 }
+    };
+
+    const lessonsData = [
+      {
+        id: "kuantum",
+        title: "Kuantum Kuramı ve Orbitaller",
+        subtitle: "AYT Kimya Müfredatı",
+        content: "Modern atom teorisinde elektronların bulunma olasılığının en yüksek olduğu hacimsel bölgelere orbital denir. Orbitalleri belirleyen ve Schrödinger dalga denklemi çözümlerinden türetilen sayılara kuantum sayıları adı verilir.",
+        formulas: ["E_n = -R_H \\cdot \\frac{1}{n^2}", "\\Delta x \\cdot \\Delta p \\ge \\frac{h}{4\\pi}"],
+        quiz: [
+          { q: "Maksimum 10 elektron alabilen d alt kabuğunun açısal momentum kuantum sayısı (l) kaçtır?", a: ["0", "1", "2", "3"], correct: 2 },
+          { q: "Bir p orbitali uzayda kaç farklı yönelime (ml) sahip alt orbitale ayrılır?", a: ["1", "3", "5", "7"], correct: 1 }
+        ]
+      },
+      {
+        id: "gazlar",
+        title: "Gaz Yasaları ve İdeal Gaz",
+        subtitle: "Basınç, Hacim ve Sıcaklık İlişkileri",
+        content: "Gazların fiziksel davranışlarını açıklamak üzere oluşturulan ideal gaz denkleminde; basınç, hacim, madde miktarı ve mutlak sıcaklık parametreleri bir araya gelir. Boyle, Charles, Gay-Lussac ve Avogadro yasaları bu parametrelerin birbirleriyle olan ilişkilerini detaylandırır.",
+        formulas: ["P \\cdot V = n \\cdot R \\cdot T", "P_1 \\cdot V_1 = P_2 \\cdot V_2"],
+        quiz: [
+          { q: "İdeal gaz denklemindeki 'R' sabiti değeri yaklaşık olarak kaçtır?", a: ["0.08206", "8.314", "İkisi de yerine göre doğrudur", "1.00"], correct: 2 }
+        ]
+      }
+    ];
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('Orbital');
+      const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+
+      // Custom Toast Notification System
+      const showToast = (message, type = 'success') => {
+        setToast({ visible: true, message, type });
+        setTimeout(() => setToast({ visible: false, message: '', type }), 3000);
+      };
+
+      // --- TAB: ORBITAL STATES & HOOKS ---
+      const [activeOrbital, setActiveOrbital] = useState('p');
+      const orbitalCanvasRef = useRef(null);
+      const [rotation, setRotation] = useState({ x: 0.5, y: -0.6 });
+      const [isDragging, setIsDragging] = useState(false);
+      const dragStart = useRef({ x: 0, y: 0 });
+
+      // --- TAB: 118 EL STATES ---
+      const [searchTerm, setSearchTerm] = useState('');
+      const [temperatureMode, setTemperatureMode] = useState(true);
+      const [temperatureVal, setTemperatureVal] = useState(298);
+      const [selectedElement, setSelectedElement] = useState(elementList[0]);
+
+      // --- TAB: 3D LAB STATES ---
+      const [activeGlassware, setActiveGlassware] = useState('Beherglas');
+      const [activeAtomModel, setActiveAtomModel] = useState(null);
+      const [labLiquidVol, setLabLiquidVol] = useState(150);
+      const [labTemperature, setLabTemperature] = useState(25);
+      const [isHeating, setIsHeating] = useState(false);
+      const [selectedChemical, setSelectedChemical] = useState('Su');
+      const [labPH, setLabPH] = useState(7.0);
+
+      // --- TAB: DERS STATES ---
+      const [currentLesson, setCurrentLesson] = useState(lessonsData[0]);
+      const [quizIndex, setQuizIndex] = useState(0);
+      const [userSelectedAnswer, setUserSelectedAnswer] = useState(null);
+      const [score, setScore] = useState(0);
+
+      // --- TAB: SENARYO STATES ---
+      const [activeScenario, setActiveScenario] = useState('titration');
+      const [titrationML, setTitrationML] = useState(0);
+      const [sodiumStatus, setSodiumStatus] = useState('idle');
+
+      // --- LAB TEMPERATURE PROCESS ---
+      useEffect(() => {
+        let timer;
+        if (isHeating) {
+          timer = setInterval(() => {
+            setLabTemperature(t => Math.min(250, t + 4));
+          }, 150);
+        } else {
+          timer = setInterval(() => {
+            setLabTemperature(t => Math.max(25, t - 2));
+          }, 300);
+        }
+        return () => clearInterval(timer);
+      }, [isHeating]);
+
+      const chemicalColor = useMemo(() => {
+        switch (selectedChemical) {
+          case 'HCl': return 'rgba(241, 245, 249, 0.2)';
+          case 'NaOH': return 'rgba(148, 163, 184, 0.3)';
+          case 'CuSO4': return 'rgba(14, 165, 233, 0.7)';
+          case 'KMnO4': return 'rgba(147, 51, 234, 0.8)';
+          case 'K2Cr2O7': return 'rgba(249, 115, 22, 0.85)';
+          default: return 'rgba(56, 189, 248, 0.45)';
+        }
+      }, [selectedChemical]);
+
+      // --- MATHEMATICAL LOBES POINT CLOUD GENERATOR ---
+      const points = useMemo(() => {
+        const pointCount = 1400;
+        const pts = [];
+        for (let i = 0; i < pointCount; i++) {
+          let r, theta, phi;
+          if (activeOrbital === 's') {
+            r = Math.pow(Math.random(), 1.5) * 45;
+            theta = Math.acos(2 * Math.random() - 1);
+            phi = Math.random() * 2 * Math.PI;
+            pts.push({
+              x: r * Math.sin(theta) * Math.cos(phi),
+              y: r * Math.sin(theta) * Math.sin(phi),
+              z: r * Math.cos(theta)
+            });
+          } else if (activeOrbital === 'p') {
+            const u = (Math.random() > 0.5 ? 1 : -1) * (0.12 + 0.88 * Math.random());
+            const z = u * 52;
+            const r_slice = 16 * Math.sin(Math.abs(u) * Math.PI);
+            const theta = Math.random() * 2 * Math.PI;
+            const fuzz = 1.5;
+            pts.push({
+              x: r_slice * Math.cos(theta) + (Math.random() - 0.5) * fuzz,
+              y: r_slice * Math.sin(theta) + (Math.random() - 0.5) * fuzz,
+              z: z + (Math.random() - 0.5) * fuzz
+            });
+          } else if (activeOrbital === 'd') {
+            const lobe = Math.floor(Math.random() * 4);
+            const baseAngle = lobe * Math.PI / 2 + Math.PI / 4;
+            const u = 0.15 + 0.85 * Math.random();
+            const dist = u * 48;
+            const r_slice = 14 * Math.sin(u * Math.PI);
+            const sliceAngle = Math.random() * 2 * Math.PI;
+            pts.push({
+              x: dist * Math.cos(baseAngle) + r_slice * Math.cos(sliceAngle) * 0.4,
+              y: dist * Math.sin(baseAngle) + r_slice * Math.cos(sliceAngle) * 0.4,
+              z: r_slice * Math.sin(sliceAngle)
+            });
+          } else if (activeOrbital === 'f') {
+            const directions = [
+              {x: 1, y: 1, z: 1}, {x: 1, y: 1, z: -1},
+              {x: 1, y: -1, z: 1}, {x: 1, y: -1, z: -1},
+              {x: -1, y: 1, z: 1}, {x: -1, y: 1, z: -1},
+              {x: -1, y: -1, z: 1}, {x: -1, y: -1, z: -1}
+            ];
+            const dir = directions[Math.floor(Math.random() * 8)];
+            const len = Math.sqrt(dir.x*dir.x + dir.y*dir.y + dir.z*dir.z);
+            const dx = dir.x / len;
+            const dy = dir.y / len;
+            const dz = dir.z / len;
+
+            const u = 0.2 + 0.8 * Math.random();
+            const dist = u * 50;
+            const r_slice = 11 * Math.sin(u * Math.PI);
+            const sliceAngle = Math.random() * 2 * Math.PI;
+
+            let temp = {x: 0, y: 1, z: 0};
+            if (Math.abs(dy) > 0.9) temp = {x: 1, y: 0, z: 0};
+            const px_x = dy * temp.z - dz * temp.y;
+            const px_y = dz * temp.x - dx * temp.z;
+            const px_z = dx * temp.y - dy * temp.x;
+            const len_p = Math.sqrt(px_x*px_x + px_y*px_y + px_z*px_z);
+            const u_x = px_x / len_p;
+            const u_y = px_y / len_p;
+            const u_z = px_z / len_p;
+
+            const v_x = dy * u_z - dz * u_y;
+            const v_y = dz * u_x - dx * u_z;
+            const v_z = dx * u_y - dy * u_x;
+
+            pts.push({
+              x: dist * dx + r_slice * (Math.cos(sliceAngle) * u_x + Math.sin(sliceAngle) * v_x),
+              y: dist * dy + r_slice * (Math.cos(sliceAngle) * u_y + Math.sin(sliceAngle) * v_y),
+              z: dist * dz + r_slice * (Math.cos(sliceAngle) * u_z + Math.sin(sliceAngle) * v_z)
+            });
+          }
+        }
+        return pts;
+      }, [activeOrbital]);
+
+      // RENDERING CANVAS
+      useEffect(() => {
+        const canvas = orbitalCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animId;
+
+        const draw = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const cx = canvas.width / 2;
+          const cy = canvas.height / 2;
+
+          ctx.strokeStyle = 'rgba(26, 29, 50, 0.4)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(cx - 80, cy); ctx.lineTo(cx + 80, cy);
+          ctx.moveTo(cx, cy - 80); ctx.lineTo(cx, cy + 80);
+          ctx.stroke();
+
+          const cosX = Math.cos(rotation.x);
+          const sinX = Math.sin(rotation.x);
+          const cosY = Math.cos(rotation.y);
+          const sinY = Math.sin(rotation.y);
+
+          const projected = points.map(p => {
+            let x1 = p.x * cosY - p.z * sinY;
+            let z1 = p.x * sinY + p.z * cosY;
+            let y2 = p.y * cosX - z1 * sinX;
+            let z2 = p.y * sinX + z1 * cosX;
+            return { x: x1, y: y2, z: z2 };
+          }).sort((a, b) => b.z - a.z);
+
+          projected.forEach(p => {
+            const factor = (p.z + 100) / 120;
+            const size = Math.max(1, factor * 2.3);
+            const alpha = Math.min(1, Math.max(0.12, factor * 0.75));
+
+            if (activeOrbital === 'p') {
+              ctx.fillStyle = `rgba(45, 212, 191, ${alpha})`;
+            } else if (activeOrbital === 'd') {
+              ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
+            } else if (activeOrbital === 'f') {
+              ctx.fillStyle = `rgba(192, 132, 252, ${alpha})`;
+            } else {
+              ctx.fillStyle = `rgba(59, 130, 246, ${alpha})`;
+            }
+
+            ctx.beginPath();
+            ctx.arc(cx + p.x * 1.8, cy + p.y * 1.8, size, 0, Math.PI * 2);
+            ctx.fill();
+          });
+
+          animId = requestAnimationFrame(draw);
+        };
+
+        draw();
+        return () => cancelAnimationFrame(animId);
+      }, [points, rotation, activeOrbital]);
+
+      // RENDERING ATOMIC THEORIES ON THE FLY
+      const atomCanvasRef = useRef(null);
+      useEffect(() => {
+        const canvas = atomCanvasRef.current;
+        if (!canvas || !activeAtomModel || activeTab !== '3D Lab') return;
+        const ctx = canvas.getContext('2d');
+        let animId;
+        let angle = 0;
+
+        const particlesArr = Array.from({ length: 8 }, () => ({
+          x: -20,
+          y: Math.random() * 120 + 40,
+          speed: Math.random() * 2 + 2,
+          deflected: false
+        }));
+
+        const drawAtom = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const cx = canvas.width / 2;
+          const cy = canvas.height / 2;
+
+          if (activeAtomModel === 'Dalton') {
+            const grad = ctx.createRadialGradient(cx - 30, cy - 30, 5, cx, cy, 70);
+            grad.addColorStop(0, '#475569'); grad.addColorStop(1, '#020617');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(cx, cy, 65, 0, Math.PI*2); ctx.fill();
+          } else if (activeAtomModel === 'Thomson') {
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+            ctx.beginPath(); ctx.arc(cx, cy, 65, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#ef4444'; ctx.stroke();
+            // Negative electrons
+            [{x:-20,y:-10},{x:20,y:20},{x:-10,y:25}].forEach(el => {
+              ctx.fillStyle = '#3b82f6';
+              ctx.beginPath(); ctx.arc(cx+el.x, cy+el.y, 6, 0, Math.PI*2); ctx.fill();
+            });
+          } else if (activeAtomModel === 'Rutherf.') {
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI*2); ctx.fill();
+            particlesArr.forEach(p => {
+              ctx.fillStyle = '#10b981';
+              ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI*2); ctx.fill();
+              p.x += p.speed;
+              if (Math.abs(p.x - cx) < 25 && !p.deflected) {
+                p.deflected = true;
+                p.y += (p.y - cy) * 0.55;
+              }
+              if (p.x > canvas.width) { p.x = -10; p.deflected = false; }
+            });
+          } else if (activeAtomModel === 'Bohr') {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI*2); ctx.fill();
+            [35, 65].forEach((r, idx) => {
+              ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+              ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+              const elAngle = angle * (1.5 / (idx + 1));
+              ctx.fillStyle = '#38bdf8';
+              ctx.beginPath(); ctx.arc(cx + Math.cos(elAngle)*r, cy + Math.sin(elAngle)*r, 5, 0, Math.PI*2); ctx.fill();
+            });
+          }
+          angle += 0.04;
+          animId = requestAnimationFrame(drawAtom);
+        };
+        drawAtom();
+        return () => cancelAnimationFrame(animId);
+      }, [activeAtomModel, activeTab]);
+
+      const handleStart = (e) => {
+        setIsDragging(true);
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        dragStart.current = { x: clientX, y: clientY };
+      };
+
+      const handleMove = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const dx = clientX - dragStart.current.x;
+        const dy = clientY - dragStart.current.y;
+        setRotation(prev => ({
+          x: prev.x + dy * 0.012,
+          y: prev.y + dx * 0.012
+        }));
+        dragStart.current = { x: clientX, y: clientY };
+      };
+
+      return (
+        <div className="min-h-screen bg-[#07080e] text-slate-100 flex flex-col justify-between font-sans overflow-x-hidden pb-28 selection:bg-blue-600">
+          
+          {/* HEADER RECREATION */}
+          <header className="p-4 bg-[#0a0c16]/95 border-b border-[#14192d] flex justify-between items-center sticky top-0 z-50">
+            <div className="flex items-center space-x-3">
+              <button className="text-slate-400 hover:text-white transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <div className="flex items-center space-x-2">
+                <img 
+                  src="logo.png" 
+                  className="w-8 h-8 rounded-lg object-contain" 
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <svg className="w-8 h-8 rounded-lg bg-[#0c0f1d] border border-slate-800 p-1" viewBox="0 0 100 100">
+                  <polygon points="50,15 20,80 80,80" fill="none" stroke="url(#prismGrad)" strokeWidth="4"/>
+                  <line x1="50" y1="15" x2="35" y2="80" stroke="#ef4444" strokeWidth="2.5"/>
+                  <line x1="50" y1="15" x2="45" y2="80" stroke="#f59e0b" strokeWidth="2.5"/>
+                  <line x1="50" y1="15" x2="55" y2="80" stroke="#10b981" strokeWidth="2.5"/>
+                  <line x1="50" y1="15" x2="65" y2="80" stroke="#3b82f6" strokeWidth="2.5"/>
+                  <defs>
+                    <linearGradient id="prismGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#818cf8" />
+                      <stop offset="100%" stopColor="#c084fc" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div>
+                  <h1 className="text-xs sm:text-sm font-extrabold tracking-wide text-slate-100 leading-tight">
+                    <span className="text-[#38bdf8] font-black">Medeni Gökalp Kimya </span>
+                    <span className="text-slate-100 block text-xs font-semibold">Paneli <span className="text-[#818cf8] font-bold">v2.7 Master</span></span>
+                  </h1>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-[#1b223c]/90 border border-[#2d3765]">
+              <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.2L3.5 6.4v11.2L12 21.8l8.5-4.2V6.4L12 2.2zm-1 15.3l-4.5-2.2v-5.4l4.5 2.2v5.4zm1-6.5L7.5 8.8l4.5-2.2 4.5 2.2-4.5 2.2zm5.5 4.3l-4.5 2.2v-5.4l4.5-2.2v5.4z"/>
+              </svg>
+              <span className="text-[9px] font-bold text-slate-300 tracking-wider">Tüm Sistemler Entegre</span>
+            </div>
+          </header>
+
+          <main className="flex-1 max-w-lg w-full mx-auto p-4">
+
+            {/* TAB: ORBITAL SIMULATOR */}
+            {activeTab === 'Orbital' && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="bg-[#0e1122]/90 border border-[#1d223d] rounded-2xl p-4.5 shadow-2xl">
+                  
+                  <div className="flex items-center space-x-2 text-[#a855f7] mb-4">
+                    <svg className="w-4 h-4 text-[#c084fc]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a3 3 0 000-3.44M4 12a3 3 0 116 0 3 3 0 01-6 0zm10.36-4.64a3 3 0 11-4.72 4.72 3 3 0 014.72-4.72zM18 5.28a3 3 0 110 3.44" />
+                    </svg>
+                    <h2 className="text-xs font-black uppercase tracking-wider text-[#d8b4fe]">
+                      Kuantum Orbital Simülatörü
+                    </h2>
+                  </div>
+
+                  <div className="w-full h-80 relative bg-[#05060a] rounded-xl border border-[#161a30] flex items-center justify-center overflow-hidden">
+                    <canvas
+                      ref={orbitalCanvasRef}
+                      width={340}
+                      height={280}
+                      className="cursor-grab active:cursor-grabbing max-w-full"
+                      onMouseDown={handleStart}
+                      onMouseMove={handleMove}
+                      onMouseUp={() => setIsDragging(false)}
+                      onMouseLeave={() => setIsDragging(false)}
+                      onTouchStart={handleStart}
+                      onTouchMove={handleMove}
+                      onTouchEnd={() => setIsDragging(false)}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-2 mt-4">
+                    <button
+                      onClick={() => setActiveOrbital('s')}
+                      className={`py-3 rounded-lg text-xs font-black transition-all border ${
+                        activeOrbital === 's'
+                          ? 'bg-[#1e293b]/50 border-blue-500/80 text-blue-300'
+                          : 'bg-[#0e1122]/60 border-[#1d223d] text-slate-400 hover:border-slate-600'
+                      }`}
+                    >
+                      s Orbitali
+                    </button>
+                    <button
+                      onClick={() => setActiveOrbital('p')}
+                      className={`py-3 rounded-lg text-xs font-black transition-all border ${
+                        activeOrbital === 'p'
+                          ? 'bg-[#112d26] border-emerald-500/80 text-emerald-300'
+                          : 'bg-[#0e1122]/60 border-[#1d223d] text-slate-400 hover:border-slate-600'
+                      }`}
+                    >
+                      p Orbitali
+                    </button>
+                    <button
+                      onClick={() => setActiveOrbital('d')}
+                      className={`py-3 rounded-lg text-xs font-black transition-all border ${
+                        activeOrbital === 'd'
+                          ? 'bg-[#451a03]/50 border-amber-500/80 text-amber-300'
+                          : 'bg-[#0e1122]/60 border-[#1d223d] text-slate-400 hover:border-slate-600'
+                      }`}
+                    >
+                      d Orbitali
+                    </button>
+                    <button
+                      onClick={() => setActiveOrbital('f')}
+                      className={`py-3 rounded-lg text-xs font-black transition-all border ${
+                        activeOrbital === 'f'
+                          ? 'bg-[#3b0764]/40 border-[#a855f7]/80 text-[#d8b4fe]'
+                          : 'bg-[#0e1122]/60 border-[#1d223d] text-slate-400 hover:border-slate-600'
+                      }`}
+                    >
+                      f Orbitali
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-[#0e1122] border border-[#1d223d] rounded-2xl p-5 shadow-2xl space-y-4">
+                  <div className="flex justify-between items-center border-b border-[#1d223d] pb-2.5">
+                    <h3 className="text-xs font-black tracking-wide text-slate-100 uppercase">
+                      {activeOrbital} Orbitali Kuantum Analizi
+                    </h3>
+                    <span className="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded font-black font-mono">
+                      l = {activeOrbital === 's' ? '0' : activeOrbital === 'p' ? '1' : activeOrbital === 'd' ? '2' : '3'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-[#080914] p-3.5 rounded-xl border border-[#1e233f]">
+                      <span className="text-[9px] text-slate-500 font-bold block uppercase tracking-wider mb-1">Manyetik Kuantum (m_l)</span>
+                      <span className="text-xs font-mono font-black text-slate-200">
+                        {activeOrbital === 's' && '0 (1 Alt Orbital)'}
+                        {activeOrbital === 'p' && '-1, 0, +1 (3 Alt Orbital)'}
+                        {activeOrbital === 'd' && '-2, -1, 0, +1, +2 (5 Alt Orbital)'}
+                        {activeOrbital === 'f' && '-3, -2, -1, 0, +1, +2, +3 (7 Alt Orbital)'}
+                      </span>
+                    </div>
+                    <div className="bg-[#080914] p-3.5 rounded-xl border border-[#1e233f]">
+                      <span className="text-[9px] text-slate-500 font-bold block uppercase tracking-wider mb-1">Maksimum Elektron</span>
+                      <span className="text-xs font-mono font-black text-slate-200">
+                        {activeOrbital === 's' && '2 Elektron'}
+                        {activeOrbital === 'p' && '6 Elektron'}
+                        {activeOrbital === 'd' && '10 Elektron'}
+                        {activeOrbital === 'f' && '14 Elektron'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                    {activeOrbital === 's' && 'Çekirdek etrafında küresel simetrik bir yapıya sahiptir. Tüm enerji katmanlarında mutlaka yer alır.'}
+                    {activeOrbital === 'p' && 'Çekirdeğin iki zıt tarafında yönlenmiş dambıl veya iki loblu yapıdadır. Eksen yönelimlerine göre p_x, p_y, p_z alt orbitallerinden oluşur.'}
+                    {activeOrbital === 'd' && 'Genellikle dört loblu (yonca yaprağı) geometrik yapılara sahiptir. Manyetik kuantum uzayında 5 farklı yönelime ayrılır.'}
+                    {activeOrbital === 'f' && 'Kuantum mekaniksel olarak en karmaşık, çoklu halkalı veya loblu geometrilere sahiptir. Yüksek enerjili iç geçiş serilerini oluşturur.'}
+                  </p>
+
+                  <div className="bg-[#0b132b]/80 border border-[#1b254b] p-3.5 rounded-xl flex items-start space-x-2.5">
+                    <span className="text-indigo-400 text-xs mt-0.5">⚡</span>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-black tracking-wide text-indigo-300 block">AYT Bilgisi:</span>
+                      <span className="text-[11px] text-slate-300 leading-relaxed block">
+                        {activeOrbital === 's' && '1. enerji düzeyinden itibaren başlar. Sferik yapısı sebebiyle yönelim göstermez.'}
+                        {activeOrbital === 'p' && '2. enerji düzeyinden itibaren başlar. Düğüm düzlemi içerir.'}
+                        {activeOrbital === 'd' && '3. enerji düzeyinden itibaren başlar. Geçiş metallerinin kimyasal reaksiyon karakterini belirler.'}
+                        {activeOrbital === 'f' && '4. enerji düzeyinden itibaren başlar. Lantanit ve aktinitlerin temelini kurar.'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: 118 ELEMENT */}
+            {activeTab === '118 El.' && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="bg-[#0e1122] border border-[#1d223d] rounded-2xl p-4 shadow-xl">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Element ara..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-[#080914] border border-[#1e233f] rounded-xl px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#38bdf8]"
+                    />
+                    <button
+                      onClick={() => setTemperatureMode(!temperatureMode)}
+                      className={`px-3 py-2 text-xs font-bold border rounded-xl flex items-center space-x-1.5 ${
+                        temperatureMode ? 'border-[#f59e0b]/60 text-[#f59e0b] bg-[#f59e0b]/5' : 'border-slate-800 text-slate-400'
+                      }`}
+                    >
+                      <span>🌡️</span>
+                      <span className="whitespace-nowrap">Sıcaklık Modu</span>
+                    </button>
+                  </div>
+                  {temperatureMode && (
+                    <div className="mt-3 flex items-center space-x-3">
+                      <input
+                        type="range"
+                        min="1"
+                        max="4500"
+                        value={temperatureVal}
+                        onChange={(e) => setTemperatureVal(parseInt(e.target.value))}
+                        className="flex-1 accent-[#f59e0b]"
+                      />
+                      <span className="text-xs font-bold text-[#f59e0b] font-mono">{temperatureVal} K</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-[#0e1122] border border-[#1d223d] p-3 rounded-2xl overflow-x-auto">
+                  <div className="grid grid-cols-18 gap-1.5 min-w-[500px]">
+                    {elementList.map(el => {
+                      const pos = elementGridPositions[el.number] || { r: 1, c: 1 };
+                      const isSelected = selectedElement.number === el.number;
+                      return (
+                        <div
+                          key={el.number}
+                          style={{ gridRow: pos.r, gridColumn: pos.c }}
+                          onClick={() => setSelectedElement(el)}
+                          className={`p-1.5 border rounded-lg text-center cursor-pointer text-xs font-bold transition-all ${
+                            isSelected ? 'border-emerald-400 bg-emerald-950/25 text-white' : 'border-[#1e233f] text-slate-400'
+                          }`}
+                        >
+                          {el.symbol}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="bg-[#0e1122] border border-[#1d223d] p-4 rounded-2xl">
+                  <h4 className="text-sm font-black text-[#38bdf8]">{selectedElement.name} ({selectedElement.symbol})</h4>
+                  <div className="text-xs text-slate-400 mt-1 font-semibold">Kütle: {selectedElement.weight} g/mol</div>
+                  <p className="text-xs text-slate-300 mt-2.5 leading-relaxed bg-[#080914] p-3.5 rounded-xl border border-slate-900">{selectedElement.desc}</p>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: 3D LAB */}
+            {activeTab === '3D Lab' && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="bg-[#0e1122] border border-[#1d223d] p-4 rounded-2xl">
+                  <span className="text-[10px] font-black tracking-widest text-[#38bdf8] uppercase block mb-2">Cam Malzemeler</span>
+                  <div className="grid grid-cols-3 gap-1.5 mb-4">
+                    {['Beherglas', 'Erlenmayer', 'Deney Tüpü'].map(g => (
+                      <button
+                        key={g}
+                        onClick={() => {
+                          setActiveGlassware(g);
+                          setActiveAtomModel(null);
+                        }}
+                        className={`py-2 px-1 text-[10px] rounded-lg border font-black transition-all ${
+                          activeGlassware === g && !activeAtomModel ? 'border-[#38bdf8] text-[#38bdf8] bg-[#38bdf8]/5' : 'border-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="text-[10px] font-black tracking-widest text-[#a855f7] uppercase block mb-2">Atom Modelleri</span>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {['Dalton', 'Thomson', 'Rutherf.', 'Bohr'].map(atom => (
+                      <button
+                        key={atom}
+                        onClick={() => setActiveAtomModel(atom)}
+                        className={`py-2 px-1 text-[9px] rounded-lg border font-black transition-all ${
+                          activeAtomModel === atom ? 'border-[#a855f7] text-[#d8b4fe] bg-[#a855f7]/5' : 'border-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {atom}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="w-full h-72 bg-[#05060a] border border-[#1a1e35] rounded-2xl flex items-center justify-center relative overflow-hidden">
+                  {activeAtomModel ? (
+                    <canvas ref={atomCanvasRef} width={340} height={260} className="max-w-full" />
+                  ) : (
+                    <div className="relative w-36 h-52 flex items-end justify-center">
+                      {/* Buhar Efekti */}
+                      {labTemperature > 95 && (
+                        <div className="absolute top-0 flex space-x-2 animate-bounce">
+                          <span className="text-slate-600 text-xs font-bold">☁️</span>
+                          <span className="text-slate-600 text-xs font-bold delay-150">☁️</span>
+                        </div>
+                      )}
+
+                      {/* Cam Malzeme Vektörel SVG Çizimleri */}
+                      {activeGlassware === 'Beherglas' && (
+                        <svg className="w-full h-full text-slate-400" viewBox="0 0 100 120">
+                          <path d={`M 22 ${110 - (labLiquidVol/3)} L 22 110 A 4 4 0 0 0 26 114 L 74 114 A 4 4 0 0 0 78 110 L 78 ${110 - (labLiquidVol/3)} Z`} fill={chemicalColor} />
+                          <rect x="20" y="10" width="60" height="105" rx="3" fill="none" stroke="currentColor" strokeWidth="3" />
+                          <path d="M 20 15 L 14 10" fill="currentColor" strokeWidth="3" />
+                        </svg>
+                      )}
+
+                      {activeGlassware === 'Erlenmayer' && (
+                        <svg className="w-full h-full text-slate-400" viewBox="0 0 100 120">
+                          <clipPath id="erlen-fluid">
+                            <polygon points="40,20 40,40 12,110 88,110 60,40 60,20" />
+                          </clipPath>
+                          <rect x="0" y={115 - (labLiquidVol/3.2)} width="100" height="120" fill={chemicalColor} clipPath="url(#erlen-fluid)" />
+                          <path d="M 40 10 L 60 10 M 43 10 L 43 40 L 15 110 A 4 4 0 0 0 19 114 L 81 114 A 4 4 0 0 0 85 110 L 57 40 L 57 10" fill="none" stroke="currentColor" strokeWidth="3" />
+                        </svg>
+                      )}
+
+                      {activeGlassware === 'Deney Tüpü' && (
+                        <svg className="w-24 h-full text-slate-400" viewBox="0 0 100 120">
+                          <clipPath id="tube-fluid">
+                            <path d="M 38 10 L 62 10 L 62 105 A 10 10 0 0 1 38 105 Z" />
+                          </clipPath>
+                          <rect x="0" y={115 - (labLiquidVol/3)} width="100" height="120" fill={chemicalColor} clipPath="url(#tube-fluid)" />
+                          <path d="M 35 10 L 65 10 M 38 10 L 38 105 A 10 10 0 0 0 62 105 L 62 10" fill="none" stroke="currentColor" strokeWidth="3.5" />
+                        </svg>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {!activeAtomModel && (
+                  <div className="bg-[#0e1122] border border-[#1d223d] p-4 rounded-xl space-y-4 text-xs text-slate-400">
+                    <div className="flex justify-between">
+                      <span>Sıvı Seviyesi:</span>
+                      <span className="font-mono text-emerald-400 font-bold">{labLiquidVol} ml</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="20"
+                      max="300"
+                      value={labLiquidVol}
+                      onChange={(e) => setLabLiquidVol(parseInt(e.target.value))}
+                      className="w-full accent-emerald-400"
+                    />
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setIsHeating(!isHeating)}
+                        className={`py-2 px-3 rounded-xl text-xs font-black border transition-all ${
+                          isHeating ? 'bg-rose-500 border-rose-400 text-white animate-pulse' : 'bg-black/30 border-rose-950 text-rose-400'
+                        }`}
+                      >
+                        {isHeating ? 'Bek Söndür' : 'Bunsen Beki Yak 🌡️'}
+                      </button>
+
+                      <select
+                        value={selectedChemical}
+                        onChange={(e) => setSelectedChemical(e.target.value)}
+                        className="bg-black/40 border border-[#1e233f] rounded-xl text-slate-300 px-2 text-xs focus:outline-none"
+                      >
+                        {['Su', 'HCl', 'NaOH', 'CuSO4', 'KMnO4', 'K2Cr2O7'].map(chem => (
+                          <option key={chem} value={chem} className="bg-[#0f111e]">{chem}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB: DERS */}
+            {activeTab === 'Ders' && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="bg-[#0e1122] border border-[#1d223d] p-5 rounded-2xl space-y-4">
+                  <h3 className="text-sm font-black text-[#38bdf8] border-b border-[#222744] pb-2">{currentLesson.title}</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{currentLesson.content}</p>
+
+                  <div className="bg-[#0a0b12] p-4 rounded-xl border border-[#222744] space-y-3">
+                    <p className="text-xs font-bold text-slate-200">Soru: {currentLesson.quiz[quizIndex].q}</p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {currentLesson.quiz[quizIndex].a.map((opt, oIdx) => (
+                        <button
+                          key={oIdx}
+                          onClick={() => setUserSelectedAnswer(oIdx)}
+                          className={`p-2.5 rounded-lg border text-left text-xs transition-colors ${
+                            userSelectedAnswer === oIdx ? 'border-amber-500 bg-amber-500/10 text-amber-300' : 'border-[#1e233f] text-slate-400'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-end mt-2">
+                      <button
+                        onClick={() => {
+                          const correct = currentLesson.quiz[quizIndex].correct;
+                          if (userSelectedAnswer === correct) setScore(s => s + 1);
+                          if (quizIndex < currentLesson.quiz.length - 1) {
+                            setQuizIndex(q => q + 1);
+                            setUserSelectedAnswer(null);
+                          } else {
+                            showToast(`Test bitti! Doğru sayınız: ${userSelectedAnswer === correct ? score + 1 : score}`, 'success');
+                            setQuizIndex(0);
+                            setUserSelectedAnswer(null);
+                            setScore(0);
+                          }
+                        }}
+                        disabled={userSelectedAnswer === null}
+                        className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${
+                          userSelectedAnswer !== null ? 'bg-amber-500 text-black' : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                        }`}
+                      >
+                        Cevabı Onayla
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: GÜVENLİK */}
+            {activeTab === 'Güvenlik' && (
+              <div className="grid grid-cols-2 gap-4 animate-fadeIn">
+                {[
+                  { title: 'Aşındırıcı (Korozif)', sym: '🧪', desc: 'Canlı dokuları kalıcı tahrip eder.' },
+                  { title: 'Toksik (Zehirli)', sym: '💀', desc: 'Ağır zehirlenme etkisi yaratır.' },
+                  { title: 'Yanıcı Madde', sym: '🔥', desc: 'Kolayca parlayıp alev alır.' },
+                  { title: 'Çevreye Zararlı', sym: '⚠️', desc: 'Doğal eko-sisteme kalıcı hasar verir.' }
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-[#0e1122] border border-[#1d223d] p-4 rounded-xl flex flex-col items-center text-center space-y-2">
+                    <span className="text-3xl bg-rose-500/10 p-2.5 rounded-full">{item.sym}</span>
+                    <h4 className="text-xs font-black text-rose-400">{item.title}</h4>
+                    <p className="text-[10px] text-slate-500">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* TAB: SENARYO */}
+            {activeTab === 'Senaryo' && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="bg-[#0e1122] border border-[#1d223d] p-4 rounded-xl flex justify-around">
+                  <button onClick={() => setActiveScenario('titration')} className={`px-4 py-2 rounded-xl text-xs font-bold ${activeScenario === 'titration' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>Titrasyon</button>
+                  <button onClick={() => { setActiveScenario('sodium'); setSodiumStatus('idle'); }} className={`px-4 py-2 rounded-xl text-xs font-bold ${activeScenario === 'sodium' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>Sodyum-Su</button>
+                </div>
+
+                {activeScenario === 'titration' ? (
+                  <div className="bg-[#0e1122] border border-[#1d223d] p-5 rounded-2xl space-y-4">
+                    <div className="flex justify-between items-center text-xs">
+                      <span>Eklenen NaOH: {titrationML} mL</span>
+                      <span className="text-pink-400 font-bold">pH: {titrationML < 20 ? (1.5 + titrationML*0.25).toFixed(2) : (7.0 + (titrationML-20)*0.35).toFixed(2)}</span>
+                    </div>
+                    <div className="w-full bg-[#05060a] border border-[#161a30] rounded-xl p-4 flex flex-col items-center">
+                      <div className="w-14 h-20 border-2 border-slate-600 rounded-b-lg relative overflow-hidden flex items-end">
+                        <div className="w-full transition-all duration-300" style={{ height: '50%', backgroundColor: titrationML < 20 ? 'rgba(255,255,255,0.05)' : 'rgba(236, 72, 153, 0.7)' }}></div>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button onClick={() => setTitrationML(m => Math.min(50, m + 2))} className="flex-1 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl">NaOH Ekle 💧</button>
+                      <button onClick={() => setTitrationML(0)} className="px-4 py-2.5 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl">Sıfırla</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-[#0e1122] border border-[#1d223d] p-5 rounded-2xl space-y-4">
+                    <div className="w-full h-40 bg-[#05060a] border border-[#161a30] rounded-xl flex items-center justify-center relative overflow-hidden">
+                      {sodiumStatus === 'reacting' && <span className="text-4xl animate-bounce">⚡💥</span>}
+                      {sodiumStatus === 'exploded' && <span className="text-rose-400 text-xs font-bold">PATLAMA GERÇEKLEŞTİ! 💥</span>}
+                      {sodiumStatus === 'idle' && <span className="text-slate-500 text-xs">Sodyum metali atılmaya hazır.</span>}
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSodiumStatus('reacting');
+                        setTimeout(() => setSodiumStatus('exploded'), 1200);
+                      }}
+                      disabled={sodiumStatus !== 'idle'}
+                      className="w-full py-2.5 bg-rose-600 text-white text-xs font-bold rounded-xl"
+                    >
+                      {sodiumStatus === 'idle' ? 'Sodyum Metalini Suya Bırak! 💥' : 'Tepkime Bitti'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+          </main>
+
+          {/* NAV BAR */}
+          <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0c16]/95 border-t border-[#14192d] py-3.5 px-4 flex justify-around items-center z-50 max-w-lg mx-auto rounded-t-3xl shadow-2xl">
+            {[
+              { id: 'Ders', label: 'Ders', icon: '📖' },
+              { id: '3D Lab', label: '3D Lab', icon: '🧪' },
+              { id: 'Orbital', label: 'Orbital', icon: '🌀' },
+              { id: '118 El.', label: '118 El.', icon: '📊' },
+              { id: 'Güvenlik', label: 'Güvenlik', icon: '⚠️' },
+              { id: 'Videolar', label: 'Videolar', icon: '🎥' },
+              { id: 'Senaryo', label: 'Senaryo', icon: '🎮' }
+            ].map(tab => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-col items-center justify-center transition-all ${
+                    isActive
+                      ? 'bg-[#2563eb] text-white font-extrabold scale-110 shadow-lg shadow-[#2563eb]/25 px-4 py-2 rounded-2xl'
+                      : 'text-slate-500 hover:text-slate-300 px-2 py-1'
+                  }`}
+                >
+                  <span className="text-base mb-0.5">{tab.icon}</span>
+                  <span className="text-[10px] tracking-tight">{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* CUSTOM TOAST NOTIFICATION OVERLAY */}
+          {toast.visible && (
+            <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fadeIn pointer-events-none">
+              <div className="px-4 py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs font-bold shadow-2xl flex items-center space-x-2">
+                <span>✅</span>
+                <span>{toast.message}</span>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
+
+```
