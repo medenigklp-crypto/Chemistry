@@ -1,703 +1,1024 @@
-<!DOCTYPE html>
+
+html_content = '''<!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3D Orbital Simülasyonu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kimya - 3D Orbitaller & Videolar</title>
     <style>
-        /* Genel Stiller */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0b0e1a;
-            color: #e0e4f0;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%);
+            color: #fff;
+            min-height: 100vh;
         }
-        /* Başlık */
         .header {
-            background: #141a2b;
-            padding: 12px 20px;
-            border-bottom: 2px solid #2a3a5a;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 2px solid #00d4ff;
         }
         .header h1 {
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            color: #aac4ff;
+            font-size: 1.4rem;
+            color: #00d4ff;
+            text-shadow: 0 0 15px rgba(0,212,255,0.5);
         }
-        .header h1 span {
-            color: #ffb347;
-        }
-
-        /* Sekmeler */
         .tabs {
             display: flex;
-            gap: 6px;
-            background: #0f1422;
-            padding: 8px 16px;
-            border-bottom: 1px solid #1f2a3f;
-            flex-shrink: 0;
-            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
         }
-        .tab-button {
-            background: transparent;
-            border: none;
-            color: #8892b0;
-            padding: 8px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .tab-button:hover {
-            background: #1f2a3f;
-            color: #e0e4f0;
-        }
-        .tab-button.active {
-            background: #2a3a5a;
-            color: #fff;
-            box-shadow: 0 0 12px rgba(42, 58, 90, 0.6);
-        }
-
-        /* Alt Butonlar (orbital seçimi) */
-        .sub-buttons {
-            display: flex;
-            gap: 8px;
-            padding: 10px 16px;
-            background: #0f1422;
-            border-bottom: 1px solid #1f2a3f;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-        }
-        .sub-button {
-            background: #1a2340;
-            border: 1px solid #2a3a5a;
-            color: #b0c4e0;
-            padding: 6px 16px;
+        .tab-btn {
+            padding: 10px 25px;
+            border: 2px solid #00d4ff;
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
             border-radius: 20px;
-            font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-weight: bold;
         }
-        .sub-button:hover {
-            background: #2a3a5a;
-            border-color: #4a6a9a;
-            color: #fff;
+        .tab-btn.active {
+            background: #00d4ff;
+            color: #000;
         }
-        .sub-button.active {
-            background: #3a5a8a;
-            border-color: #6a9af0;
-            color: #fff;
-            box-shadow: 0 0 10px rgba(58, 90, 138, 0.5);
+        .content { max-width: 900px; margin: 0 auto; padding: 0 15px 30px; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .type-card {
+            background: rgba(255,255,255,0.06);
+            border: 2px solid rgba(0,212,255,0.3);
+            border-radius: 16px;
+            padding: 18px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .type-card:active { transform: scale(0.95); }
+        .type-card.selected {
+            border-color: #00d4ff;
+            background: rgba(0,212,255,0.15);
+            box-shadow: 0 0 25px rgba(0,212,255,0.3);
+        }
+        .type-card h3 {
+            font-size: 2rem;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+        .type-card p {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
         }
 
-        /* Ana içerik: 3D sağ, bilgiler sol */
-        .main-content {
+        .sub-orbital-grid {
             display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .canvas-container {
-            flex: 2;
-            background: #0b0e1a;
-            position: relative;
-            min-height: 300px;
-        }
-        .info-panel {
-            flex: 1;
-            background: #101624;
-            padding: 20px 24px;
-            overflow-y: auto;
-            border-left: 1px solid #1f2a3f;
-            min-width: 220px;
-            max-width: 400px;
-        }
-        .info-panel h2 {
-            font-size: 20px;
-            color: #aac4ff;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #2a3a5a;
-            padding-bottom: 8px;
-        }
-        .info-panel .detail {
-            margin: 10px 0;
-            line-height: 1.6;
-        }
-        .info-panel .detail strong {
-            color: #f0b34b;
-        }
-        .info-panel .desc {
-            background: #1a2340;
-            padding: 14px;
-            border-radius: 8px;
-            margin-top: 12px;
-            border-left: 4px solid #3a5a8a;
-        }
-
-        /* Video sekmesi içeriği */
-        .videos-content {
-            display: none;
-            flex: 1;
-            padding: 20px;
-            background: #0b0e1a;
-            overflow-y: auto;
             flex-wrap: wrap;
-            gap: 20px;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            min-height: 50px;
         }
-        .videos-content.active {
-            display: flex;
+        .sub-btn {
+            padding: 10px 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-        .video-item {
-            background: #141a2b;
+        .sub-btn:active { transform: scale(0.95); }
+        .sub-btn.selected {
+            border-color: #00ff88;
+            background: rgba(0,255,136,0.15);
+            color: #00ff88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
+        }
+
+        .sim-box {
+            background: rgba(0,0,0,0.5);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+        .sim-title {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        #orbitalCanvas {
+            display: block;
+            width: 100% !important;
+            height: auto !important;
             border-radius: 12px;
+            background: #050510;
+            border: 1px solid rgba(0,212,255,0.2);
+            touch-action: none;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .ctrl-btn {
+            padding: 8px 16px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .ctrl-btn:active { background: rgba(0,212,255,0.3); }
+        .hint-drag {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+
+        .props {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 3px solid #7b2cbf;
+        }
+        .props h3 {
+            color: #00d4ff;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .prop-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.85rem;
+        }
+        .prop-row:last-child { border-bottom: none; }
+        .prop-label { color: rgba(255,255,255,0.5); }
+        .prop-val { color: #00d4ff; font-weight: bold; }
+        .prop-desc {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(0,212,255,0.05);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .video-input {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+        .video-input h2 {
+            color: #00d4ff;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .video-input input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        .video-input input::placeholder { color: rgba(255,255,255,0.3); }
+        .btn-add {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .hint { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 10px; }
+        .videos-grid { display: grid; gap: 15px; }
+        .video-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
             overflow: hidden;
-            width: calc(50% - 10px);
-            min-width: 280px;
-            border: 1px solid #2a3a5a;
-            transition: 0.2s;
+            border: 1px solid rgba(0,212,255,0.2);
         }
-        .video-item:hover {
-            border-color: #4a6a9a;
-            box-shadow: 0 0 20px rgba(42, 58, 90, 0.3);
-        }
-        .video-item video {
+        .video-card video {
             width: 100%;
             display: block;
             background: #000;
         }
-        .video-item .video-label {
-            padding: 10px 14px;
-            font-weight: 500;
-            color: #b0c4e0;
-            background: #0f1422;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            .info-panel {
-                max-width: 100%;
-                border-left: none;
-                border-top: 1px solid #1f2a3f;
-                max-height: 200px;
-            }
-            .video-item {
-                width: 100%;
-            }
-            .header h1 {
-                font-size: 18px;
-            }
-            .tab-button {
-                font-size: 14px;
-                padding: 6px 14px;
-            }
-        }
-        /* Three.js canvas tam kaplasın */
-        .canvas-container canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        /* Kaydırma çubuğu */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0e1a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2a3a5a;
+        .video-info { padding: 12px; }
+        .video-info h4 { color: #00d4ff; font-size: 0.95rem; margin-bottom: 4px; }
+        .video-info p { color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+        .video-actions { padding: 0 12px 12px; }
+        .btn-del {
+            padding: 6px 14px;
+            background: rgba(255,50,50,0.15);
+            border: 1px solid rgba(255,50,50,0.4);
             border-radius: 8px;
+            color: #ff6666;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: rgba(255,255,255,0.3);
         }
     </style>
 </head>
 <body>
-
     <div class="header">
-        <h1>🔬 <span>Orbital</span> Simülasyonu</h1>
-        <div style="font-size:14px;color:#8892b0;">3D · Hareketli</div>
+        <h1>🧪 3D Atomik Orbitaller</h1>
     </div>
 
-    <!-- Sekmeler -->
-    <div class="tabs" id="tabsContainer">
-        <button class="tab-button active" data-tab="s">s</button>
-        <button class="tab-button" data-tab="p">p</button>
-        <button class="tab-button" data-tab="d">d</button>
-        <button class="tab-button" data-tab="f">f</button>
-        <button class="tab-button" data-tab="videos">🎬 Videolar</button>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('orbitals')">🔬 Orbitaller</button>
+        <button class="tab-btn" onclick="switchTab('videos')">🎬 Videolar</button>
     </div>
 
-    <!-- Alt Butonlar (orbital seçenekleri) -->
-    <div class="sub-buttons" id="subButtons"></div>
-
-    <!-- Ana İçerik -->
-    <div class="main-content">
-        <div class="canvas-container" id="canvasContainer"></div>
-        <div class="info-panel" id="infoPanel">
-            <h2 id="orbitalTitle">s Orbitali</h2>
-            <div class="detail" id="orbitalDetails">
-                <strong>Kuantum Sayıları:</strong> ℓ = 0, mℓ = 0<br />
-                <strong>Şekil:</strong> Küresel simetrik<br />
-                <strong>Düğüm Düzlemi:</strong> Yok
+    <div class="content">
+        <div id="orbitals" class="tab-panel active">
+            <div class="type-grid">
+                <div class="type-card" onclick="pickType('s', this)">
+                    <h3>s</h3>
+                    <p>1 Orbital · 2e⁻</p>
+                </div>
+                <div class="type-card" onclick="pickType('p', this)">
+                    <h3>p</h3>
+                    <p>3 Orbital · 6e⁻</p>
+                </div>
+                <div class="type-card" onclick="pickType('d', this)">
+                    <h3>d</h3>
+                    <p>5 Orbital · 10e⁻</p>
+                </div>
+                <div class="type-card" onclick="pickType('f', this)">
+                    <h3>f</h3>
+                    <p>7 Orbital · 14e⁻</p>
+                </div>
             </div>
-            <div class="desc" id="orbitalDesc">
-                s orbitali, çekirdek etrafında küresel bir elektron bulutudur. Açısal momentumu sıfırdır.
+
+            <div class="sub-orbital-grid" id="subGrid"></div>
+
+            <div class="sim-box">
+                <div class="sim-title" id="simTitle">Bir orbital türü seçin</div>
+                <canvas id="orbitalCanvas" width="600" height="400"></canvas>
+                <p class="hint-drag">👆 Ekrana dokunarak 3D döndürün</p>
+                <div class="controls">
+                    <button class="ctrl-btn" onclick="toggleSpin()">🔄 Oto-Döndür</button>
+                    <button class="ctrl-btn" onclick="toggleElec()">⚡ Elektronlar</button>
+                    <button class="ctrl-btn" onclick="setSpeed(0.3)">🐌 Yavaş</button>
+                    <button class="ctrl-btn" onclick="setSpeed(1.5)">🚀 Hızlı</button>
+                    <button class="ctrl-btn" onclick="resetView()">🎯 Sıfırla</button>
+                </div>
+            </div>
+
+            <div class="props">
+                <h3>📋 Orbital Özellikleri</h3>
+                <div class="prop-row"><span class="prop-label">Tip:</span><span class="prop-val" id="pType">-</span></div>
+                <div class="prop-row"><span class="prop-label">Alt Orbital:</span><span class="prop-val" id="pSub">-</span></div>
+                <div class="prop-row"><span class="prop-label">l (Açısal Momentum):</span><span class="prop-val" id="pL">-</span></div>
+                <div class="prop-row"><span class="prop-label">mₗ (Manyetik):</span><span class="prop-val" id="pMl">-</span></div>
+                <div class="prop-row"><span class="prop-label">Maks. Elektron:</span><span class="prop-val" id="pElec">-</span></div>
+                <div class="prop-row"><span class="prop-label">Şekil:</span><span class="prop-val" id="pShape">-</span></div>
+                <div class="prop-desc" id="pDesc">Bir orbital türü seçin, ardından alt orbital butonlarından birine tıklayın.</div>
+            </div>
+        </div>
+
+        <div id="videos" class="tab-panel">
+            <div class="video-input">
+                <h2>🎥 Video Ekle</h2>
+                <input type="text" id="vUrl" placeholder="GitHub raw video URL...">
+                <input type="text" id="vTitle" placeholder="Video başlığı...">
+                <button class="btn-add" onclick="addVid()">➕ Ekle</button>
+                <p class="hint">💡 GitHub'daki videonun raw linkini yapıştırın</p>
+            </div>
+            <div class="videos-grid" id="vGrid">
+                <div class="empty">
+                    <p>Henüz video yok</p>
+                    <p style="font-size:0.8rem;margin-top:5px;">Yukarıya URL ekleyin</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Video Sekmesi İçeriği (başlangıçta gizli) -->
-    <div class="videos-content" id="videosContent">
-        <!-- Örnek video placeholder -->
-        <div class="video-item">
-            <video controls src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>
-            <div class="video-label">Örnek Video - Buraya kendi videolarınızı ekleyin</div>
-        </div>
-        <div class="video-item">
-            <video controls src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"></video>
-            <div class="video-label">İkinci Örnek Video</div>
-        </div>
-        <div style="width:100%;text-align:center;color:#8892b0;padding:30px 0;">
-            📂 Videoları buraya sürükleyip bırakabilir veya <code>src</code> özniteliğini değiştirebilirsiniz.
-        </div>
-    </div>
-
-    <!-- Three.js ve OrbitControls -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
-            }
+    <script>
+        function switchTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+            event.target.classList.add('active');
         }
-    </script>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        // ===== CANVAS & 3D ENGINE =====
+        const canvas = document.getElementById('orbitalCanvas');
+        const c = canvas.getContext('2d');
+        let W = 600, H = 400;
+        let activeType = null, activeSub = null;
+        let t = 0, autoSpin = true, elecOn = true, spd = 1;
+        let animFrame = null;
 
-        // --- Veri Yapıları ---
-        // Her orbitalin bilgileri
-        const orbitalData = {
+        // 3D View parameters
+        let rotX = 0.4, rotY = 0.3; // Rotation angles
+        let isDragging = false;
+        let lastX = 0, lastY = 0;
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            W = rect.width;
+            H = rect.height;
+            c.scale(dpr, dpr);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Touch/Mouse drag for 3D rotation
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        canvas.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            rotY += dx * 0.01;
+            rotX += dy * 0.01;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+        
+        canvas.addEventListener('touchstart', e => {
+            isDragging = true;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+            e.preventDefault();
+        }, {passive: false});
+        canvas.addEventListener('touchmove', e => {
+            if (!isDragging) return;
+            const dx = e.touches[0].clientX - lastX;
+            const dy = e.touches[0].clientY - lastY;
+            rotY += dx * 0.015;
+            rotX += dy * 0.015;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+            e.preventDefault();
+        }, {passive: false});
+        canvas.addEventListener('touchend', () => isDragging = false);
+
+        // ===== 3D MATH =====
+        function project3D(x, y, z) {
+            // Rotate around X axis
+            let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
+            let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
+            // Rotate around Y axis
+            let x2 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
+            let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
+            // Perspective projection
+            const scale = 280 / (280 + z2);
+            return {
+                x: W/2 + x2 * scale,
+                y: H/2 + y1 * scale,
+                z: z2,
+                scale: scale
+            };
+        }
+
+        function rotatePoint(x, y, z, ax, ay) {
+            let y1 = y * Math.cos(ax) - z * Math.sin(ax);
+            let z1 = y * Math.sin(ax) + z * Math.cos(ax);
+            let x2 = x * Math.cos(ay) + z1 * Math.sin(ay);
+            let z2 = -x * Math.sin(ay) + z1 * Math.cos(ay);
+            return {x: x2, y: y1, z: z2};
+        }
+
+        // ===== ORBITAL DATA =====
+        const ORBITALS = {
             s: {
-                name: 's Orbitali',
-                subs: [
-                    { id: 's1', label: 's', details: 'ℓ = 0, mℓ = 0', desc: 'Küresel simetrik, düğüm düzlemi yok.' }
-                ]
+                subs: [{ name: '1s', ml: 0, desc: '1s orbitali en düşük enerjili orbitaldir. Çekirdek etrafında küresel simetriye sahiptir. 2 elektron barındırır.' }],
+                l: 0, max: 2, shape: 'Küresel',
+                color: [0, 212, 255]
             },
             p: {
-                name: 'p Orbitalleri',
                 subs: [
-                    { id: 'px', label: 'pₓ', details: 'ℓ = 1, mℓ = -1', desc: 'x ekseni boyunca iki lob, düğüm düzlemi yz.' },
-                    { id: 'py', label: 'pᵧ', details: 'ℓ = 1, mℓ = 0', desc: 'y ekseni boyunca iki lob, düğüm düzlemi xz.' },
-                    { id: 'pz', label: 'p_z', details: 'ℓ = 1, mℓ = +1', desc: 'z ekseni boyunca iki lob, düğüm düzlemi xy.' }
-                ]
+                    { name: 'px', ml: -1, desc: 'px orbitali x-ekseni boyunca uzanan çift loblu (dumbbell) şeklindedir.' },
+                    { name: 'py', ml: 0, desc: 'py orbitali y-ekseni boyunca uzanan çift loblu şeklindedir.' },
+                    { name: 'pz', ml: +1, desc: 'pz orbitali z-ekseni boyunca uzanan çift loblu şeklindedir.' }
+                ],
+                l: 1, max: 6, shape: 'Çift Loblu (Dumbbell)',
+                color: [255, 107, 107]
             },
             d: {
-                name: 'd Orbitalleri',
                 subs: [
-                    { id: 'dxy', label: 'dₓᵧ', details: 'ℓ = 2, mℓ = -2', desc: 'xy düzleminde dört lob, düğüm düzlemleri xz ve yz.' },
-                    { id: 'dxz', label: 'dₓ_z', details: 'ℓ = 2, mℓ = -1', desc: 'xz düzleminde dört lob, düğüm düzlemleri xy ve yz.' },
-                    { id: 'dyz', label: 'dᵧ_z', details: 'ℓ = 2, mℓ = +1', desc: 'yz düzleminde dört lob, düğüm düzlemleri xy ve xz.' },
-                    { id: 'dx2y2', label: 'dₓ²₋ᵧ²', details: 'ℓ = 2, mℓ = +2', desc: 'x ve y eksenlerinde dört lob, düğüm düzlemleri xy ve xz? (aslında 45°)' },
-                    { id: 'dz2', label: 'd_z²', details: 'ℓ = 2, mℓ = 0', desc: 'z ekseninde iki lob ve torus, düğüm düzlemi xy.' }
-                ]
+                    { name: 'dxy', ml: -2, desc: 'dxy orbitali x ve y eksenleri ARASINDA (45°) yer alan dört yapraklı şeklindedir.' },
+                    { name: 'dyz', ml: -1, desc: 'dyz orbitali y ve z eksenleri arasında yer alan dört yapraklı şeklindedir.' },
+                    { name: 'dxz', ml: 0, desc: 'dxz orbitali x ve z eksenleri arasında yer alan dört yapraklı şeklindedir.' },
+                    { name: 'dx²-y²', ml: +1, desc: 'dx²-y² orbitali x ve y eksenleri ÜZERİNDE yer alan dört yapraklı şeklindedir.' },
+                    { name: 'dz²', ml: +2, desc: 'dz² orbitali z-ekseni boyunca iki büyük lob ve ortada bir halka (torus) şeklindedir.' }
+                ],
+                l: 2, max: 10, shape: 'Klover / Torus',
+                color: [34, 180, 80]
             },
             f: {
-                name: 'f Orbitalleri',
                 subs: [
-                    { id: 'fz3', label: 'f_z³', details: 'ℓ = 3, mℓ = 0', desc: 'z ekseni boyunca iki lob, düğüm konileri.' },
-                    { id: 'fxz2', label: 'fₓ_z²', details: 'ℓ = 3, mℓ = ±1', desc: 'xz düzleminde loblar.' },
-                    { id: 'fyz2', label: 'fᵧ_z²', details: 'ℓ = 3, mℓ = ±1', desc: 'yz düzleminde loblar.' },
-                    { id: 'fxyz', label: 'fₓᵧ_z', details: 'ℓ = 3, mℓ = ±2', desc: 'xyz yönlerinde loblar.' },
-                    { id: 'fx3y', label: 'fₓ(ₓ²₋₃ᵧ²)', details: 'ℓ = 3, mℓ = ±3', desc: 'x ekseninde karmaşık loblar.' },
-                    { id: 'fy3x', label: 'fᵧ(₃ₓ²₋ᵧ²)', details: 'ℓ = 3, mℓ = ±3', desc: 'y ekseninde karmaşık loblar.' },
-                    { id: 'fzx2y2', label: 'f_z(ₓ²₋ᵧ²)', details: 'ℓ = 3, mℓ = ±2', desc: 'z ekseni ve x²-y² düğümleri.' }
-                ]
+                    { name: 'fxyz', ml: -3, desc: 'fxyz orbitali üç eksenin köşegenleri boyunca yönelmiş karmaşık yapıdadır.' },
+                    { name: 'fz(x²-y²)', ml: -2, desc: 'fz(x²-y²) orbitali z-ekseni etrafında dört yapraklı simetrik yapıya sahiptir.' },
+                    { name: 'fy(3x²-y²)', ml: -1, desc: 'fy(3x²-y²) orbitali y-ekseni boyunca uzanan karmaşık yapıdadır.' },
+                    { name: 'fz³', ml: 0, desc: 'fz³ orbitali z-ekseni boyunca uzanan, merkezi halkalı karmaşık yapıdadır.' },
+                    { name: 'fx(3y²-x²)', ml: +1, desc: 'fx(3y²-x²) orbitali x-ekseni boyunca uzanan karmaşık yapıdadır.' },
+                    { name: 'fz(x²-y²)', ml: +2, desc: 'fz(x²-y²) orbitali z-ekseni etrafında dört yapraklı yapıdadır.' },
+                    { name: 'fx³', ml: +3, desc: 'fx³ orbitali x-ekseni boyunca uzanan, en karmaşık f orbitalidir.' }
+                ],
+                l: 3, max: 14, shape: 'Çok Karmaşık (8 Lob)',
+                color: [168, 85, 247]
             }
         };
 
-        // --- Three.js Kurulumu ---
-        const container = document.getElementById('canvasContainer');
-        const width = container.clientWidth;
-        const height = container.clientHeight || 400;
+        function rgba(rgb, a) { return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`; }
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0b0e1a);
-
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-        camera.position.set(4, 3, 6);
-        camera.lookAt(0, 0, 0);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = false;
-        container.appendChild(renderer.domElement);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.autoRotate = false;
-        controls.enableZoom = true;
-        controls.target.set(0, 0, 0);
-        controls.update();
-
-        // Işıklandırma
-        const ambientLight = new THREE.AmbientLight(0x404060, 0.8);
-        scene.add(ambientLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-        dirLight.position.set(2, 5, 3);
-        scene.add(dirLight);
-
-        const backLight = new THREE.DirectionalLight(0x446688, 0.6);
-        backLight.position.set(-3, -1, -2);
-        scene.add(backLight);
-
-        // Eksenler (isteğe bağlı, ince çizgiler)
-        const axesHelper = new THREE.AxesHelper(3);
-        scene.add(axesHelper);
-
-        // Izgara
-        const gridHelper = new THREE.GridHelper(5, 10, 0x336699, 0x224466);
-        gridHelper.position.y = -1.5;
-        scene.add(gridHelper);
-
-        // Mevcut orbital grubu
-        let currentOrbitalGroup = null;
-
-        // --- Orbitalleri oluşturan fonksiyonlar ---
-
-        // Yardımcı: belirli konumlarda küreler oluştur
-        function createLob(position, color, radius = 0.6, opacity = 0.85) {
-            const geo = new THREE.SphereGeometry(radius, 32, 32);
-            const mat = new THREE.MeshPhongMaterial({
-                color: color,
-                emissive: color,
-                emissiveIntensity: 0.2,
-                transparent: true,
-                opacity: opacity,
-                shininess: 30,
-                side: THREE.DoubleSide
-            });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.copy(position);
-            return mesh;
-        }
-
-        function createOrbitalGroup(type, id) {
-            const group = new THREE.Group();
-
-            // Renkler
-            const posColor = 0x4a8fe0; // mavi
-            const negColor = 0xe04a4a; // kırmızı
-            const neutralColor = 0x88aadd;
-
-            const r = 0.6; // lob yarıçapı
-
-            switch (type) {
-                case 's': {
-                    // s: tek küre
-                    const sphere = new THREE.Mesh(
-                        new THREE.SphereGeometry(1.0, 48, 48),
-                        new THREE.MeshPhongMaterial({
-                            color: 0x66aaff,
-                            emissive: 0x224466,
-                            emissiveIntensity: 0.3,
-                            transparent: true,
-                            opacity: 0.6,
-                            wireframe: false,
-                            side: THREE.DoubleSide
-                        })
-                    );
-                    // Daha iyi görünüm için içte bir parlak küre
-                    group.add(sphere);
-                    // İnce bir kabuk
-                    const shell = new THREE.Mesh(
-                        new THREE.SphereGeometry(1.02, 32, 32),
-                        new THREE.MeshBasicMaterial({
-                            color: 0x88ccff,
-                            wireframe: true,
-                            transparent: true,
-                            opacity: 0.15
-                        })
-                    );
-                    group.add(shell);
-                    break;
-                }
-                case 'p': {
-                    // px, py, pz: iki lob zıt yönlerde
-                    let dir = new THREE.Vector3();
-                    if (id === 'px') dir.set(1, 0, 0);
-                    else if (id === 'py') dir.set(0, 1, 0);
-                    else if (id === 'pz') dir.set(0, 0, 1);
-                    const p1 = dir.clone().multiplyScalar(1.1);
-                    const p2 = dir.clone().multiplyScalar(-1.1);
-                    const lob1 = createLob(p1, posColor, r);
-                    const lob2 = createLob(p2, negColor, r);
-                    group.add(lob1);
-                    group.add(lob2);
-                    // İnce bağlantı
-                    break;
-                }
-                case 'd': {
-                    // d orbitalleri
-                    if (id === 'dxy') {
-                        // 4 lob x ve y eksenlerinde
-                        const dirs = [
-                            [1, 1, 0],
-                            [-1, -1, 0],
-                            [1, -1, 0],
-                            [-1, 1, 0]
-                        ];
-                        dirs.forEach(d => {
-                            const v = new THREE.Vector3(d[0], d[1], d[2]).normalize().multiplyScalar(1.2);
-                            const color = (d[0] * d[1] > 0) ? posColor : negColor;
-                            group.add(createLob(v, color, r * 0.9));
-                        });
-                    } else if (id === 'dxz') {
-                        const dirs = [
-                            [1, 0, 1],
-                            [-1, 0, -1],
-                            [1, 0, -1],
-                            [-1, 0, 1]
-                        ];
-                        dirs.forEach(d => {
-                            const v = new THREE.Vector3(d[0], d[1], d[2]).normalize().multiplyScalar(1.2);
-                            const color = (d[0] * d[2] > 0) ? posColor : negColor;
-                            group.add(createLob(v, color, r * 0.9));
-                        });
-                    } else if (id === 'dyz') {
-                        const dirs = [
-                            [0, 1, 1],
-                            [0, -1, -1],
-                            [0, 1, -1],
-                            [0, -1, 1]
-                        ];
-                        dirs.forEach(d => {
-                            const v = new THREE.Vector3(d[0], d[1], d[2]).normalize().multiplyScalar(1.2);
-                            const color = (d[1] * d[2] > 0) ? posColor : negColor;
-                            group.add(createLob(v, color, r * 0.9));
-                        });
-                    } else if (id === 'dx2y2') {
-                        // x ve y eksenlerinde, işaret farklı
-                        const dirs = [
-                            [1, 0, 0],
-                            [-1, 0, 0],
-                            [0, 1, 0],
-                            [0, -1, 0]
-                        ];
-                        dirs.forEach(d => {
-                            const v = new THREE.Vector3(d[0], d[1], d[2]).multiplyScalar(1.5);
-                            const color = (d[0] !== 0) ? posColor : negColor;
-                            group.add(createLob(v, color, r * 0.9));
-                        });
-                        // ek olarak torus? daha basit tutalım.
-                    } else if (id === 'dz2') {
-                        // z ekseninde iki lob + torus (halka)
-                        const up = new THREE.Vector3(0, 0, 1.4);
-                        const down = new THREE.Vector3(0, 0, -1.4);
-                        group.add(createLob(up, posColor, r * 1.1));
-                        group.add(createLob(down, posColor, r * 1.1));
-
-                        // torus: xy düzleminde halka
-                        const torusGeo = new THREE.TorusGeometry(1.2, 0.25, 24, 48);
-                        const torusMat = new THREE.MeshPhongMaterial({
-                            color: 0x88aadd,
-                            emissive: 0x224466,
-                            emissiveIntensity: 0.2,
-                            transparent: true,
-                            opacity: 0.5,
-                            side: THREE.DoubleSide
-                        });
-                        const torus = new THREE.Mesh(torusGeo, torusMat);
-                        torus.rotation.x = Math.PI / 2;
-                        group.add(torus);
-                    }
-                    break;
-                }
-                case 'f': {
-                    // f orbitalleri - basitleştirilmiş gösterim
-                    // Her biri için rastgele loblar koyalım, gerçek şekilleri çok karmaşık.
-                    // Kullanıcıya görsel fikir vermesi için.
-                    const colors = [posColor, negColor, 0x66dd88, 0xdd66dd];
-                    const count = 6; // her f için 6 lob
-                    for (let i = 0; i < count; i++) {
-                        const theta = Math.random() * Math.PI * 2;
-                        const phi = Math.acos(2 * Math.random() - 1);
-                        const x = Math.sin(phi) * Math.cos(theta);
-                        const y = Math.sin(phi) * Math.sin(theta);
-                        const z = Math.cos(phi);
-                        const v = new THREE.Vector3(x, y, z).multiplyScalar(1.4 + 0.3 * Math.random());
-                        const color = colors[i % colors.length];
-                        group.add(createLob(v, color, 0.5 + 0.2 * Math.random(), 0.7));
-                    }
-                    // Ayrıca etrafa küçük noktalar
-                    break;
-                }
-                default:
-                    break;
-            }
-
-            // Tüm grubu ortala ve döndür
-            return group;
-        }
-
-        // --- Sekme ve buton yönetimi ---
-
-        let currentTab = 's';
-        let currentSubId = 's1';
-
-        const tabsContainer = document.getElementById('tabsContainer');
-        const subButtonsContainer = document.getElementById('subButtons');
-        const infoTitle = document.getElementById('orbitalTitle');
-        const infoDetails = document.getElementById('orbitalDetails');
-        const infoDesc = document.getElementById('orbitalDesc');
-        const videosContent = document.getElementById('videosContent');
-
-        // Alt butonları oluştur
-        function renderSubButtons(tab) {
-            const data = orbitalData[tab];
-            if (!data) return;
-            subButtonsContainer.innerHTML = '';
-            data.subs.forEach(sub => {
+        function pickType(type, el) {
+            activeType = type;
+            activeSub = null;
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            const d = ORBITALS[type];
+            document.getElementById('simTitle').textContent = type.toUpperCase() + ' Orbitalleri';
+            
+            const grid = document.getElementById('subGrid');
+            grid.innerHTML = '';
+            d.subs.forEach((sub, i) => {
                 const btn = document.createElement('button');
-                btn.className = 'sub-button';
-                btn.textContent = sub.label;
-                btn.dataset.subId = sub.id;
-                if (sub.id === currentSubId && tab === currentTab) {
-                    btn.classList.add('active');
-                }
-                btn.addEventListener('click', () => {
-                    // aktif buton
-                    document.querySelectorAll('.sub-button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentSubId = sub.id;
-                    // orbitali değiştir
-                    updateOrbital(tab, sub.id);
-                    // bilgileri güncelle
-                    updateInfo(tab, sub.id);
-                });
-                subButtonsContainer.appendChild(btn);
+                btn.className = 'sub-btn';
+                btn.textContent = sub.name;
+                btn.onclick = function() { pickSub(type, i, this); };
+                grid.appendChild(btn);
+            });
+            
+            document.getElementById('pType').textContent = type.toUpperCase();
+            document.getElementById('pSub').textContent = 'Seçiniz';
+            document.getElementById('pL').textContent = d.l;
+            document.getElementById('pMl').textContent = d.subs.map(s => s.ml).join(', ');
+            document.getElementById('pElec').textContent = d.max;
+            document.getElementById('pShape').textContent = d.shape;
+            document.getElementById('pDesc').textContent = 'Yukarıdaki butonlardan bir alt orbital seçin.';
+            
+            t = 0;
+            rotX = 0.4; rotY = 0.3;
+        }
+
+        function pickSub(type, idx, el) {
+            activeSub = idx;
+            document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            const d = ORBITALS[type];
+            const sub = d.subs[idx];
+            
+            document.getElementById('simTitle').textContent = sub.name + ' Orbitali (3D)';
+            document.getElementById('pSub').textContent = sub.name;
+            document.getElementById('pMl').textContent = sub.ml;
+            document.getElementById('pDesc').textContent = sub.desc;
+            
+            t = 0;
+            rotX = 0.4; rotY = 0.3;
+            if (animFrame) cancelAnimationFrame(animFrame);
+            loop();
+        }
+
+        // ===== 3D DRAWING HELPERS =====
+        function clear() {
+            c.clearRect(0, 0, W, H);
+            c.fillStyle = '#050510';
+            c.fillRect(0, 0, W, H);
+        }
+
+        function draw3DAxes() {
+            const axisLen = 120;
+            const axes = [
+                {x: axisLen, y: 0, z: 0, label: 'x', col: '#ff6666'},
+                {x: 0, y: -axisLen, z: 0, label: 'y', col: '#66ff66'},
+                {x: 0, y: 0, z: axisLen, label: 'z', col: '#6666ff'}
+            ];
+            
+            c.strokeStyle = 'rgba(255,255,255,0.15)';
+            c.lineWidth = 1.5;
+            
+            axes.forEach(ax => {
+                const p = project3D(ax.x, ax.y, ax.z);
+                const center = project3D(0, 0, 0);
+                c.beginPath();
+                c.moveTo(center.x, center.y);
+                c.lineTo(p.x, p.y);
+                c.stroke();
+                
+                c.fillStyle = ax.col;
+                c.font = 'bold 12px sans-serif';
+                c.textAlign = 'center';
+                c.fillText(ax.label, p.x + 8, p.y - 8);
             });
         }
 
-        // Bilgileri güncelle
-        function updateInfo(tab, subId) {
-            const data = orbitalData[tab];
-            const sub = data.subs.find(s => s.id === subId);
-            if (!sub) return;
-            infoTitle.textContent = `${data.name} - ${sub.label}`;
-            infoDetails.innerHTML = `<strong>Kuantum Sayıları:</strong> ${sub.details}<br /><strong>Şekil:</strong> ${sub.desc.split(',')[0]}`;
-            infoDesc.textContent = sub.desc;
+        function draw3DNucleus() {
+            const p = project3D(0, 0, 0);
+            const r = 6 * p.scale;
+            c.beginPath();
+            c.arc(p.x, p.y, r, 0, Math.PI*2);
+            c.fillStyle = '#ff4444';
+            c.fill();
+            c.beginPath();
+            c.arc(p.x - 2, p.y - 2, r * 0.6, 0, Math.PI*2);
+            c.fillStyle = '#4488ff';
+            c.fill();
+            c.beginPath();
+            c.arc(p.x + 2, p.y + 2, r * 0.6, 0, Math.PI*2);
+            c.fillStyle = '#ff6666';
+            c.fill();
         }
 
-        // Orbitali güncelle (3D)
-        function updateOrbital(tab, subId) {
-            // Eski grubu kaldır
-            if (currentOrbitalGroup) {
-                scene.remove(currentOrbitalGroup);
-                // dispose? basit
+        function draw3DEllipse(cx, cy, cz, rx, ry, rz, rgb, alpha, rotation) {
+            // Generate ellipse points in 3D
+            const points = [];
+            for (let i = 0; i <= 24; i++) {
+                const a = (Math.PI * 2 / 24) * i;
+                let x = rx * Math.cos(a);
+                let y = ry * Math.sin(a);
+                let z = 0;
+                
+                // Apply local rotation if provided
+                if (rotation) {
+                    const r = rotatePoint(x, y, z, rotation.rx || 0, rotation.ry || 0);
+                    x = r.x; y = r.y; z = r.z;
+                }
+                
+                const p = project3D(cx + x, cy + y, cz + z);
+                points.push(p);
             }
-            const group = createOrbitalGroup(tab, subId);
-            // Biraz rastgele dönüş açısı verme, daha güzel dursun
-            group.rotation.x = 0.2;
-            group.rotation.y = 0.5;
-            scene.add(group);
-            currentOrbitalGroup = group;
+            
+            // Draw filled
+            c.beginPath();
+            c.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                c.lineTo(points[i].x, points[i].y);
+            }
+            c.closePath();
+            
+            // Calculate average z for depth sorting approximation
+            let avgZ = 0;
+            points.forEach(p => avgZ += p.z);
+            avgZ /= points.length;
+            const depthAlpha = Math.max(0.1, Math.min(1, 1 - avgZ / 400));
+            
+            c.fillStyle = rgba(rgb, alpha * depthAlpha);
+            c.fill();
+            c.strokeStyle = rgba(rgb, 0.4 * depthAlpha);
+            c.lineWidth = 1;
+            c.stroke();
+            
+            return avgZ;
         }
 
-        // Sekme değiştirme
-        function switchTab(tab) {
-            currentTab = tab;
-            // Aktif sekme stil
-            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.tab-button[data-tab="${tab}"]`).classList.add('active');
+        function draw3DSphere(cx, cy, cz, r, rgb, alpha) {
+            const p = project3D(cx, cy, cz);
+            const radius = r * p.scale;
+            const grad = c.createRadialGradient(
+                p.x - radius * 0.3, p.y - radius * 0.3, 2,
+                p.x, p.y, radius
+            );
+            grad.addColorStop(0, rgba(rgb, alpha));
+            grad.addColorStop(0.5, rgba(rgb, alpha * 0.4));
+            grad.addColorStop(1, rgba(rgb, alpha * 0.05));
+            
+            c.beginPath();
+            c.arc(p.x, p.y, radius, 0, Math.PI*2);
+            c.fillStyle = grad;
+            c.fill();
+            c.strokeStyle = rgba(rgb, 0.3);
+            c.lineWidth = 1;
+            c.stroke();
+        }
 
-            // Video sekmesi özel
-            if (tab === 'videos') {
-                document.querySelector('.main-content').style.display = 'none';
-                videosContent.style.display = 'flex';
-                subButtonsContainer.innerHTML = '';
+        // ===== 3D ORBITAL DRAWERS =====
+
+        function draw3DSOrbital(rgb) {
+            const pulse = 1 + Math.sin(t * 2) * 0.05;
+            // Multiple concentric spheres for 3D effect
+            draw3DSphere(0, 0, 0, 70 * pulse, rgb, 0.6);
+            draw3DSphere(0, 0, 0, 50 * pulse, rgb, 0.3);
+            draw3DSphere(0, 0, 0, 30 * pulse, rgb, 0.15);
+            draw3DNucleus();
+            
+            if (elecOn) {
+                const a1 = t * 2;
+                const a2 = t * 2 + Math.PI;
+                draw3DElectron(50 * Math.cos(a1), 50 * Math.sin(a1) * 0.6, 0);
+                draw3DElectron(50 * Math.cos(a2), 50 * Math.sin(a2) * 0.6, 0);
+            }
+        }
+
+        function draw3DPOrbital(subIdx, rgb) {
+            draw3DAxes();
+            draw3DNucleus();
+            
+            // p orbitals oriented along different axes
+            const orientations = [
+                {axis: 'x', angle: 0},
+                {axis: 'y', angle: Math.PI/2},
+                {axis: 'z', angle: Math.PI}
+            ];
+            const orient = orientations[subIdx];
+            
+            // Draw two lobes
+            const lobeDist = 55;
+            const lobeRx = 55, lobeRy = 24, lobeRz = 24;
+            
+            // Left/positive lobe
+            let lx = 0, ly = 0, lz = 0;
+            if (orient.axis === 'x') lx = -lobeDist;
+            else if (orient.axis === 'y') ly = -lobeDist;
+            else lz = -lobeDist;
+            
+            draw3DEllipse(lx, ly, lz, lobeRx, lobeRy, lobeRz, rgb, 0.7);
+            
+            // Right/negative lobe
+            lx = 0; ly = 0; lz = 0;
+            if (orient.axis === 'x') lx = lobeDist;
+            else if (orient.axis === 'y') ly = lobeDist;
+            else lz = lobeDist;
+            
+            draw3DEllipse(lx, ly, lz, lobeRx, lobeRy, lobeRz, rgb, 0.7);
+            
+            // Nodal plane
+            draw3DNodalPlane(orient.axis);
+            
+            if (elecOn) {
+                const a = t * 1.8;
+                const r = 65;
+                draw3DElectron(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
+                draw3DElectron(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            }
+        }
+
+        function draw3DDOrbital(subIdx, rgb) {
+            draw3DAxes();
+            draw3DNucleus();
+            
+            if (subIdx === 4) {
+                // ===== dz² =====
+                // Two main lobes along z-axis
+                draw3DEllipse(0, 0, -60, 26, 26, 50, rgb, 0.75);
+                draw3DEllipse(0, 0, 60, 26, 26, 50, rgb, 0.75);
+                
+                // Torus ring in xy plane
+                const torusPoints = [];
+                for (let i = 0; i <= 32; i++) {
+                    const a = (Math.PI * 2 / 32) * i;
+                    const tx = Math.cos(a) * 55;
+                    const ty = Math.sin(a) * 55;
+                    const tz = 0;
+                    const p = project3D(tx, ty, tz);
+                    torusPoints.push(p);
+                }
+                c.beginPath();
+                c.moveTo(torusPoints[0].x, torusPoints[0].y);
+                for (let i = 1; i < torusPoints.length; i++) {
+                    c.lineTo(torusPoints[i].x, torusPoints[i].y);
+                }
+                c.closePath();
+                c.fillStyle = rgba(rgb, 0.3);
+                c.fill();
+                c.strokeStyle = rgba(rgb, 0.4);
+                c.lineWidth = 1.5;
+                c.stroke();
+                
+                // Inner torus ring
+                const innerPoints = [];
+                for (let i = 0; i <= 32; i++) {
+                    const a = (Math.PI * 2 / 32) * i;
+                    const tx = Math.cos(a) * 30;
+                    const ty = Math.sin(a) * 30;
+                    const p = project3D(tx, ty, 0);
+                    innerPoints.push(p);
+                }
+                c.beginPath();
+                c.moveTo(innerPoints[0].x, innerPoints[0].y);
+                for (let i = 1; i < innerPoints.length; i++) {
+                    c.lineTo(innerPoints[i].x, innerPoints[i].y);
+                }
+                c.closePath();
+                c.strokeStyle = rgba(rgb, 0.25);
+                c.lineWidth = 1;
+                c.stroke();
+                
+            } else if (subIdx === 3) {
+                // ===== dx²-y² =====
+                // Four lobes ON the axes
+                const positions = [
+                    {x: 45, y: 0, z: 0},
+                    {x: -45, y: 0, z: 0},
+                    {x: 0, y: 45, z: 0},
+                    {x: 0, y: -45, z: 0}
+                ];
+                
+                positions.forEach(pos => {
+                    draw3DEllipse(pos.x, pos.y, pos.z, 36, 22, 22, rgb, 0.72);
+                });
+                
+                // Nodal lines at 45°
+                draw3DNodalLine(45, 45, 0, -45, -45, 0);
+                draw3DNodalLine(-45, 45, 0, 45, -45, 0);
+                
+            } else {
+                // ===== dxy, dyz, dxz =====
+                // Four lobes BETWEEN axes
+                const baseAngles = [Math.PI/4, Math.PI/2, 0];
+                const angle = baseAngles[subIdx] || 0;
+                
+                for (let i = 0; i < 4; i++) {
+                    const a = (Math.PI / 2) * i + angle + Math.PI/4;
+                    const r = 42;
+                    const lx = Math.cos(a) * r;
+                    const ly = Math.sin(a) * r;
+                    const lz = subIdx === 1 ? Math.cos(a) * r * 0.5 : (subIdx === 2 ? Math.sin(a) * r * 0.5 : 0);
+                    
+                    draw3DEllipse(lx, ly, lz, 32, 18, 18, rgb, 0.7);
+                }
+                
+                // Nodal lines along axes
+                if (subIdx === 0) {
+                    draw3DNodalLine(-60, 0, 0, 60, 0, 0);
+                    draw3DNodalLine(0, -60, 0, 0, 60, 0);
+                }
+            }
+            
+            if (elecOn) {
+                const a = t * 1.5;
+                const r = 80;
+                draw3DElectron(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
+                draw3DElectron(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            }
+        }
+
+        function draw3DFOrbital(subIdx, rgb) {
+            draw3DAxes();
+            draw3DNucleus();
+            
+            // f orbitals have 6-8 lobes with complex orientations
+            const configs = [
+                // fxyz - 8 lobes in octants
+                {count: 8, r: 38, w: 24, h: 14, d: 14, offset: Math.PI/8},
+                // fz(x²-y²) - 4 main + 4 small
+                {count: 8, r: 35, w: 22, h: 13, d: 13, offset: 0},
+                // fy(3x²-y²) - 6 lobes
+                {count: 6, r: 38, w: 24, h: 14, d: 14, offset: Math.PI/6},
+                // fz³ - 2 main z-lobes + ring
+                {count: 6, r: 32, w: 20, h: 12, d: 12, offset: 0, special: 'z3'},
+                // fx(3y²-x²) - 6 lobes
+                {count: 6, r: 38, w: 24, h: 14, d: 14, offset: 0},
+                // fz(x²-y²) variant - 4 lobes
+                {count: 4, r: 40, w: 26, h: 15, d: 15, offset: Math.PI/4},
+                // fx³ - 8 lobes along x
+                {count: 8, r: 35, w: 22, h: 13, d: 13, offset: 0, special: 'x3'}
+            ];
+            
+            const cfg = configs[subIdx] || configs[0];
+            
+            if (cfg.special === 'z3') {
+                // fz³ special: two big z-lobes + ring
+                draw3DEllipse(0, 0, -55, 22, 22, 48, rgb, 0.7);
+                draw3DEllipse(0, 0, 55, 22, 22, 48, rgb, 0.7);
+                
+                // Middle ring lobes
+                for (let i = 0; i < 6; i++) {
+                    const a = (Math.PI * 2 / 6) * i;
+                    const lx = Math.cos(a) * 40;
+                    const ly = Math.sin(a) * 40;
+                    draw3DEllipse(lx, ly, 0, 18, 18, 12, rgb, 0.5);
+                }
+            } else if (cfg.special === 'x3') {
+                // fx³: lobes primarily along x-axis with complex pattern
+                for (let i = 0; i < 8; i++) {
+                    const a = (Math.PI * 2 / 8) * i;
+                    const r = 38;
+                    const lx = Math.cos(a) * r * (Math.abs(Math.cos(a)) > 0.5 ? 1.3 : 0.7);
+                    const ly = Math.sin(a) * r;
+                    const lz = Math.sin(a * 2) * r * 0.3;
+                    draw3DEllipse(lx, ly, lz, 22, 13, 13, rgb, 0.65);
+                }
+            } else {
+                // Standard multi-lobe f orbital
+                for (let i = 0; i < cfg.count; i++) {
+                    const a = (Math.PI * 2 / cfg.count) * i + cfg.offset + (subIdx * 0.2);
+                    const lx = Math.cos(a) * cfg.r;
+                    const ly = Math.sin(a) * cfg.r;
+                    const lz = Math.sin(a * 2 + subIdx) * cfg.r * 0.4;
+                    
+                    draw3DEllipse(lx, ly, lz, cfg.w, cfg.h, cfg.d, rgb, 0.65);
+                }
+            }
+            
+            // Inner structure for some f orbitals
+            if (subIdx === 2 || subIdx === 3 || subIdx === 6) {
+                draw3DSphere(0, 0, 0, 15, rgb, 0.2);
+            }
+            
+            if (elecOn) {
+                const a = t * 1.2;
+                const r = 90;
+                draw3DElectron(r * Math.cos(a), r * Math.sin(a) * 0.5, 0);
+                draw3DElectron(r * Math.cos(a + Math.PI), r * Math.sin(a + Math.PI) * 0.5, 0);
+            }
+        }
+
+        function draw3DNodalPlane(axis) {
+            // Draw a transparent plane
+            const size = 80;
+            let points = [];
+            if (axis === 'x') {
+                for (let i = 0; i <= 8; i++) {
+                    for (let j = 0; j <= 8; j++) {
+                        points.push(project3D(0, -size + i*20, -size + j*20));
+                    }
+                }
+            } else if (axis === 'y') {
+                for (let i = 0; i <= 8; i++) {
+                    for (let j = 0; j <= 8; j++) {
+                        points.push(project3D(-size + i*20, 0, -size + j*20));
+                    }
+                }
+            } else {
+                for (let i = 0; i <= 8; i++) {
+                    for (let j = 0; j <= 8; j++) {
+                        points.push(project3D(-size + i*20, -size + j*20, 0));
+                    }
+                }
+            }
+            
+            points.forEach(p => {
+                c.beginPath();
+                c.arc(p.x, p.y, 1.5, 0, Math.PI*2);
+                c.fillStyle = 'rgba(255,255,255,0.08)';
+                c.fill();
+            });
+        }
+
+        function draw3DNodalLine(x1, y1, z1, x2, y2, z2) {
+            const p1 = project3D(x1, y1, z1);
+            const p2 = project3D(x2, y2, z2);
+            c.strokeStyle = 'rgba(255,255,255,0.12)';
+            c.lineWidth = 1;
+            c.setLineDash([4, 4]);
+            c.beginPath();
+            c.moveTo(p1.x, p1.y);
+            c.lineTo(p2.x, p2.y);
+            c.stroke();
+            c.setLineDash([]);
+        }
+
+        function draw3DElectron(x, y, z) {
+            const p = project3D(x, y, z);
+            const r = 4 * p.scale;
+            c.beginPath();
+            c.arc(p.x, p.y, r + 4, 0, Math.PI*2);
+            c.fillStyle = 'rgba(255,255,0,0.15)';
+            c.fill();
+            c.beginPath();
+            c.arc(p.x, p.y, r, 0, Math.PI*2);
+            c.fillStyle = '#ffff00';
+            c.fill();
+        }
+
+        // ===== MAIN LOOP =====
+        function loop() {
+            clear();
+            
+            if (!activeType || activeSub === null) {
+                c.fillStyle = 'rgba(255,255,255,0.3)';
+                c.font = 'bold 15px sans-serif';
+                c.textAlign = 'center';
+                c.fillText('Bir orbital türü ve alt orbital seçin', W/2, H/2);
+                animFrame = requestAnimationFrame(loop);
                 return;
+            }
+            
+            if (autoSpin && !isDragging) {
+                rotY += 0.008 * spd;
+                t += 0.015 * spd;
             } else {
-                document.querySelector('.main-content').style.display = 'flex';
-                videosContent.style.display = 'none';
+                t += 0.015 * spd;
             }
-
-            // Alt butonları oluştur
-            const data = orbitalData[tab];
-            if (data && data.subs.length > 0) {
-                currentSubId = data.subs[0].id;
-            } else {
-                currentSubId = '';
+            
+            const d = ORBITALS[activeType];
+            const rgb = d.color;
+            
+            switch (activeType) {
+                case 's': draw3DSOrbital(rgb); break;
+                case 'p': draw3DPOrbital(activeSub, rgb); break;
+                case 'd': draw3DDOrbital(activeSub, rgb); break;
+                case 'f': draw3DFOrbital(activeSub, rgb); break;
             }
-            renderSubButtons(tab);
-            // İlk orbitali göster
-            if (currentSubId) {
-                updateOrbital(tab, currentSubId);
-                updateInfo(tab, currentSubId);
-            }
+            
+            // Legend
+            c.textAlign = 'left';
+            c.font = '10px sans-serif';
+            c.fillStyle = 'rgba(255,255,255,0.35)';
+            c.fillText('🔴 Proton  🔵 Nötron', 10, 18);
+            c.fillStyle = '#ffff00';
+            c.fillText('● Elektron', 10, 34);
+            c.fillStyle = 'rgba(255,255,255,0.25)';
+            c.fillText('👆 Sürükleyerek 3D döndürün', 10, H - 10);
+            
+            animFrame = requestAnimationFrame(loop);
         }
 
-        // Sekme tıklama olayları
-        tabsContainer.addEventListener('click', (e) => {
-            const btn = e.target.closest('.tab-button');
-            if (!btn) return;
-            const tab = btn.dataset.tab;
-            if (tab === currentTab) return;
-            switchTab(tab);
-        });
+        function toggleSpin() { autoSpin = !autoSpin; }
+        function toggleElec() { elecOn = !elecOn; }
+        function setSpeed(v) { spd = v; }
+        function resetView() { rotX = 0.4; rotY = 0.3; }
 
-        // --- Başlangıç ---
-        switchTab('s');
+        loop();
 
-        // --- Animasyon Döngüsü ---
-        function animate() {
-            requestAnimationFrame(animate);
+        // ===== VIDEOS =====
+        let videos = JSON.parse(localStorage.getItem('chemVids') || '[]');
 
-            if (currentOrbitalGroup) {
-                // Yavaşça döndür
-                currentOrbitalGroup.rotation.y += 0.005;
-                currentOrbitalGroup.rotation.x += 0.001;
+        function addVid() {
+            const url = document.getElementById('vUrl').value.trim();
+            const title = document.getElementById('vTitle').value.trim() || 'Video';
+            if (!url) { alert('URL girin!'); return; }
+            let u = url;
+            if (u.includes('github.com') && u.includes('/blob/')) {
+                u = u.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
             }
-
-            controls.update();
-            renderer.render(scene, camera);
+            videos.unshift({ id: Date.now(), url: u, title, date: new Date().toLocaleDateString('tr-TR') });
+            localStorage.setItem('chemVids', JSON.stringify(videos));
+            document.getElementById('vUrl').value = '';
+            document.getElementById('vTitle').value = '';
+            renderVids();
         }
-        animate();
 
-        // --- Pencere yeniden boyutlandırma ---
-        window.addEventListener('resize', () => {
-            const w = container.clientWidth;
-            const h = container.clientHeight || 400;
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            renderer.setSize(w, h);
-        });
+        function delVid(id) {
+            videos = videos.filter(v => v.id !== id);
+            localStorage.setItem('chemVids', JSON.stringify(videos));
+            renderVids();
+        }
 
-        // Video sekmesine dosya ekleme (örnek)
-        // Kullanıcı kendi videolarını ekleyebilir
-        console.log('Orbital simülasyonu hazır!');
+        function renderVids() {
+            const g = document.getElementById('vGrid');
+            if (!videos.length) {
+                g.innerHTML = '<div class="empty"><p>Henüz video yok</p><p style="font-size:0.8rem;margin-top:5px;">Yukarıya URL ekleyin</p></div>';
+                return;
+            }
+            g.innerHTML = videos.map(v => `
+                <div class="video-card">
+                    <video controls playsinline preload="metadata" style="width:100%;display:block;background:#000;">
+                        <source src="${v.url}" type="video/mp4">
+                    </video>
+                    <div class="video-info">
+                        <h4>${v.title}</h4>
+                        <p>${v.date}</p>
+                    </div>
+                    <div class="video-actions">
+                        <button class="btn-del" onclick="delVid(${v.id})">🗑️ Sil</button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-        // Ekstra: video sekmesinde video ekleme için bir fonksiyon örneği
-        // Burada manuel olarak video elementleri eklenebilir.
+        renderVids();
     </script>
-
 </body>
-</html>
+</html>'''
+
+with open('/mnt/agents/output/kimya_orbitaller_videolar.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("Dosya güncellendi! Tüm orbitaller 3D, f orbitalleri düzeltildi.")
