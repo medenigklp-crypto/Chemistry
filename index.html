@@ -1,342 +1,558 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Roni 3D Kimya Laboratuvarı Pro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        body {
+            background-color: #08090c;
+            color: #e0e6ed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .dashboard {
+            display: flex;
+            gap: 15px;
+            padding: 24px 20px 10px 20px;
+            background: linear-gradient(to bottom, #11141a, #08090c);
+        }
+        .indicator {
+            flex: 1;
+            background: rgba(20, 24, 33, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .indicator span {
+            display: block;
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        #ph-val { color: #00ffcc; text-shadow: 0 0 12px rgba(0,255,204,0.4); }
+        #temp-val { color: #ff5533; text-shadow: 0 0 12px rgba(255,85,51,0.4); }
 
-beaker_code = '''
-"""
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    KİMYA LABORATUVARI BEAKER SIMÜLASYONU                    ║
-║                  (BEAKER App - Enhanced Python Version)                       ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  Özellikler:                                                                 ║
-║  • 150+ Kimyasal madde ve bileşik                                          ║
-║  • Gerçekçi renk değişimleri ve fiziksel özellikler                        ║
-║  • 50+ Kimyasal reaksiyon simülasyonu                                     ║
-║  • Sıcaklık, pH, yoğunluk, çözünürlük hesaplamaları                        ║
-║  • Gaz çıkışı, çökelme, renk değişimi, ışıma efektleri                    ║
-║  • Karıştırma, ısıtma, soğutma, dökme fonksiyonları                        ║
-║  • Türkçe arayüz ve açıklamalar                                           ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-"""
+        .canvas-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #151922 0%, #08090c 90%);
+            position: relative;
+        }
+        canvas {
+            background-color: transparent;
+            max-width: 100%;
+            max-height: 100%;
+        }
 
-import random
-import math
-import time
-from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple
-from enum import Enum
+        #log-panel {
+            background-color: #08090c;
+            color: #8f9cae;
+            font-size: 13px;
+            padding: 12px 20px;
+            text-align: center;
+            font-family: monospace;
+            height: 45px;
+            overflow: hidden;
+        }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# RENK VE GÖRSEL SİSTEM
-# ═══════════════════════════════════════════════════════════════════════════════
+        .controls {
+            background-color: #11141a;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 32px 32px 0 0;
+            box-shadow: 0 -15px 35px rgba(0,0,0,0.6);
+        }
+        
+        .select-container {
+            display: flex;
+            gap: 10px;
+        }
 
-class Renk:
-    """ANSI renk kodları ve renk işlemleri"""
-    
-    # Temel renkler
-    SIFIRLA = "\\033[0m"
-    KALIN = "\\033[1m"
-    SOLUK = "\\033[2m"
-    ITALIK = "\\033[3m"
-    ALTICIZGI = "\\033[4m"
-    
-    # Ön plan renkleri
-    SIYAH = "\\033[30m"
-    KIRMIZI = "\\033[31m"
-    YESIL = "\\033[32m"
-    SARI = "\\033[33m"
-    MAVI = "\\033[34m"
-    MOR = "\\033[35m"
-    CAMGOZBEYAZI = "\\033[36m"
-    BEYAZ = "\\033[37m"
-    
-    # Parlak renkler
-    KOYU_KIRMIZI = "\\033[91m"
-    KOYU_YESIL = "\\033[92m"
-    KOYU_SARI = "\\033[93m"
-    KOYU_MAVI = "\\033[94m"
-    KOYU_MOR = "\\033[95m"
-    KOYU_CAMGOZ = "\\033[96m"
-    KOYU_BEYAZ = "\\033[97m"
-    
-    # Arka plan renkleri
-    ARKA_SIYAH = "\\033[40m"
-    ARKA_KIRMIZI = "\\033[41m"
-    ARKA_YESIL = "\\033[42m"
-    ARKA_SARI = "\\033[43m"
-    ARKA_MAVI = "\\033[44m"
-    ARKA_MOR = "\\033[45m"
-    ARKA_CAMGOZ = "\\033[46m"
-    ARKA_BEYAZ = "\\033[47m"
-    
-    # Kimyasal renk paleti
-    RENK_PALETI = {
-        "beyaz": "\\033[97m",
-        "gri": "\\033[37m",
-        "siyah": "\\033[30m",
-        "kirmizi": "\\033[91m",
-        "koyu_kirmizi": "\\033[31m",
-        "turuncu": "\\033[38;5;208m",
-        "sari": "\\033[93m",
-        "yesil": "\\033[92m",
-        "koyu_yesil": "\\033[32m",
-        "mavi": "\\033[94m",
-        "koyu_mavi": "\\033[34m",
-        "mor": "\\033[95m",
-        "koyu_mor": "\\033[35m",
-        "pembe": "\\033[38;5;205m",
-        "kahverengi": "\\033[38;5;130m",
-        "altin": "\\033[38;5;220m",
-        "gumus": "\\033[38;5;250m",
-        "bakir": "\\033[38;5;166m",
-        "simsiyah": "\\033[30;1m",
-        "acik_mavi": "\\033[38;5;51m",
-        "acik_yesil": "\\033[38;5;120m",
-        "acik_mor": "\\033[38;5;141m",
-        "acik_turuncu": "\\033[38;5;215m",
-        "acik_pembe": "\\033[38;5;218m",
-        "turkuaz": "\\033[38;5;45m",
-        "zeytin": "\\033[38;5;64m",
-        "bordo": "\\033[38;5;88m",
-        "lacivert": "\\033[38;5;18m",
-        "bej": "\\033[38;5;180m",
-        "krem": "\\033[38;5;230m",
-        "menekse": "\\033[38;5;129m",
-        "fuşya": "\\033[38;5;199m",
-        "somon": "\\033[38;5;209m",
-        "çamur": "\\033[38;5;94m",
-        "çelik": "\\033[38;5;247m",
-        "platin": "\\033[38;5;255m",
-        "pirinç": "\\033[38;5;178m",
-        "bronz": "\\033[38;5;136m",
-    }
-    
-    @classmethod
-    def renk(cls, renk_adi: str) -> str:
-        return cls.RENK_PALETI.get(renk_adi, cls.BEYAZ)
-    
-    @classmethod
-    def metin(cls, metin: str, renk_adi: str, kalin: bool = False) -> str:
-        r = cls.renk(renk_adi)
-        if kalin:
-            r = cls.KALIN + r
-        return r + metin + cls.SIFIRLA
+        select {
+            flex: 1;
+            background: #171b22;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 14px;
+            outline: none;
+            -webkit-appearance: none;
+        }
 
+        .btn-add {
+            background: linear-gradient(135deg, #00ffcc 0%, #0088cc 100%);
+            color: #08090c;
+            font-weight: bold;
+            padding: 0 25px;
+        }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# KİMYASAL DURUM VE FAZLAR
-# ═══════════════════════════════════════════════════════════════════════════════
+        button {
+            background: linear-gradient(135deg, #232933 0%, #171b22 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.03);
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:active { transform: scale(0.97); }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #ff3b30 0%, #660000 100%);
+            border: 1px solid rgba(255,59,48,0.2);
+        }
+    </style>
+</head>
+<body>
 
-class Faz(Enum):
-    KATI = "katı"
-    SIVI = "sıvı"
-    GAZ = "gaz"
-    COZELTI = "çözelti"
-    COKELEK = "çökelme"
+    <div class="dashboard">
+        <div class="indicator">HİDROJEN İNDEKSİ <span id="ph-val">7.00</span></div>
+        <div class="indicator">TERMAL ENERJİ <span id="temp-val">298.15 K</span></div>
+    </div>
 
+    <div class="canvas-container">
+        <canvas id="chemCanvas" width="600" height="600"></canvas>
+    </div>
 
-@dataclass
-class FizikselOzellikler:
-    """Kimyasal maddenin fiziksel özellikleri"""
-    renk: str = "beyaz"
-    faz: Faz = Faz.KATI
-    erime_noktasi: float = 0.0  # °C
-    kaynama_noktasi: float = 100.0  # °C
-    yogunluk: float = 1.0  # g/cm³
-    cozunurluk_su: float = 0.0  # g/100mL
-    ph: Optional[float] = None
-    parlaklik: bool = False
-    metalik: bool = False
-    saydam: bool = False
-    parlama_noktasi: Optional[float] = None  # Alevlenme noktası
-    buhar_basinci: float = 0.0  # mmHg
-    viskozite: float = 1.0  # cP
-    
+    <div id="log-panel">Laboratuvar hazır. Eklemek istediğiniz reaktifi seçin.</div>
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# KİMYASAL MADDE SINIFI
-# ═══════════════════════════════════════════════════════════════════════════════
+    <div class="controls">
+        <div class="select-container">
+            <select id="substanceSelect">
+                <!-- image_7.png: Sıvılar, Asitler ve Çözeltiler -->
+                <optgroup label="💧 Sıvılar & Çözeltiler (image_7.png)">
+                    <option value="H2O">Saf Su (H2O)</option>
+                    <option value="Litmus">Turnusol Boyası (Litmus)</option>
+                    <option value="Br2">Bromlu Su (Br2)</option>
+                    <option value="NH3_H2O">Amonyak Çözeltisi (NH3·H2O)</option>
+                    <option value="CH3COOH">Asetik Asit (CH3COOH)</option>
+                    <option value="H2O2">Hidrojen Peroksit (H2O2)</option>
+                    <option value="SO3_liq">Kükürt Trioksit Sıvısı (SO3)</option>
+                    <option value="HNO3">Nitrik Asit (HNO3)</option>
+                    <option value="H2SO3">Kükürtlü Asit (H2SO3)</option>
+                    <option value="H2SO4">Sülfürik Asit (H2SO4)</option>
+                    <option value="HCl">Hidroklorik Asit (HCl)</option>
+                    <option value="HF">Hidroflorik Asit (HF)</option>
+                </optgroup>
+                
+                <!-- image_8.png: Katılar A-B -->
+                <optgroup label="🧱 Katılar (A - B) (image_8.png)">
+                    <option value="Ag">Gümüş (Ag)</option>
+                    <option value="Ag2S">Gümüş Sülfür (Ag2S)</option>
+                    <option value="Ag2SO4">Gümüş Sülfat (Ag2SO4)</option>
+                    <option value="AgCl">Gümüş Klorür (AgCl)</option>
+                    <option value="AgI">Gümüş İyodür (AgI)</option>
+                    <option value="AgNO3">Gümüş Nitrat (AgNO3)</option>
+                    <option value="Al">Alüminyum Metal (Al)</option>
+                    <option value="Al2O3">Alüminyum Oksit (Al2O3)</option>
+                    <option value="Al2S3">Alüminyum Sülfür (Al2S3)</option>
+                    <option value="Al2_SO4_3">Alüminyum Sülfat [Al2(SO4)3]</option>
+                    <option value="AlBr3">Alüminyum Bromür (AlBr3)</option>
+                    <option value="AlCl3">Alüminyum Klorür (AlCl3)</option>
+                    <option value="Al_NO3_3">Alüminyum Nitrat [AlRef(NO3)3]</option>
+                    <option value="Al_OH_3">Alüminyum Hidroksit [Al(OH)3]</option>
+                    <option value="As">Arsenik (As)</option>
+                    <option value="Au">Altın (Au)</option>
+                    <option value="Ba">Baryum Metal (Ba)</option>
+                    <option value="BaCl2">Baryum Klorür (BaCl2)</option>
+                    <option value="BaCO3">Baryum Karbonat (BaCO3)</option>
+                </optgroup>
 
-@dataclass
-class Kimyasal:
-    """Kimyasal madde tanımı"""
-    ad: str
-    formul: str
-    ozellikler: FizikselOzellikler
-    tur: str = "bilesik"  # element, bilesik, cozelti, gaz
-    tehlike: List[str] = field(default_factory=list)
-    aciklama: str = ""
-    
-    def __post_init__(self):
-        if not self.aciklama:
-            self.aciklama = f"{self.ad} ({self.formul})"
-    
-    def __str__(self) -> str:
-        r = Renk.renk(self.ozellikler.renk)
-        faz_emoji = {"katı": "◆", "sıvı": "◉", "gaz": "○", "çözelti": "◎", "çökelme": "●"}
-        emoji = faz_emoji.get(self.ozellikler.faz.value, "•")
-        return f"{r}{emoji} {self.ad} ({self.formul}){Renk.SIFIRLA}"
+                <!-- image_9.png: Katılar B-C-Cu -->
+                <optgroup label="🧱 Katılar (B - Cu) (image_9.png)">
+                    <option value="Ba_NO3_2">Baryum Nitrat [Ba(NO3)2]</option>
+                    <option value="BaO">Baryum Oksit (BaO)</option>
+                    <option value="Ba_OH_2">Baryum Hidroksit [Ba(OH)2]</option>
+                    <option value="BaSO4">Baryum Sülfat (BaSO4)</option>
+                    <option value="C">Karbon / Kömür (C)</option>
+                    <option value="Ca">Kalsiyum Metal (Ca)</option>
+                    <option value="CaC2">Kalsiyum Karbür (CaC2)</option>
+                    <option value="CaCl2">Kalsiyum Klorür (CaCl2)</option>
+                    <option value="CaCO3">Kalsiyum Karbonat (CaCO3)</option>
+                    <option value="Ca_NO3_2">Kalsiyum Nitrat [Ca(NO3)2]</option>
+                    <option value="CaO">Kalsiyum Oksit (CaO)</option>
+                    <option value="Ca_OH_2">Kalsiyum Hidroksit [Ca(OH)2]</option>
+                    <option value="CaSO4">Kalsiyum Sülfat (CaSO4)</option>
+                    <option value="Cr">Krom (Cr)</option>
+                    <option value="Cs">Sezyum Metal (Cs)</option>
+                    <option value="Cu">Bakır Metal (Cu)</option>
+                    <option value="Cu2S">Bakır(I) Sülfür (Cu2S)</option>
+                    <option value="CuCl2">Bakır(II) Klorür (CuCl2)</option>
+                    <option value="CuCO3">Bakır(II) Karbonat (CuCO3)</option>
+                    <option value="Cu_NO3_2">Bakır(II) Nitrat [Cu(NO3)2]</option>
+                </optgroup>
 
+                <!-- image_10.png: Katılar Cu-Fe-I -->
+                <optgroup label="🧱 Katılar (Cu - I2) (image_10.png)">
+                    <option value="CuO">Bakır(II) Oksit (CuO)</option>
+                    <option value="Cu_OH_2">Bakır(II) Hidroksit [Cu(OH)2]</option>
+                    <option value="CuSO4">Bakır Sülfat (CuSO4)</option>
+                    <option value="Fe">Demir Metal (Fe)</option>
+                    <option value="Fe2O3">Demir(III) Oksit (Fe2O3)</option>
+                    <option value="Fe2_SO4_3">Demir(III) Sülfat [Fe2(SO4)3]</option>
+                    <option value="Fe3O4">Manyetit (Fe3O4)</option>
+                    <option value="FeCl2">Demir(II) Klorür (FeCl2)</option>
+                    <option value="FeCl3">Demir(III) Klorür (FeCl3)</option>
+                    <option value="Fe_NO3_2">Demir(II) Nitrat [Fe(NO3)2]</option>
+                    <option value="Fe_NO3_3">Demir(III) Nitrat [Fe(NO3)3]</option>
+                    <option value="FeO">Demir(II) Oksit (FeO)</option>
+                    <option value="Fe_OH_2">Demir(II) Hidroksit [Fe(OH)2]</option>
+                    <option value="Fe_OH_3">Demir(III) Hidroksit [Fe(OH)3]</option>
+                    <option value="FeSO4">Demir(II) Sülfat (FeSO4)</option>
+                    <option value="Hg_NO3_2">Cıva(II) Nitrat [Hg(NO3)2]</option>
+                    <option value="HgO">Cıva(II) Oksit (HgO)</option>
+                    <option value="I2">İyot Kristalleri (I2)</option>
+                </optgroup>
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# KAPSAMLI KİMYASAL VERİTABANI (150+ Maddeler)
-# ═══════════════════════════════════════════════════════════════════════════════
+                <!-- image_11.png: Katılar K-Mg-Mn -->
+                <optgroup label="🧱 Katılar (K - Mn) (image_11.png)">
+                    <option value="K">Potasyum Metal (K)</option>
+                    <option value="K2MnO4">Potasyum Manganat (K2MnO4)</option>
+                    <option value="K2O">Potasyum Oksit (K2O)</option>
+                    <option value="KCl">Potasyum Klorür (KCl)</option>
+                    <option value="KClO3">Potasyum Klorat (KClO3)</option>
+                    <option value="KH">Potasyum Hidrür (KH)</option>
+                    <option value="KI">Potasyum İyodür (KI)</option>
+                    <option value="KMnO4">Potasyum Permanganat (KMnO4)</option>
+                    <option value="KOH">Potasyum Hidroksit (KOH)</option>
+                    <option value="Li">Lityum Metal (Li)</option>
+                    <option value="Li3N">Lityum Nitrür (Li3N)</option>
+                    <option value="Mg">Magnezyum Metal (Mg)</option>
+                    <option value="MgCl2">Magnezyum Klorür (MgCl2)</option>
+                    <option value="Mg_NO3_2">Magnezyum Nitrat [Mg(NO3)2]</option>
+                    <option value="MgO">Magnezyum Oksit (MgO)</option>
+                    <option value="Mg_OH_2">Magnezyum Hidroksit [Mg(OH)2]</option>
+                    <option value="MgSO4">Magnezyum Sülfat (MgSO4)</option>
+                    <option value="Mn">Mangan (Mn)</option>
+                </optgroup>
 
-KIMYASAL_VERITABANI: Dict[str, Kimyasal] = {}
+                <!-- image_12.png: Katılar Mn-Na-Pb -->
+                <optgroup label="🧱 Katılar (Mn - Pb) (image_12.png)">
+                    <option value="MnO2">Mangan Dioksit (MnO2)</option>
+                    <option value="Na">Sodyum Metal (Na)</option>
+                    <option value="Na2CO3">Sodyum Karbonat (Na2CO3)</option>
+                    <option value="Na2O">Sodyum Oksit (Na2O)</option>
+                    <option value="Na2O2">Sodyum Peroksit (Na2O2)</option>
+                    <option value="Na2SO4">Sodyum Sülfat (Na2SO4)</option>
+                    <option value="NaC2H3O2">Sodyum Asetat (NaC2H3O2)</option>
+                    <option value="NaCl">Sodyum Klorür (NaCl)</option>
+                    <option value="NaHCO3">Sodyum Bikarbonat (NaHCO3)</option>
+                    <option value="NaNO3">Sodyum Nitrat (NaNO3)</option>
+                    <option value="NaOH">Sodyum Hidroksit (NaOH)</option>
+                    <option value="NH4Cl">Amonyum Klorür (NH4Cl)</option>
+                    <option value="NH4NO3">Amonyum Nitrat (NH4NO3)</option>
+                    <option value="P">Fosfor (P)</option>
+                    <option value="P2O5">Difosfor Pentoksit (P2O5)</option>
+                    <option value="Pb">Kurşun Metal (Pb)</option>
+                    <option value="PbCl2">Kurşun(II) Klorür (PbCl2)</option>
+                    <option value="Pb_NO3_2">Kurşun(II) Nitrat [Pb(NO3)2]</option>
+                    <option value="PbO">Kurşun(II) Oksit (PbO)</option>
+                </optgroup>
 
-def ekle_kimyasal(kimyasal: Kimyasal):
-    KIMYASAL_VERITABANI[kimyasal.ad.lower()] = kimyasal
-    KIMYASAL_VERITABANI[kimyasal.formul.lower()] = kimyasal
+                <!-- image_13.png: Katılar Pb-Zn -->
+                <optgroup label="🧱 Katılar (Pb - Zn) (image_13.png)">
+                    <option value="PbO2">Kurşun(IV) Oksit (PbO2)</option>
+                    <option value="Pt">Platin (Pt)</option>
+                    <option value="S">Kükürt Kristalleri (S)</option>
+                    <option value="Si">Silisyum (Si)</option>
+                    <option value="Zn">Çinko Metal (Zn)</option>
+                    <option value="ZnCl2">Çinko Klorür (ZnCl2)</option>
+                    <option value="ZnO2">Çinko Peroksit (ZnO2)</option>
+                    <option value="ZnSO4">Çinko Sülfat (ZnSO4)</option>
+                </optgroup>
 
+                <!-- image_14.png: Gazlar -->
+                <optgroup label="💨 Gaz Reaktifler (image_14.png)">
+                    <option value="Ar">Argon (Ar)</option>
+                    <option value="C2H2">Asetilen (C2H2)</option>
+                    <option value="Cl2">Klor Gazı (Cl2)</option>
+                    <option value="CO">Karbonmonoksit (CO)</option>
+                    <option value="CO2">Karbondioksit (CO2)</option>
+                    <option value="F2">Flor Gazı (F2)</option>
+                    <option value="H2">Hidrojen Gazı (H2)</option>
+                    <option value="H2S">Hidrojen Sülfür (H2S)</option>
+                    <option value="He">Helyum (He)</option>
+                    <option value="N2">Azot Gazı (N2)</option>
+                    <option value="N2O">Diazot Monoksit / Kahkaha Gazı (N2O)</option>
+                    <option value="Ne">Neon Gazı (Ne)</option>
+                    <option value="NH3">Amonyak Gazı (NH3)</option>
+                    <option value="NO">Azot Monoksit (NO)</option>
+                    <option value="NO2">Azot Dioksit (NO2)</option>
+                    <option value="O2">Oksijen Gazı (O2)</option>
+                    <option value="O3">Ozon Gazı (O3)</option>
+                    <option value="SO2">Kükürtdioksit (SO2)</option>
+                </optgroup>
+            </select>
+            <button class="btn-add" onclick="handleAdd()">EKLE</button>
+        </div>
+        <button class="btn-clear" onclick="clearBeaker()">🗑️ Beheri Temizle / Sıfırla</button>
+    </div>
 
-# ─── ELEMENTLER ───
-ekle_kimyasal(Kimyasal("Hidrojen", "H2", FizikselOzellikler("beyaz", Faz.GAZ, -259, -253, 0.09, 1.6, None, False, False, True, None, 760), "element", ["yanıcı"], "Hafif, renksiz, kokusuz gaz"))
-ekle_kimyasal(Kimyasal("Helyum", "He", FizikselOzellikler("beyaz", Faz.GAZ, -272, -269, 0.18, 0.9, None, False, False, True, None, 760), "element", [], "Soy gaz, havadan hafif"))
-ekle_kimyasal(Kimyasal("Lityum", "Li", FizikselOzellikler("gumus", Faz.KATI, 181, 1342, 0.53, 131, None, True, True, False, None, 0), "element", ["su ile reaksiyon", "yanıcı"], "En hafif metal"))
-ekle_kimyasal(Kimyasal("Berilyum", "Be", FizikselOzellikler("gumus", Faz.KATI, 1287, 2471, 1.85, 0.6, None, True, True, False, None, 0), "element", ["toksik"], "Hafif, sert metal"))
-ekle_kimyasal(Kimyasal("Bor", "B", FizikselOzellikler("kahverengi", Faz.KATI, 2075, 4000, 2.34, 4.7, None, False, False, False, None, 0), "element", [], "Yarı metal"))
-ekle_kimyasal(Kimyasal("Karbon", "C", FizikselOzellikler("siyah", Faz.KATI, 3550, 4027, 2.27, 0.0, None, False, False, False, None, 0), "element", [], "Grafit ve elmas formu"))
-ekle_kimyasal(Kimyasal("Azot", "N2", FizikselOzellikler("beyaz", Faz.GAZ, -210, -196, 1.25, 1.9, None, False, False, True, None, 760), "element", [], "Havanın %78'i"))
-ekle_kimyasal(Kimyasal("Oksijen", "O2", FizikselOzellikler("beyaz", Faz.GAZ, -218, -183, 1.43, 3.1, None, False, False, True, None, 760), "element", ["oksidan"], "Havanın %21'i"))
-ekle_kimyasal(Kimyasal("Flor", "F2", FizikselOzellikler("sari", Faz.GAZ, -220, -188, 1.7, 1.7, None, False, False, True, None, 760), "element", ["çok zehirli", "aşırı oksidan"], "En elektronegatif element"))
-ekle_kimyasal(Kimyasal("Neon", "Ne", FizikselOzellikler("beyaz", Faz.GAZ, -249, -246, 0.9, 1.5, None, False, False, True, None, 760), "element", [], "Soy gaz, floresan lambalar"))
-ekle_kimyasal(Kimyasal("Sodyum", "Na", FizikselOzellikler("gumus", Faz.KATI, 98, 883, 0.97, 359, None, True, True, False, None, 0), "element", ["su ile reaksiyon", "yanıcı"], "Yumuşak, reaktif metal"))
-ekle_kimyasal(Kimyasal("Magnezyum", "Mg", FizikselOzellikler("gumus", Faz.KATI, 650, 1090, 1.74, 0.009, None, True, True, False, None, 0), "element", ["yanıcı"], "Hafif, güçlü metal"))
-ekle_kimyasal(Kimyasal("Aluminyum", "Al", FizikselOzellikler("gumus", Faz.KATI, 660, 2519, 2.7, 0.0, None, True, True, False, None, 0), "element", [], "Hafif, paslanmaz metal"))
-ekle_kimyasal(Kimyasal("Silikon", "Si", FizikselOzellikler("gri", Faz.KATI, 1414, 3265, 2.33, 0.0, None, True, False, False, None, 0), "element", [], "Yarı iletken"))
-ekle_kimyasal(Kimyasal("Fosfor", "P", FizikselOzellikler("beyaz", Faz.KATI, 44, 280, 1.82, 0.3, None, False, False, False, 30, 0), "element", ["yanıcı", "zehirli", "kendiliğinden yanma"], "Beyaz fosfor çok reaktif"))
-ekle_kimyasal(Kimyasal("Kükürt", "S", FizikselOzellikler("sari", Faz.KATI, 115, 445, 2.07, 0.0, None, False, False, False, 207, 0), "element", ["yanıcı"], "Sarı kristal"))
-ekle_kimyasal(Kimyasal("Klor", "Cl2", FizikselOzellikler("yesil", Faz.GAZ, -102, -34, 3.21, 0.7, None, False, False, True, None, 760), "element", ["zehirli", "oksidan"], "Yeşil-sarı gaz"))
-ekle_kimyasal(Kimyasal("Argon", "Ar", FizikselOzellikler("beyaz", Faz.GAZ, -189, -186, 1.78, 3.4, None, False, False, True, None, 760), "element", [], "Soy gaz, kaynak"))
-ekle_kimyasal(Kimyasal("Potasyum", "K", FizikselOzellikler("gumus", Faz.KATI, 64, 759, 0.86, 347, None, True, True, False, None, 0), "element", ["su ile reaksiyon", "yanıcı"], "Çok reaktif metal"))
-ekle_kimyasal(Kimyasal("Kalsiyum", "Ca", FizikselOzellikler("gumus", Faz.KATI, 842, 1484, 1.55, 0.165, None, True, True, False, None, 0), "element", ["su ile reaksiyon"], "Kemiklerde bulunur"))
-ekle_kimyasal(Kimyasal("Titanyum", "Ti", FizikselOzellikler("gumus", Faz.KATI, 1668, 3287, 4.51, 0.0, None, True, True, False, None, 0), "element", [], "Hafif, güçlü metal"))
-ekle_kimyasal(Kimyasal("Vanadyum", "V", FizikselOzellikler("gumus", Faz.KATI, 1910, 3421, 6.11, 0.0, None, True, True, False, None, 0), "element", [], "Alaşım elementi"))
-ekle_kimyasal(Kimyasal("Krom", "Cr", FizikselOzellikler("gumus", Faz.KATI, 1907, 2671, 7.19, 0.0, None, True, True, False, None, 0), "element", [], "Paslanmaz çelik"))
-ekle_kimyasal(Kimyasal("Mangan", "Mn", FizikselOzellikler("gumus", Faz.KATI, 1246, 2061, 7.43, 0.0, None, True, True, False, None, 0), "element", [], "Çelik alaşımı"))
-ekle_kimyasal(Kimyasal("Demir", "Fe", FizikselOzellikler("gumus", Faz.KATI, 1538, 2861, 7.87, 0.0, None, True, True, False, None, 0), "element", [], "En çok kullanılan metal"))
-ekle_kimyasal(Kimyasal("Kobalt", "Co", FizikselOzellikler("gumus", Faz.KATI, 1495, 2927, 8.86, 0.0, None, True, True, False, None, 0), "element", [], "Mıknatıs alaşımı"))
-ekle_kimyasal(Kimyasal("Nikel", "Ni", FizikselOzellikler("gumus", Faz.KATI, 1455, 2913, 8.91, 0.0, None, True, True, False, None, 0), "element", [], "Paslanmaz çelik"))
-ekle_kimyasal(Kimyasal("Bakır", "Cu", FizikselOzellikler("bakir", Faz.KATI, 1085, 2562, 8.96, 0.0, None, True, True, False, None, 0), "element", [], "İletkenlikte gümüşten sonra"))
-ekle_kimyasal(Kimyasal("Çinko", "Zn", FizikselOzellikler("gumus", Faz.KATI, 420, 907, 7.13, 0.0, None, True, True, False, None, 0), "element", [], "Galvaniz kaplama"))
-ekle_kimyasal(Kimyasal("Galyum", "Ga", FizikselOzellikler("gumus", Faz.KATI, 30, 2204, 5.91, 0.0, None, True, True, False, None, 0), "element", [], "Oda sıcaklığında sıvı"))
-ekle_kimyasal(Kimyasal("Germanyum", "Ge", FizikselOzellikler("gri", Faz.KATI, 938, 2833, 5.32, 0.0, None, True, False, False, None, 0), "element", [], "Yarı iletken"))
-ekle_kimyasal(Kimyasal("Arsenik", "As", FizikselOzellikler("gri", Faz.KATI, 817, 614, 5.78, 0.0, None, True, False, False, None, 0), "element", ["zehirli"], "Yarı metal"))
-ekle_kimyasal(Kimyasal("Selenyum", "Se", FizikselOzellikler("gri", Faz.KATI, 221, 685, 4.81, 0.0, None, False, False, False, None, 0), "element", ["toksik"], "Yarı metal"))
-ekle_kimyasal(Kimyasal("Brom", "Br2", FizikselOzellikler("kirmizi", Faz.SIVI, -7, 59, 3.12, 3.41, None, False, False, False, None, 213), "element", ["zehirli", "aşındırıcı"], "Kırmızı-kahverengi sıvı"))
-ekle_kimyasal(Kimyasal("Kripton", "Kr", FizikselOzellikler("beyaz", Faz.GAZ, -157, -153, 3.75, 5.9, None, False, False, True, None, 760), "element", [], "Soy gaz"))
-ekle_kimyasal(Kimyasal("Rubidyum", "Rb", FizikselOzellikler("gumus", Faz.KATI, 39, 688, 1.53, 177, None, True, True, False, None, 0), "element", ["su ile reaksiyon", "yanıcı"], "Çok reaktif"))
-ekle_kimyasal(Kimyasal("Stronsiyum", "Sr", FizikselOzellikler("gumus", Faz.KATI, 777, 1377, 2.64, 10, None, True, True, False, None, 0), "element", ["yanıcı"], "Ateşleme rengi kırmızı"))
-ekle_kimyasal(Kimyasal("Zirkonyum", "Zr", FizikselOzellikler("gumus", Faz.KATI, 1855, 4409, 6.52, 0.0, None, True, True, False, None, 0), "element", [], "Nükleer reaktör"))
-ekle_kimyasal(Kimyasal("Niobyum", "Nb", FizikselOzellikler("gumus", Faz.KATI, 2477, 4744, 8.57, 0.0, None, True, True, False, None, 0), "element", [], "Süper iletken"))
-ekle_kimyasal(Kimyasal("Molibden", "Mo", FizikselOzellikler("gumus", Faz.KATI, 2623, 4639, 10.28, 0.0, None, True, True, False, None, 0), "element", [], "Yüksek erime noktası"))
-ekle_kimyasal(Kimyasal("Teknesyum", "Tc", FizikselOzellikler("gumus", Faz.KATI, 2157, 4265, 11.5, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif"], "İlk yapay element"))
-ekle_kimyasal(Kimyasal("Rutenyum", "Ru", FizikselOzellikler("gumus", Faz.KATI, 2334, 4150, 12.37, 0.0, None, True, True, False, None, 0), "element", [], "Nadir toprak"))
-ekle_kimyasal(Kimyasal("Rodyum", "Rh", FizikselOzellikler("gumus", Faz.KATI, 1964, 3695, 12.41, 0.0, None, True, True, False, None, 0), "element", [], "Katalizör"))
-ekle_kimyasal(Kimyasal("Paladyum", "Pd", FizikselOzellikler("gumus", Faz.KATI, 1555, 2963, 12.02, 0.0, None, True, True, False, None, 0), "element", [], "Katalizör"))
-ekle_kimyasal(Kimyasal("Gümüş", "Ag", FizikselOzellikler("gumus", Faz.KATI, 962, 2162, 10.49, 0.0, None, True, True, False, None, 0), "element", [], "En iyi iletken"))
-ekle_kimyasal(Kimyasal("Kadmiyum", "Cd", FizikselOzellikler("gumus", Faz.KATI, 321, 767, 8.69, 0.0, None, True, True, False, None, 0), "element", ["toksik"], "Akülerde"))
-ekle_kimyasal(Kimyasal("İndiyum", "In", FizikselOzellikler("gumus", Faz.KATI, 157, 2072, 7.31, 0.0, None, True, True, False, None, 0), "element", [], "Yumuşak metal"))
-ekle_kimyasal(Kimyasal("Kalay", "Sn", FizikselOzellikler("gumus", Faz.KATI, 232, 2602, 7.31, 0.0, None, True, True, False, None, 0), "element", [], "Teneke"))
-ekle_kimyasal(Kimyasal("Antimon", "Sb", FizikselOzellikler("gumus", Faz.KATI, 631, 1587, 6.68, 0.0, None, True, False, False, None, 0), "element", ["toksik"], "Yarı metal"))
-ekle_kimyasal(Kimyasal("Tellür", "Te", FizikselOzellikler("gumus", Faz.KATI, 450, 988, 6.24, 0.0, None, True, False, False, None, 0), "element", [], "Yarı metal"))
-ekle_kimyasal(Kimyasal("İyot", "I2", FizikselOzellikler("mor", Faz.KATI, 114, 184, 4.93, 0.03, None, True, False, False, None, 0.3), "element", ["zehirli"], "Mor kristal, antiseptik"))
-ekle_kimyasal(Kimyasal("Ksenon", "Xe", FizikselOzellikler("beyaz", Faz.GAZ, -112, -108, 5.89, 11, None, False, False, True, None, 760), "element", [], "Soy gaz"))
-ekle_kimyasal(Kimyasal("Sezyum", "Cs", FizikselOzellikler("gumus", Faz.KATI, 28, 671, 1.93, 0.0, None, True, True, False, None, 0), "element", ["su ile reaksiyon", "yanıcı", "patlayıcı"], "En reaktif metal"))
-ekle_kimyasal(Kimyasal("Baryum", "Ba", FizikselOzellikler("gumus", Faz.KATI, 727, 1845, 3.59, 3.89, None, True, True, False, None, 0), "element", ["toksik"], "Ateşleme rengi yeşil"))
-ekle_kimyasal(Kimyasal("Tungsten", "W", FizikselOzellikler("gumus", Faz.KATI, 3422, 5555, 19.25, 0.0, None, True, True, False, None, 0), "element", [], "En yüksek erime noktası"))
-ekle_kimyasal(Kimyasal("Renyum", "Re", FizikselOzellikler("gumus", Faz.KATI, 3186, 5596, 21.02, 0.0, None, True, True, False, None, 0), "element", [], "En ağır metal"))
-ekle_kimyasal(Kimyasal("Osmiyum", "Os", FizikselOzellikler("gumus", Faz.KATI, 3045, 5027, 22.59, 0.0, None, True, True, False, None, 0), "element", [], "En yoğun doğal element"))
-ekle_kimyasal(Kimyasal("İridyum", "Ir", FizikselOzellikler("gumus", Faz.KATI, 2446, 4428, 22.56, 0.0, None, True, True, False, None, 0), "element", [], "Korozyona dayanıklı"))
-ekle_kimyasal(Kimyasal("Platin", "Pt", FizikselOzellikler("gumus", Faz.KATI, 1768, 3825, 21.45, 0.0, None, True, True, False, None, 0), "element", [], "Katalizör"))
-ekle_kimyasal(Kimyasal("Altın", "Au", FizikselOzellikler("altin", Faz.KATI, 1064, 2970, 19.32, 0.0, None, True, True, False, None, 0), "element", [], "Değerli metal"))
-ekle_kimyasal(Kimyasal("Cıva", "Hg", FizikselOzellikler("gumus", Faz.SIVI, -39, 357, 13.53, 0.0, None, True, True, False, None, 0.002), "element", ["toksik"], "Oda sıcaklığında sıvı metal"))
-ekle_kimyasal(Kimyasal("Talyum", "Tl", FizikselOzellikler("gumus", Faz.KATI, 304, 1473, 11.85, 0.0, None, True, True, False, None, 0), "element", ["toksik"], "Zehirli metal"))
-ekle_kimyasal(Kimyasal("Kurşun", "Pb", FizikselOzellikler("gumus", Faz.KATI, 328, 1749, 11.34, 0.0, None, True, True, False, None, 0), "element", ["toksik"], "Ağır metal"))
-ekle_kimyasal(Kimyasal("Bizmut", "Bi", FizikselOzellikler("gumus", Faz.KATI, 271, 1564, 9.78, 0.0, None, True, True, False, None, 0), "element", [], "Diamanyetik"))
-ekle_kimyasal(Kimyasal("Polonyum", "Po", FizikselOzellikler("gumus", Faz.KATI, 254, 962, 9.32, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif", "zehirli"], "Radyoaktif"))
-ekle_kimyasal(Kimyasal("Astat", "At", FizikselOzellikler("siyah", Faz.KATI, 302, 337, 0.0, 0.0, None, False, False, False, None, 0), "element", ["radyoaktif", "zehirli"], "Radyoaktif halojen"))
-ekle_kimyasal(Kimyasal("Radon", "Rn", FizikselOzellikler("beyaz", Faz.GAZ, -71, -62, 9.73, 0.0, None, False, False, True, None, 760), "element", ["radyoaktif", "zehirli"], "Radyoaktif gaz"))
-ekle_kimyasal(Kimyasal("Fransiyum", "Fr", FizikselOzellikler("gumus", Faz.KATI, 27, 677, 0.0, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif", "su ile reaksiyon"], "En büyük atom"))
-ekle_kimyasal(Kimyasal("Radyum", "Ra", FizikselOzellikler("gumus", Faz.KATI, 700, 1737, 5.5, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif", "zehirli"], "Radyoaktif"))
-ekle_kimyasal(Kimyasal("Aktinyum", "Ac", FizikselOzellikler("gumus", Faz.KATI, 1050, 3198, 10.07, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif"], "Aktinit serisi"))
-ekle_kimyasal(Kimyasal("Toryum", "Th", FizikselOzellikler("gumus", Faz.KATI, 1750, 4788, 11.72, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif"], "Nükleer yakıt"))
-ekle_kimyasal(Kimyasal("Uran", "U", FizikselOzellikler("gumus", Faz.KATI, 1135, 4131, 19.1, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif", "zehirli"], "Nükleer yakıt"))
-ekle_kimyasal(Kimyasal("Plütonyum", "Pu", FizikselOzellikler("gumus", Faz.KATI, 640, 3228, 19.84, 0.0, None, True, True, False, None, 0), "element", ["radyoaktif", "zehirli"], "Nükleer silah"))
+    <script>
+        const canvas = document.getElementById('chemCanvas');
+        const ctx = canvas.getContext('2d');
 
-# ─── BİLEŞİKLER - ASİTLER ───
-ekle_kimyasal(Kimyasal("Hidroklorik Asit", "HCl", FizikselOzellikler("beyaz", Faz.SIVI, -114, -85, 1.49, 72, 0.0, False, False, True, None, 0), "bilesik", ["aşındırıcı", "zehirli"], "Güçlü asit"))
-ekle_kimyasal(Kimyasal("Sülfürik Asit", "H2SO4", FizikselOzellikler("beyaz", Faz.SIVI, 10, 337, 1.84, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["aşındırıcı", "zehirli", "dehidrate"], "Güçlü oksidan asit"))
-ekle_kimyasal(Kimyasal("Nitrik Asit", "HNO3", FizikselOzellikler("beyaz", Faz.SIVI, -42, 83, 1.51, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["aşındırıcı", "zehirli", "oksidan"], "Güçlü oksidan asit"))
-ekle_kimyasal(Kimyasal("Fosforik Asit", "H3PO4", FizikselOzellikler("beyaz", Faz.SIVI, 42, 158, 1.88, 548, 1.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Orta güçlü asit"))
-ekle_kimyasal(Kimyasal("Asetik Asit", "CH3COOH", FizikselOzellikler("beyaz", Faz.SIVI, 17, 118, 1.05, 0.0, 2.4, False, False, False, 39, 11.4), "bilesik", ["yanıcı"], "Sirke asidi"))
-ekle_kimyasal(Kimyasal("Karbonik Asit", "H2CO3", FizikselOzellikler("beyaz", Faz.SIVI, 0, 0, 1.0, 0.0, 6.3, False, False, False, None, 0), "bilesik", [], "Zayıf asit, CO2 + H2O"))
-ekle_kimyasal(Kimyasal("Sülfürik Asit (Seyreltik)", "H2SO4(dil)", FizikselOzellikler("beyaz", Faz.SIVI, 0, 100, 1.1, 0.0, 1.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Seyreltik sülfürik asit"))
-ekle_kimyasal(Kimyasal("Nitrik Asit (Seyreltik)", "HNO3(dil)", FizikselOzellikler("beyaz", Faz.SIVI, 0, 100, 1.05, 0.0, 1.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Seyreltik nitrik asit"))
-ekle_kimyasal(Kimyasal("Hidrojen Florür", "HF", FizikselOzellikler("beyaz", Faz.SIVI, -83, 20, 1.15, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["çok zehirli", "aşındırıcı", "kemik eritici"], "Camı eriten asit"))
-ekle_kimyasal(Kimyasal("Perklorik Asit", "HClO4", FizikselOzellikler("beyaz", Faz.SIVI, -112, 203, 1.77, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["patlayıcı", "aşındırıcı"], "Güçlü oksidan"))
-ekle_kimyasal(Kimyasal("Kromik Asit", "H2CrO4", FizikselOzellikler("turuncu", Faz.SIVI, 0, 0, 1.2, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["toksik", "kanserojen", "oksidan"], "Krom(VI) bileşiği"))
-ekle_kimyasal(Kimyasal("Borik Asit", "H3BO3", FizikselOzellikler("beyaz", Faz.KATI, 171, 300, 1.44, 4.7, 5.1, False, False, False, None, 0), "bilesik", ["toksik"], "Antiseptik"))
-ekle_kimyasal(Kimyasal("Sitrik Asit", "C6H8O7", FizikselOzellikler("beyaz", Faz.KATI, 153, 310, 1.67, 59, 2.2, False, False, False, None, 0), "bilesik", [], "Limon asidi"))
-ekle_kimyasal(Kimyasal("Oksalik Asit", "C2H2O4", FizikselOzellikler("beyaz", Faz.KATI, 190, 365, 1.9, 9.5, 1.3, False, False, False, None, 0), "bilesik", ["toksik"], "Ispanakta bulunur"))
-ekle_kimyasal(Kimyasal("Tartarik Asit", "C4H6O6", FizikselOzellikler("beyaz", Faz.KATI, 171, 210, 1.79, 139, 2.2, False, False, False, None, 0), "bilesik", [], "Üzüm asidi"))
-ekle_kimyasal(Kimyasal("Maleik Asit", "C4H4O4", FizikselOzellikler("beyaz", Faz.KATI, 135, 202, 1.59, 79, 1.9, False, False, False, None, 0), "bilesik", [], "Organik asit"))
-ekle_kimyasal(Kimyasal("Salisilik Asit", "C7H6O3", FizikselOzellikler("beyaz", Faz.KATI, 159, 211, 1.44, 0.2, 2.4, False, False, False, None, 0), "bilesik", [], "Aspirin öncüsü"))
-ekle_kimyasal(Kimyasal("Benzoik Asit", "C7H6O2", FizikselOzellikler("beyaz", Faz.KATI, 122, 249, 1.27, 0.29, 4.2, False, False, False, None, 0), "bilesik", [], "Gıda koruyucu"))
-ekle_kimyasal(Kimyasal("Metanoik Asit", "HCOOH", FizikselOzellikler("beyaz", Faz.SIVI, 8, 101, 1.22, 0.0, 2.4, False, False, False, 69, 42), "bilesik", ["yanıcı", "zehirli"], "Karınca asidi"))
-ekle_kimyasal(Kimyasal("Etanoik Asit", "CH3COOH", FizikselOzellikler("beyaz", Faz.SIVI, 17, 118, 1.05, 0.0, 2.4, False, False, False, 39, 11.4), "bilesik", ["yanıcı"], "Sirke asidi"))
-ekle_kimyasal(Kimyasal("Propanoik Asit", "C2H5COOH", FizikselOzellikler("beyaz", Faz.SIVI, -21, 141, 0.99, 0.0, 4.9, False, False, False, 54, 0), "bilesik", ["yanıcı"], "Peynir asidi"))
-ekle_kimyasal(Kimyasal("Butirik Asit", "C4H8O2", FizikselOzellikler("beyaz", Faz.SIVI, -8, 164, 0.96, 0.0, 4.8, False, False, False, 72, 0), "bilesik", ["yanıcı"], "Rançit yağ kokusu"))
-ekle_kimyasal(Kimyasal("Laktik Asit", "C3H6O3", FizikselOzellikler("beyaz", Faz.SIVI, 18, 122, 1.21, 0.0, 3.9, False, False, False, None, 0), "bilesik", [], "Süt asidi"))
-ekle_kimyasal(Kimyasal("Glukonik Asit", "C6H12O7", FizikselOzellikler("beyaz", Faz.SIVI, 131, 0, 1.24, 0.0, 3.6, False, False, False, None, 0), "bilesik", [], "Glikoz oksidasyonu"))
-ekle_kimyasal(Kimyasal("Askorbik Asit", "C6H8O6", FizikselOzellikler("beyaz", Faz.KATI, 190, 192, 1.65, 33, 4.2, False, False, False, None, 0), "bilesik", [], "C vitamini"))
-ekle_kimyasal(Kimyasal("Sübstitrik Asit", "HNO2", FizikselOzellikler("beyaz", Faz.SIVI, -42, 0, 1.45, 0.0, 3.4, False, False, False, None, 0), "bilesik", ["toksik"], "Zayıf asit, kararsız"))
-ekle_kimyasal(Kimyasal("Fosforöz Asit", "H3PO3", FizikselOzellikler("beyaz", Faz.KATI, 74, 200, 1.65, 309, 1.3, False, False, False, None, 0), "bilesik", [], "İki değerlikli asit"))
-ekle_kimyasal(Kimyasal("Hipokloröz Asit", "HClO", FizikselOzellikler("beyaz", Faz.SIVI, 0, 0, 1.0, 0.0, 7.5, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Dezenfektan"))
-ekle_kimyasal(Kimyasal("Klorik Asit", "HClO3", FizikselOzellikler("beyaz", Faz.SIVI, 0, 0, 1.0, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["oksidan", "aşındırıcı"], "Güçlü oksidan"))
+        let beakerContents = [];
+        let mixedPh = 7.0;
+        let maxTemp = 298.15;
+        let activeIndicators = { litmus: false };
+        let hasPrecipitate = false; 
+        
+        let liquidLevel = 0; 
+        let targetLiquidLevel = 0;
+        let waveWave = 0;
 
-# ─── BİLEŞİKLER - BAZLAR ───
-ekle_kimyasal(Kimyasal("Sodyum Hidroksit", "NaOH", FizikselOzellikler("beyaz", Faz.KATI, 318, 1390, 2.13, 111, 14.0, False, False, False, None, 0), "bilesik", ["aşındırıcı", "zehirli"], "Kostik soda, güçlü baz"))
-ekle_kimyasal(Kimyasal("Potasyum Hidroksit", "KOH", FizikselOzellikler("beyaz", Faz.KATI, 406, 1327, 2.04, 121, 14.0, False, False, False, None, 0), "bilesik", ["aşındırıcı", "zehirli"], "Potasyum kostik"))
-ekle_kimyasal(Kimyasal("Kalsiyum Hidroksit", "Ca(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 580, 0, 2.21, 0.185, 12.4, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Sönmemiş kireç"))
-ekle_kimyasal(Kimyasal("Magnezyum Hidroksit", "Mg(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 350, 0, 2.36, 0.0009, 10.3, False, False, False, None, 0), "bilesik", [], "Mide ilacı"))
-ekle_kimyasal(Kimyasal("Amonyak", "NH3", FizikselOzellikler("beyaz", Faz.GAZ, -78, -33, 0.73, 89.9, 11.6, False, False, True, None, 760), "bilesik", ["zehirli", "yanıcı"], "Güçlü baz, keskin koku"))
-ekle_kimyasal(Kimyasal("Amonyum Hidroksit", "NH4OH", FizikselOzellikler("beyaz", Faz.SIVI, 0, 0, 0.91, 0.0, 11.6, False, False, False, None, 0), "bilesik", ["zehirli"], "Amonyak suyu"))
-ekle_kimyasal(Kimyasal("Lityum Hidroksit", "LiOH", FizikselOzellikler("beyaz", Faz.KATI, 462, 0, 1.46, 12.8, 13.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Pil elektroliti"))
-ekle_kimyasal(Kimyasal("Rubidyum Hidroksit", "RbOH", FizikselOzellikler("beyaz", Faz.KATI, 301, 0, 3.2, 180, 14.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Güçlü baz"))
-ekle_kimyasal(Kimyasal("Sezyum Hidroksit", "CsOH", FizikselOzellikler("beyaz", Faz.KATI, 272, 0, 3.68, 385, 14.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "En güçlü baz"))
-ekle_kimyasal(Kimyasal("Baryum Hidroksit", "Ba(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 78, 0, 3.74, 3.89, 13.0, False, False, False, None, 0), "bilesik", ["toksik", "aşındırıcı"], "Toksik baz"))
-ekle_kimyasal(Kimyasal("Stronsiyum Hidroksit", "Sr(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 375, 0, 3.63, 0.41, 13.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Orta güçlü baz"))
-ekle_kimyasal(Kimyasal("Aluminyum Hidroksit", "Al(OH)3", FizikselOzellikler("beyaz", Faz.KATI, 300, 0, 2.42, 0.0001, 7.0, False, False, False, None, 0), "bilesik", [], "Amfoter hidroksit"))
-ekle_kimyasal(Kimyasal("Çinko Hidroksit", "Zn(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 125, 0, 3.05, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Amfoter hidroksit"))
-ekle_kimyasal(Kimyasal("Demir(II) Hidroksit", "Fe(OH)2", FizikselOzellikler("yesil", Faz.KATI, 0, 0, 3.4, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Yeşil çökelme"))
-ekle_kimyasal(Kimyasal("Demir(III) Hidroksit", "Fe(OH)3", FizikselOzellikler("turuncu", Faz.KATI, 0, 0, 3.25, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Kahverengi çökelme"))
-ekle_kimyasal(Kimyasal("Bakır(II) Hidroksit", "Cu(OH)2", FizikselOzellikler("mavi", Faz.KATI, 0, 0, 3.37, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Mavi çökelme"))
-ekle_kimyasal(Kimyasal("Krom(III) Hidroksit", "Cr(OH)3", FizikselOzellikler("yesil", Faz.KATI, 0, 0, 3.0, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Yeşil çökelme"))
-ekle_kimyasal(Kimyasal("Kobalt(II) Hidroksit", "Co(OH)2", FizikselOzellikler("mavi", Faz.KATI, 0, 0, 3.6, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Pembe/Mavi çökelme"))
-ekle_kimyasal(Kimyasal("Nikel(II) Hidroksit", "Ni(OH)2", FizikselOzellikler("yesil", Faz.KATI, 0, 0, 4.1, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Yeşil çökelme"))
-ekle_kimyasal(Kimyasal("Kurşun(II) Hidroksit", "Pb(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 0, 0, 7.59, 0.016, 7.0, False, False, False, None, 0), "bilesik", ["toksik"], "Beyaz çökelme"))
-ekle_kimyasal(Kimyasal("Kalay(II) Hidroksit", "Sn(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 0, 0, 3.3, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Beyaz çökelme"))
-ekle_kimyasal(Kimyasal("Mangan(II) Hidroksit", "Mn(OH)2", FizikselOzellikler("beyaz", Faz.KATI, 0, 0, 3.26, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Beyaz çökelme"))
-ekle_kimyasal(Kimyasal("Kalsiyum Oksit", "CaO", FizikselOzellikler("beyaz", Faz.KATI, 2614, 2850, 3.34, 0.0, 12.5, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Sönmemiş kireç"))
-ekle_kimyasal(Kimyasal("Sodyum Oksit", "Na2O", FizikselOzellikler("beyaz", Faz.KATI, 1132, 1275, 2.27, 0.0, 14.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Güçlü bazik oksit"))
-ekle_kimyasal(Kimyasal("Potasyum Oksit", "K2O", FizikselOzellikler("beyaz", Faz.KATI, 740, 0, 2.32, 0.0, 14.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Güçlü bazik oksit"))
-ekle_kimyasal(Kimyasal("Magnezyum Oksit", "MgO", FizikselOzellikler("beyaz", Faz.KATI, 2852, 3600, 3.58, 0.0006, 10.0, False, False, False, None, 0), "bilesik", [], "Sönmemiş magnezyum"))
-ekle_kimyasal(Kimyasal("Aluminyum Oksit", "Al2O3", FizikselOzellikler("beyaz", Faz.KATI, 2072, 2977, 3.95, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Korindon, safir"))
-ekle_kimyasal(Kimyasal("Silikon Dioksit", "SiO2", FizikselOzellikler("beyaz", Faz.KATI, 1713, 2950, 2.65, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Kum, kuvars"))
-ekle_kimyasal(Kimyasal("Demir(III) Oksit", "Fe2O3", FizikselOzellikler("turuncu", Faz.KATI, 1566, 0, 5.24, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Pas, kızıl ocher"))
-ekle_kimyasal(Kimyasal("Demir(II,III) Oksit", "Fe3O4", FizikselOzellikler("siyah", Faz.KATI, 1597, 0, 5.17, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Manyetit"))
-ekle_kimyasal(Kimyasal("Bakır(II) Oksit", "CuO", FizikselOzellikler("siyah", Faz.KATI, 1326, 0, 6.31, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Siyah oksit"))
-ekle_kimyasal(Kimyasal("Bakır(I) Oksit", "Cu2O", FizikselOzellikler("kirmizi", Faz.KATI, 1235, 0, 6.0, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Kırmızı oksit"))
-ekle_kimyasal(Kimyasal("Çinko Oksit", "ZnO", FizikselOzellikler("beyaz", Faz.KATI, 1975, 0, 5.61, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Beyaz boya"))
-ekle_kimyasal(Kimyasal("Kurşun(II) Oksit", "PbO", FizikselOzellikler("sari", Faz.KATI, 888, 0, 9.53, 0.0, 7.0, False, False, False, None, 0), "bilesik", ["toksik"], "Litharge"))
-ekle_kimyasal(Kimyasal("Kurşun(IV) Oksit", "PbO2", FizikselOzellikler("kahverengi", Faz.KATI, 290, 0, 9.38, 0.0, 7.0, False, False, False, None, 0), "bilesik", ["toksik", "oksidan"], "Kurşun dioksit"))
-ekle_kimyasal(Kimyasal("Krom(VI) Oksit", "CrO3", FizikselOzellikler("turuncu", Faz.KATI, 197, 250, 2.7, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["toksik", "kanserojen", "oksidan"], "Krom trioksit"))
-ekle_kimyasal(Kimyasal("Krom(III) Oksit", "Cr2O3", FizikselOzellikler("yesil", Faz.KATI, 2435, 4000, 5.22, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Yeşil krom oksit"))
-ekle_kimyasal(Kimyasal("Mangan(IV) Oksit", "MnO2", FizikselOzellikler("siyah", Faz.KATI, 535, 0, 5.03, 0.0, 7.0, False, False, False, None, 0), "bilesik", ["oksidan"], "Mangan dioksit"))
-ekle_kimyasal(Kimyasal("Titanyum Dioksit", "TiO2", FizikselOzellikler("beyaz", Faz.KATI, 1843, 0, 4.23, 0.0, 7.0, False, False, False, None, 0), "bilesik", [], "Titanyum beyazı"))
-ekle_kimyasal(Kimyasal("Karbon Dioksit", "CO2", FizikselOzellikler("beyaz", Faz.GAZ, -78, -78, 1.98, 0.15, 5.6, False, False, True, None, 760), "bilesik", ["boğucu"], "Kuru buz, sera gazı"))
-ekle_kimyasal(Kimyasal("Karbon Monoksit", "CO", FizikselOzellikler("beyaz", Faz.GAZ, -205, -191, 1.25, 0.0026, 7.0, False, False, True, None, 760), "bilesik", ["zehirli", "yanıcı"], "Öldürücü gaz"))
-ekle_kimyasal(Kimyasal("Kükürt Dioksit", "SO2", FizikselOzellikler("beyaz", Faz.GAZ, -75, -10, 2.63, 9.4, 1.5, False, False, True, None, 760), "bilesik", ["zehirli"], "Asit yağmuru"))
-ekle_kimyasal(Kimyasal("Kükürt Trioksit", "SO3", FizikselOzellikler("beyaz", Faz.SIVI, 17, 45, 1.92, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["aşındırıcı"], "Sülfürik asit anhidriti"))
-ekle_kimyasal(Kimyasal("Nitrojen Dioksit", "NO2", FizikselOzellikler("turuncu", Faz.GAZ, -11, 21, 1.88, 0.0, 0.0, False, False, True, None, 760), "bilesik", ["toksik", "oksidan"], "Kahverengi gaz"))
-ekle_kimyasal(Kimyasal("Nitrojen Monoksit", "NO", FizikselOzellikler("beyaz", Faz.GAZ, -164, -152, 1.34, 0.0, 0.0, False, False, True, None, 760), "bilesik", ["toksik"], "Nitrik oksit"))
-ekle_kimyasal(Kimyasal("Dinitrojen Tetroksit", "N2O4", FizikselOzellikler("beyaz", Faz.SIVI, -11, 21, 1.44, 0.0, 0.0, False, False, False, None, 0), "bilesik", ["toksik", "oksidan"], "NO2 dimeri"))
-ekle_kimyasal(Kimyasal("Fosfor Pentoksit", "P2O5", FizikselOzellikler("beyaz", Faz.KATI, 340, 360, 2.39, 0.0,
+        let particles = [];
+        let bubbles = [];
+
+        // BEAKER Temalı Renk Kütüphanesi
+        const PALETTES = {
+            water: { top: "rgba(0, 180, 216, 0.35)", bottom: "rgba(3, 4, 94, 0.6)" },
+            litmusAcid: { top: "rgba(242, 53, 53, 0.6)", bottom: "rgba(138, 12, 12, 0.75)" },
+            litmusBase: { top: "rgba(38, 72, 232, 0.6)", bottom: "rgba(14, 25, 133, 0.75)" },
+            CuSO4: { top: "rgba(0, 150, 255, 0.5)", bottom: "rgba(0, 48, 143, 0.8)" },
+            KKMnO4: { top: "rgba(186, 12, 186, 0.55)", bottom: "rgba(61, 2, 61, 0.85)" },
+            FeCl3: { top: "rgba(224, 131, 0, 0.5)", bottom: "rgba(102, 51, 0, 0.8)" },
+            Br2: { top: "rgba(186, 45, 11, 0.5)", bottom: "rgba(92, 18, 2, 0.75)" },
+            gasCloud: { top: "rgba(255, 255, 255, 0.08)", bottom: "rgba(200, 200, 200, 0.12)" },
+            defaultMix: { top: "rgba(215, 220, 228, 0.35)", bottom: "rgba(95, 105, 120, 0.6)" }
+        };
+
+        class Bubble {
+            constructor() {
+                this.x = Math.random() * 210 + 195;
+                this.y = 475;
+                this.radius = Math.random() * 2 + 0.8;
+                this.vy = -(Math.random() * 1.3 + 0.5);
+                this.wobble = Math.random() * 100;
+            }
+            update() {
+                this.y += this.vy;
+                this.x += Math.sin(this.wobble / 12) * 0.4;
+                this.wobble++;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+                ctx.fill();
+            }
+        }
+
+        class Spark {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.vx = (Math.random() - 0.5) * 13;
+                this.vy = (Math.random() - 0.9) * 15;
+                this.radius = Math.random() * 3.5 + 1.2;
+                this.life = 1.0;
+                this.decay = Math.random() * 0.022 + 0.016;
+            }
+            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.3; this.life -= this.decay; }
+            draw() {
+                ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = "#ff5533";
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 95, 35, ${this.life})`; ctx.fill(); ctx.restore();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            waveWave += 0.07;
+
+            if (liquidLevel < targetLiquidLevel) liquidLevel += 0.01;
+            if (liquidLevel > targetLiquidLevel) liquidLevel -= 0.01;
+
+            let bX = 180, bY = 120, bW = 240, bH = 360, bR = 20;
+            let currentHeight = bH * liquidLevel;
+            let surfaceY = (bY + bH) - currentHeight;
+
+            if (liquidLevel > 0.01) {
+                ctx.save();
+                let colorBase = getLiquidPalette();
+                let liquidGrad = ctx.createLinearGradient(bX, surfaceY, bX, bY + bH);
+                liquidGrad.addColorStop(0, colorBase.top);
+                liquidGrad.addColorStop(1, colorBase.bottom);
+                ctx.fillStyle = liquidGrad;
+
+                ctx.beginPath();
+                ctx.moveTo(bX + 4, bY + bH - 4);
+                ctx.lineTo(bX + 4, surfaceY);
+                
+                for (let x = bX + 4; x <= bX + bW - 4; x++) {
+                    let waveY = surfaceY + Math.sin((x / 18) + waveWave) * 4.5 * liquidLevel;
+                    ctx.lineTo(x, waveY);
+                }
+                
+                ctx.lineTo(bX + bW - 4, bY + bH - 4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+
+                // Çökelme Çizimi
+                if (hasPrecipitate) {
+                    ctx.save();
+                    let precipGrad = ctx.createLinearGradient(bX, bY + bH - 25, bX, bY + bH);
+                    precipGrad.addColorStop(0, "rgba(240, 240, 245, 0.15)");
+                    precipGrad.addColorStop(1, "rgba(255, 255, 255, 0.85)");
+                    ctx.fillStyle = precipGrad;
+                    ctx.beginPath();
+                    ctx.moveTo(bX + 6, bY + bH - 4);
+                    ctx.ellipse(bX + bW/2, bY + bH - 8, bW/2 - 8, 12, 0, 0, Math.PI, true);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                if (Math.random() < 0.15 + (maxTemp - 298) * 0.003) bubbles.push(new Bubble());
+            }
+
+            // Kabarcıklar ve Parçacıklar
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                bubbles[i].update();
+                let waveAtX = surfaceY + Math.sin((bubbles[i].x / 18) + waveWave) * 4.5 * liquidLevel;
+                if (bubbles[i].y < waveAtX + 4 || liquidLevel === 0) bubbles.splice(i, 1);
+                else bubbles[i].draw();
+            }
+
+            // Beher Çerçevesi
+            ctx.save();
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.16)";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(bX, bY); ctx.lineTo(bX, bY + bH - bR);
+            ctx.arcTo(bX, bY + bH, bX + bR, bY + bH, bR);
+            ctx.lineTo(bX + bW - bR, bY + bH);
+            ctx.arcTo(bX + bW, bY + bH, bX + bW, bY + bH - bR, bR);
+            ctx.lineTo(bX + bW, bY);
+            ctx.stroke();
+
+            // Parlama çizgisi
+            let glassGlow = ctx.createLinearGradient(bX + 4, bY, bX + 14, bY);
+            glassGlow.addColorStop(0, "rgba(255, 255, 255, 0.22)");
+            glassGlow.addColorStop(1, "rgba(255, 255, 255, 0.0)");
+            ctx.fillStyle = glassGlow;
+            ctx.fillRect(bX + 4, bY + 10, 8, bH - 20);
+            ctx.restore();
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                if (particles[i].life <= 0) particles.splice(i, 1);
+                else particles[i].draw();
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function getLiquidPalette() {
+            if (activeIndicators.litmus) {
+                return mixedPh < 7.0 ? PALETTES.litmusAcid : PALETTES.litmusBase;
+            }
+            if (beakerContents.includes("CuSO4")) return PALETTES.CuSO4;
+            if (beakerContents.includes("KMnO4")) return PALETTES.KKMnO4;
+            if (beakerContents.includes("FeCl3")) return PALETTES.FeCl3;
+            if (beakerContents.includes("Br2")) return PALETTES.Br2;
+            if (beakerContents.includes("H2O") && beakerContents.length === 1) return PALETTES.water;
+            
+            // Eğer sadece gazlar ekliyse hafif duman bulutu
+            const hasLiquids = beakerContents.some(item => !["Ar","C2H2","Cl2","CO","CO2","F2","H2","H2S","He","N2","N2O","Ne","NH3","NO","NO2","O2","O3","SO2","Na","K","Mg","Al","Fe","Zn","Pt","Au","Ba","C","Ca","Cr","Cs","Pb","S","Si"].includes(item));
+            if (!hasLiquids && beakerContents.length > 0) return PALETTES.gasCloud;
+
+            return PALETTES.defaultMix;
+        }
+
+        function handleAdd() {
+            const select = document.getElementById('substanceSelect');
+            const val = select.value;
+            
+            if (!beakerContents.includes(val)) beakerContents.push(val);
+            
+            // Gazlar seviyeyi çok az yükseltir, sıvılar ve katılar daha belirgin
+            let levelInc = ["Ar","C2H2","Cl2","CO","CO2","F2","H2","H2S","He","N2","N2O","Ne","NH3","NO","NO2","O2","O3","SO2"].includes(val) ? 0.03 : 0.16;
+            targetLiquidLevel = Math.min(targetLiquidLevel + levelInc, 0.90);
+
+            // Reaksiyon Algoritmaları
+            if (val === "Na" || val === "K" || val === "Cs") {
+                if (beakerContents.includes("H2O")) {
+                    let currentSurfaceY = 480 - (360 * targetLiquidLevel);
+                    for (let i = 0; i < 65; i++) particles.push(new Spark(300, currentSurfaceY + 20));
+                    mixedPh = val === "K" ? 13.50 : 12.80; 
+                    maxTemp = val === "Cs" ? 385.00 : 355.15;
+                    beakerContents.push(val === "K" ? "KOH" : "NaOH");
+                    log(`⚠️ REAKSİYON: Aktif metal (${val}) suyla şiddetle alevlendi! Ekzotermik patlama.`);
+                } else {
+                    log(`Sistem: ${val} metali susuz behere bırakıldı.`);
+                }
+            }
+            else if (val === "HCl" || val === "HNO3" || val === "H2SO4") {
+                if (beakerContents.includes("NaOH") || beakerContents.includes("KOH") || beakerContents.includes("NH3_H2O")) {
+                    mixedPh = 7.00; maxTemp += 25.0;
+                    log(`⚡ NÖTRLEŞME: Kuvvetli asit (${val}) ve baz nötrleşti, yüksek ısı yayıldı.`);
+                } else {
+                    mixedPh = val === "HCl" ? 1.10 : (val === "HNO3" ? 1.20 : 0.80);
+                    log(`Sistem: Asit çözeltisi (${val}) eklendi.`);
+                }
+            }
+            else if (val === "NaOH" || val === "KOH" || val === "NH3_H2O") {
+                if (beakerContents.includes("HCl") || beakerContents.includes("HNO3") || beakerContents.includes("H2SO4")) {
+                    mixedPh = 7.00; maxTemp += 25.0;
+                    log(`⚡ NÖTRLEŞME: Baz çözeltisi (${val}) ortamdaki asidi nötrleştirdi.`);
+                } else {
+                    mixedPh = val === "NaOH" ? 13.70 : (val === "KOH" ? 13.90 : 11.20);
+                    log(`Sistem: Baz çözeltisi (${val}) eklendi.`);
+                }
+            }
+            // AgCl Beyaz Çökeleği
+            else if ((val === "AgNO3" && beakerContents.includes("NaCl")) || (val === "NaCl" && beakerContents.includes("AgNO3"))) {
+                hasPrecipitate = true;
+                log("Çökelme: Gümüş Nitrat ve Tuz reaksiyona girdi. Gümüş Klorür [AgCl(k)] beyaz çökeleği oluştu!");
+            }
+            else if (val === "Litmus") { activeIndicators.litmus = true; log("İndikatör: Turnusol boyası eklendi. Renk skalası asit/baz duyarlı."); }
+            else if (val === "H2O") { log("Sistem: Saf Su (H2O) eklendi."); }
+            else if (val === "CuSO4") { log("Sistem: Bakır Sülfat (CuSO4) eklendi. Çözelti açık mavi."); }
+            else if (val === "KMnO4") { log("Sistem: Potasyum Permanganat eklendi. Koyu mor/menekşe renk."); }
+            else if (val === "FeCl3") { log("Sistem: Demir(III) Klorür eklendi. Kehribar renkli asidik çözelti."); }
+            else if (val === "Cl2" || val === "NO2") { log(`Sistem: Renkli gaz (${val}) behere üflendi. Hafif dumanlanma.`); }
+            else { log(`Sistem: ${val} başarıyla laboratuvar ortamına eklendi.`); }
+
+            document.getElementById('ph-val').innerText = mixedPh.toFixed(2);
+            document.getElementById('temp-val').innerText = maxTemp.toFixed(2) + " K";
+        }
+
+        function clearBeaker() {
+            beakerContents = []; mixedPh = 7.0; maxTemp = 298.15;
+            activeIndicators = { litmus: false };
+            hasPrecipitate = false; particles = []; bubbles = []; targetLiquidLevel = 0;
+            log("Sistem: Tüm içerik tahliye edildi. Beher sterilize edildi.");
+            document.getElementById('ph-val').innerText = "7.00";
+            document.getElementById('temp-val').innerText = "298.15 K";
+        }
+
+        animate();
+    </script>
+</body>
+</html>
